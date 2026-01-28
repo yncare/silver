@@ -1,0 +1,1350 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>굿실버 건강한 두뇌훈련</title>
+    <link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+    <!-- 폭죽 효과 컨테이너 -->
+    <div class="confetti-container" id="confettiContainer"></div>
+    
+    <!-- 축하 오버레이 -->
+    <div class="celebration-overlay" id="celebrationOverlay">
+        <div class="celebration-emoji">🎉</div>
+    </div>
+    
+    <!-- 배지 모달 -->
+    <div class="badge-modal" id="badgeModal">
+        <div class="badge-modal-content">
+            <button class="badge-close-btn" onclick="closeBadgeModal()">✕</button>
+            <div class="badge-modal-header">
+                <h2>🏆 나의 배지 컬렉션</h2>
+                <span class="badge-count" id="badgeCountDisplay">0 / 20</span>
+            </div>
+            <div class="badge-grid" id="badgeGrid">
+                <!-- 배지가 여기에 표시됨 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 새 배지 획득 알림 -->
+    <div class="badge-unlock-overlay" id="badgeUnlockOverlay">
+        <div class="badge-unlock-card">
+            <div class="badge-unlock-title">🎊 새 배지 획득! 🎊</div>
+            <div class="badge-unlock-icon" id="unlockBadgeIcon">🏆</div>
+            <div class="badge-unlock-name" id="unlockBadgeName">배지 이름</div>
+            <div class="badge-unlock-desc" id="unlockBadgeDesc">배지 설명</div>
+            <button class="badge-unlock-close" onclick="closeBadgeUnlock()">확인</button>
+        </div>
+    </div>
+    
+    <!-- 난이도 선택 모달 -->
+    <div class="difficulty-modal" id="difficultyModal">
+        <div class="difficulty-modal-content">
+            <h3>⚙️ 난이도 설정</h3>
+            <p>원하시는 난이도를 선택하세요</p>
+            
+            <div class="difficulty-options">
+                <div class="difficulty-option very-easy" onclick="selectDifficulty('very_easy', this)" data-diff="very_easy">
+                    <div class="diff-info">
+                        <div class="diff-name">매우 쉬움</div>
+                        <div class="diff-desc">천천히 여유롭게 즐기기</div>
+                    </div>
+                    <div class="diff-stars">⭐</div>
+                </div>
+                <div class="difficulty-option easy" onclick="selectDifficulty('easy', this)" data-diff="easy">
+                    <div class="diff-info">
+                        <div class="diff-name">쉬움</div>
+                        <div class="diff-desc">가볍게 두뇌 운동하기</div>
+                    </div>
+                    <div class="diff-stars">⭐⭐</div>
+                </div>
+                <div class="difficulty-option normal" onclick="selectDifficulty('normal', this)" data-diff="normal">
+                    <div class="diff-info">
+                        <div class="diff-name">보통</div>
+                        <div class="diff-desc">적당한 도전으로 훈련하기</div>
+                    </div>
+                    <div class="diff-stars">⭐⭐⭐</div>
+                </div>
+                <div class="difficulty-option hard" onclick="selectDifficulty('hard', this)" data-diff="hard">
+                    <div class="diff-info">
+                        <div class="diff-name">어려움</div>
+                        <div class="diff-desc">집중력이 필요해요</div>
+                    </div>
+                    <div class="diff-stars">⭐⭐⭐⭐</div>
+                </div>
+                <div class="difficulty-option very-hard" onclick="selectDifficulty('very_hard', this)" data-diff="very_hard">
+                    <div class="diff-info">
+                        <div class="diff-name">매우 어려움</div>
+                        <div class="diff-desc">최고 수준의 두뇌 훈련!</div>
+                    </div>
+                    <div class="diff-stars">⭐⭐⭐⭐⭐</div>
+                </div>
+            </div>
+            
+            <div class="difficulty-modal-btns">
+                <button class="btn btn-back" onclick="closeDifficultyModal()">취소</button>
+                <button class="btn btn-primary" onclick="applyDifficulty()">적용하기</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 그래프 모달 -->
+    <div class="graph-modal" id="graphModal">
+        <div class="graph-container">
+            <div class="graph-header">
+                <h2>📊 <span id="graphUserName">사용자</span>님의 훈련 기록</h2>
+                <button class="close-graph-btn" onclick="closeStatsGraph()">✕ 닫기</button>
+            </div>
+            
+            <div class="graph-tabs">
+                <button class="graph-tab active" onclick="showGraphTab('score')">점수 추이</button>
+                <button class="graph-tab" onclick="showGraphTab('accuracy')">정확도</button>
+                <button class="graph-tab" onclick="showGraphTab('games')">게임별 통계</button>
+                <button class="graph-tab" onclick="showGraphTab('history')">기록 목록</button>
+            </div>
+            
+            <!-- 점수 추이 그래프 -->
+            <div id="scoreGraph" class="chart-area">
+                <div class="chart-title">📈 최근 7일간 점수 변화</div>
+                <div class="bar-chart" id="scoreBarChart"></div>
+            </div>
+            
+            <!-- 정확도 그래프 -->
+            <div id="accuracyGraph" class="chart-area" style="display:none;">
+                <div class="chart-title">🎯 최근 7일간 정확도 (%)</div>
+                <div class="bar-chart" id="accuracyBarChart"></div>
+            </div>
+            
+            <!-- 게임별 통계 -->
+            <div id="gamesGraph" class="chart-area" style="display:none;">
+                <div class="chart-title">🎮 게임별 플레이 횟수</div>
+                <div class="bar-chart" id="gamesBarChart"></div>
+                <div class="game-detail-select">
+                    <label>📋 게임 상세 기록: </label>
+                    <select id="gameDetailSelect" onchange="showGameDetailHistory()">
+                        <option value="">-- 게임 선택 --</option>
+                    </select>
+                </div>
+                <div id="gameDetailHistory" class="game-detail-history"></div>
+            </div>
+            
+            <!-- 기록 목록 -->
+            <div id="historyList" class="chart-area" style="display:none;">
+                <div class="chart-title">📋 전체 기록</div>
+                <div class="history-list" id="historyListContent"></div>
+            </div>
+            
+            <!-- 요약 통계 -->
+            <div class="stats-summary">
+                <div class="summary-card">
+                    <div class="summary-value" id="totalDays">0</div>
+                    <div class="summary-label">총 훈련 일수</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-value" id="totalGamesPlayed">0</div>
+                    <div class="summary-label">총 게임 횟수</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-value" id="avgScore">0</div>
+                    <div class="summary-label">평균 점수</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-value" id="avgAccuracy">0%</div>
+                    <div class="summary-label">평균 정확도</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <header>
+        <div class="header-left">
+            <h1><img src="assets/logo.png" alt="굿실버" class="header-logo"> 두뇌 건강 훈련</h1>
+            <p>매일 10분, 건강한 두뇌를 위한 훈련</p>
+        </div>
+        
+        <!-- 사용자 배지 (헤더 중앙) -->
+        <div class="header-user-badge" id="headerUserBadge" style="display:none;">
+            <span id="userGenderIcon">👤</span>
+            <span><strong id="userNameDisplay">사용자</strong>님</span>
+            <span class="difficulty-badge clickable" id="difficultyBadge" onclick="showDifficultyModal()" title="클릭하여 난이도 변경">보통 ▼</span>
+            <button class="header-badge-btn" onclick="showBadgeModal()">🏆 배지</button>
+            <button class="header-badge-btn" onclick="showStatsGraph()">📊 기록</button>
+            <button class="header-badge-btn" onclick="changeProfile()">👤 변경</button>
+            <button class="header-badge-btn exit" onclick="exitApp()">🚪 종료</button>
+        </div>
+        
+        <!-- 우측 영역: 점수 + 접근성 컨트롤 -->
+        <div class="header-right">
+            <!-- 점수 표시 -->
+            <div class="header-score" id="headerScore" style="display:none;">
+                <div class="header-score-item">
+                    <span class="score-label">오늘</span>
+                    <span class="score-value" id="todayScore">0</span>
+                </div>
+                <div class="header-score-item">
+                    <span class="score-label">최고</span>
+                    <span class="score-value" id="highScore">0</span>
+                </div>
+            </div>
+            <!-- 접근성 컨트롤 -->
+            <div class="accessibility-controls">
+                <button class="access-btn" id="fontSizeBtn" onclick="toggleFontSize()">
+                    <span class="btn-icon">🔤</span>
+                    <span id="fontSizeLabel">크게 보기</span>
+                </button>
+                <button class="access-btn" id="contrastBtn" onclick="toggleHighContrast()">
+                    <span class="btn-icon">🌙</span>
+                    <span id="contrastLabel">고대비</span>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- 환영 화면 -->
+        <div id="welcomeScreen" class="welcome-screen">
+            <div class="welcome-card">
+                <div class="welcome-icon">🎉👏🎊</div>
+                <h2>환영합니다!</h2>
+                <p class="subtitle">사용자를 선택하거나 새로 등록하세요</p>
+                
+                <!-- 기존 사용자 선택 -->
+                <div class="user-select-section" id="existingUsersSection">
+                    <h3>👥 기존 사용자 선택</h3>
+                    <div class="existing-users" id="existingUsersList">
+                        <!-- 사용자 목록이 여기에 표시됨 -->
+                    </div>
+                    <div class="new-user-toggle" onclick="toggleNewUserForm()">
+                        ➕ 새 사용자 등록
+                    </div>
+                </div>
+                
+                <!-- 새 사용자 등록 폼 -->
+                <div class="new-user-form" id="newUserForm">
+                    <h3>✨ 새 사용자 등록</h3>
+                    
+                    <div class="form-group">
+                        <label>✏️ 이름</label>
+                        <input type="text" id="userName" maxlength="10" placeholder="이름을 입력하세요" style="text-align:center;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>👤 성별</label>
+                        <div class="gender-options">
+                            <button class="gender-btn" onclick="selectGender('male', this)">
+                                <span class="gender-icon">👨</span>남성
+                            </button>
+                            <button class="gender-btn" onclick="selectGender('female', this)">
+                                <span class="gender-icon">👩</span>여성
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>⚙️ 난이도</label>
+                        <p style="font-size:0.9rem;color:#666;margin-bottom:10px;">원하시는 난이도를 선택해주세요!</p>
+                        <select id="difficultySelect" class="difficulty-select" onchange="selectRegDifficulty(this.value)">
+                            <option value="normal">⭐⭐⭐ 보통 (기본)</option>
+                            <option value="very_easy">⭐ 매우 쉬움</option>
+                            <option value="easy">⭐⭐ 쉬움</option>
+                            <option value="normal">⭐⭐⭐ 보통</option>
+                            <option value="hard">⭐⭐⭐⭐ 어려움</option>
+                            <option value="very_hard">⭐⭐⭐⭐⭐ 매우 어려움</option>
+                        </select>
+                    </div>
+                    
+                    <button class="start-btn" id="registerBtn" onclick="registerNewUser()" disabled>등록하고 시작하기 →</button>
+                    <button class="new-user-toggle" onclick="toggleNewUserForm()" style="margin-top:10px;border-color:#757575;color:#757575;">← 돌아가기</button>
+                </div>
+                
+                <!-- 선택된 사용자로 시작 버튼 -->
+                <button class="start-btn" id="enterBtn" onclick="enterWithSelectedUser()" style="display:none;">선택한 사용자로 시작하기 →</button>
+            </div>
+        </div>
+        
+        <!-- 메인 콘텐츠 -->
+        <div id="mainContent" class="hidden">
+            <!-- 음성 안내 설정 -->
+            <div class="tts-auto-toggle">
+                <span>🔊</span>
+                <label for="ttsAutoToggle" style="cursor:pointer;">자동 음성 안내</label>
+                <label class="tts-toggle-switch" for="ttsAutoToggle">
+                    <input type="checkbox" id="ttsAutoToggle" onchange="toggleAutoTTS()">
+                    <span class="tts-slider"></span>
+                </label>
+                <div class="tts-speed-control">
+                    <label for="ttsSpeedSelect">속도:</label>
+                    <select id="ttsSpeedSelect" onchange="changeTTSSpeed()">
+                        <option value="0.7">느리게</option>
+                        <option value="0.85" selected>보통</option>
+                        <option value="1.0">빠르게</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- 메인 메뉴 (16개 게임) -->
+            <div id="mainMenu" class="main-menu">
+                <div class="menu-card" onclick="startGame('match')" style="padding:0;overflow:hidden;">
+                    <img src="assets/card_match.png" alt="카드 짝 맞추기" style="width:100%;height:100%;object-fit:cover;border-radius:20px;">
+                </div>
+                <div class="menu-card" onclick="startGame('sequence')" style="padding:0;overflow:hidden;">
+                    <img src="assets/sequence.png" alt="숫자 기억하기" style="width:100%;height:100%;object-fit:cover;border-radius:20px;">
+                </div>
+                <div class="menu-card" onclick="startGame('calc')">
+                    <span class="icon">➕</span>
+                    <h3>시장 계산</h3>
+                    <p>덧셈 뺄셈</p>
+                </div>
+                <div class="menu-card" onclick="startGame('color')">
+                    <span class="icon">🌈</span>
+                    <h3>무지개 색깔</h3>
+                    <p>색상 맞추기</p>
+                </div>
+                <div class="menu-card" onclick="startGame('pattern')">
+                    <span class="icon">🔲</span>
+                    <h3>창문 기억</h3>
+                    <p>불 켜진 위치</p>
+                </div>
+                <div class="menu-card" onclick="startGame('reaction')">
+                    <span class="icon">🚦</span>
+                    <h3>신호등 게임</h3>
+                    <p>초록불에 출발</p>
+                </div>
+                <div class="menu-card" onclick="startGame('findDiff')">
+                    <span class="icon">👀</span>
+                    <h3>다른 것 찾기</h3>
+                    <p>숨은 그림 찾기</p>
+                </div>
+                <div class="menu-card" onclick="startGame('sorting')">
+                    <span class="icon">📊</span>
+                    <h3>계단 오르기</h3>
+                    <p>순서대로 누르기</p>
+                </div>
+                <div class="menu-card" onclick="startGame('direction')">
+                    <span class="icon">🚗</span>
+                    <h3>길 찾기</h3>
+                    <p>화살표 따라가기</p>
+                </div>
+                <div class="menu-card" onclick="startGame('word')">
+                    <span class="icon">📖</span>
+                    <h3>낱말 퍼즐</h3>
+                    <p>빈칸 채우기</p>
+                </div>
+                <div class="menu-card" onclick="startGame('counting')">
+                    <span class="icon">🛒</span>
+                    <h3>장바구니 세기</h3>
+                    <p>과일 개수 세기</p>
+                </div>
+                <div class="menu-card" onclick="startGame('pairing')">
+                    <span class="icon">🔗</span>
+                    <h3>짝 연결하기</h3>
+                    <p>관련 단어 연결</p>
+                </div>
+                <div class="menu-card" onclick="startGame('timing')">
+                    <span class="icon">⏰</span>
+                    <h3>알람 맞추기</h3>
+                    <p>정확한 시간에 멈춤</p>
+                </div>
+                <div class="menu-card" onclick="startGame('reverse')">
+                    <span class="icon">🔄</span>
+                    <h3>거울 놀이</h3>
+                    <p>거꾸로 말하기</p>
+                </div>
+                <div class="menu-card" onclick="startGame('category')">
+                    <span class="icon">📂</span>
+                    <h3>분류하기</h3>
+                    <p>같은 종류 찾기</p>
+                </div>
+                <div class="menu-card" onclick="startGame('story')">
+                    <span class="icon">📚</span>
+                    <h3>이야기 순서</h3>
+                    <p>순서대로 정렬</p>
+                </div>
+                <!-- 새로운 9종 게임 -->
+                <div class="menu-card" onclick="startGame('maze')">
+                    <span class="icon">🏰</span>
+                    <h3>미로 탈출</h3>
+                    <p>출구를 찾아라</p>
+                </div>
+                <div class="menu-card" onclick="startGame('melody')">
+                    <span class="icon">🎵</span>
+                    <h3>멜로디 기억</h3>
+                    <p>음악 패턴 따라하기</p>
+                </div>
+                <div class="menu-card" onclick="startGame('puzzle')">
+                    <span class="icon">🧩</span>
+                    <h3>퍼즐 맞추기</h3>
+                    <p>조각으로 그림 완성</p>
+                </div>
+                <div class="menu-card" onclick="startGame('treasure')">
+                    <span class="icon">💎</span>
+                    <h3>보물 찾기</h3>
+                    <p>힌트로 위치 추리</p>
+                </div>
+                <div class="menu-card" onclick="startGame('shadow')">
+                    <span class="icon">👤</span>
+                    <h3>그림자 매칭</h3>
+                    <p>물체와 그림자 연결</p>
+                </div>
+                <div class="menu-card" onclick="startGame('focus')">
+                    <span class="icon">🎯</span>
+                    <h3>집중 타겟</h3>
+                    <p>움직이는 표적 맞추기</p>
+                </div>
+                <div class="menu-card" onclick="startGame('palace')">
+                    <span class="icon">🏛️</span>
+                    <h3>기억의 방</h3>
+                    <p>물건 위치 기억하기</p>
+                </div>
+                <div class="menu-card" onclick="startGame('rotate')">
+                    <span class="icon">🔷</span>
+                    <h3>도형 회전</h3>
+                    <p>회전된 모양 찾기</p>
+                </div>
+                <div class="menu-card" onclick="startGame('chain')">
+                    <span class="icon">⛓️</span>
+                    <h3>연쇄 반응</h3>
+                    <p>순서대로 빠르게 터치</p>
+                </div>
+            </div>
+            
+            <div class="today-stats">
+                <h3>📊 오늘의 훈련 기록</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="gamesPlayed">0</div>
+                        <div class="stat-label">게임 횟수</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="correctAnswers">0</div>
+                        <div class="stat-label">정답 수</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="accuracy">0%</div>
+                        <div class="stat-label">정확도</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="trainTime">0분</div>
+                        <div class="stat-label">훈련 시간</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 게임 화면들 -->
+        <!-- 0. 동물/식물 짝맞추기 -->
+        <div id="matchGame" class="game-screen">
+            <div class="game-header">
+                <h2>🐾🌿 짝 맞추기</h2>
+                <div class="game-info">
+                    <span>레벨: <strong id="matchLevel">1</strong></span>
+                    <span>시도: <strong id="matchTries">0</strong></span>
+                    <span>맞춤: <strong id="matchMatches">0</strong></span>
+                    <span>점수: <strong id="matchScore">0</strong></span>
+                </div>
+            </div>
+            <div class="level-display" id="matchLevelDisplay"></div>
+            <div class="game-difficulty-selector">
+                <span class="game-diff-label">⚙️ 난이도:</span>
+                <div class="game-diff-btns">
+                    <button class="game-diff-btn very-easy" onclick="changeGameDifficulty('very_easy')">⭐ 매우쉬움</button>
+                    <button class="game-diff-btn easy" onclick="changeGameDifficulty('easy')">⭐⭐ 쉬움</button>
+                    <button class="game-diff-btn normal" onclick="changeGameDifficulty('normal')">⭐⭐⭐ 보통</button>
+                    <button class="game-diff-btn hard" onclick="changeGameDifficulty('hard')">⭐⭐⭐⭐ 어려움</button>
+                    <button class="game-diff-btn very-hard" onclick="changeGameDifficulty('very_hard')">⭐⭐⭐⭐⭐ 매우어려움</button>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('match')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <div class="match-game-container">
+                <div class="match-stage-info">
+                    <span>🎯 레벨: <strong id="matchLevel">1</strong></span>
+                    <span>✅ 맞춘: <strong id="matchMatches">0</strong>/<span id="matchTotal">4</span></span>
+                </div>
+                <div class="stage-buttons" id="stageButtons">
+                    <button class="stage-btn animal active" onclick="selectMatchStage('animal')">🐾 동물</button>
+                    <button class="stage-btn plant" onclick="selectMatchStage('plant')">🌿 식물</button>
+                    <button class="stage-btn mixed" onclick="selectMatchStage('mixed')">🎨 혼합</button>
+                </div>
+                <div class="match-grid" id="matchGrid"></div>
+                <button class="btn btn-primary" id="matchStartBtn" onclick="startMatchGame()" style="margin-top:15px;">게임 시작</button>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-secondary" onclick="initMatchGame()">다시</button>
+            </div>
+        </div>
+        
+        <!-- 1. 숫자 순서 -->
+        <div id="sequenceGame" class="game-screen">
+            <div class="game-header">
+                <h2>🔢 숫자 기억하기</h2>
+                <div class="game-info">
+                    <span>점수: <strong id="seqScore">0</strong></span>
+                </div>
+            </div>
+            <div class="level-display" id="sequenceLevelDisplay"></div>
+            <div class="game-difficulty-selector">
+                <span class="game-diff-label">⚙️ 난이도:</span>
+                <div class="game-diff-btns">
+                    <button class="game-diff-btn very-easy" onclick="changeGameDifficulty('very_easy')">⭐ 매우쉬움</button>
+                    <button class="game-diff-btn easy" onclick="changeGameDifficulty('easy')">⭐⭐ 쉬움</button>
+                    <button class="game-diff-btn normal" onclick="changeGameDifficulty('normal')">⭐⭐⭐ 보통</button>
+                    <button class="game-diff-btn hard" onclick="changeGameDifficulty('hard')">⭐⭐⭐⭐ 어려움</button>
+                    <button class="game-diff-btn very-hard" onclick="changeGameDifficulty('very_hard')">⭐⭐⭐⭐⭐ 매우어려움</button>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('sequence')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <button class="tts-btn" onclick="speakSequenceNumbers()" style="background: linear-gradient(135deg, #FFE0B2, #FFCC80); border-color: #FF9800; color: #E65100;">
+                <span class="tts-icon">📢</span> 숫자 읽기
+            </button>
+            <button class="chance-btn" id="seqChanceBtn" onclick="useSequenceChance()" disabled>
+                <span class="chance-icon">🔍</span> 다시보기 찬스
+                <span class="chance-count" id="seqChanceCount">2</span>
+            </button>
+            <div class="timer-bar"><div class="timer-fill" id="seqTimer"></div></div>
+            <div class="game-display" id="seqDisplay">시작을 눌러주세요!</div>
+            <div class="user-input-display" id="userInput"></div>
+            <span class="input-hint" id="seqInputHint" style="display:none;">잘못 눌렀다면 빨간색 🗑️지우기 버튼을 누르세요!</span>
+            <div class="num-pad" id="numPad">
+                <button class="num-btn" onclick="inputNumber(1)">1</button>
+                <button class="num-btn" onclick="inputNumber(2)">2</button>
+                <button class="num-btn" onclick="inputNumber(3)">3</button>
+                <button class="num-btn" onclick="inputNumber(4)">4</button>
+                <button class="num-btn" onclick="inputNumber(5)">5</button>
+                <button class="num-btn" onclick="inputNumber(6)">6</button>
+                <button class="num-btn" onclick="inputNumber(7)">7</button>
+                <button class="num-btn" onclick="inputNumber(8)">8</button>
+                <button class="num-btn" onclick="inputNumber(9)">9</button>
+                <button class="num-btn" onclick="inputNumber(0)">0</button>
+                <button class="num-btn clear-btn" onclick="clearInput()">🗑️<br><span style="font-size:0.6em;">지우기</span></button>
+                <button class="num-btn submit-btn" onclick="submitSequence()">✓<br><span style="font-size:0.6em;">확인</span></button>
+            </div>
+            <div id="seqResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="seqStartBtn" onclick="startSequence()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 3. 암산 -->
+        <div id="calcGame" class="game-screen">
+            <div class="game-header">
+                <h2>➕ 암산 훈련</h2>
+                <div class="game-info">
+                    <span>문제: <strong id="calcQuestion">0</strong>/10</span>
+                    <span>점수: <strong id="calcScore">0</strong></span>
+                </div>
+            </div>
+            <div class="level-display" id="calcLevelDisplay"></div>
+            <div class="game-difficulty-selector">
+                <span class="game-diff-label">⚙️ 난이도:</span>
+                <div class="game-diff-btns">
+                    <button class="game-diff-btn very-easy" onclick="changeGameDifficulty('very_easy')">⭐ 매우쉬움</button>
+                    <button class="game-diff-btn easy" onclick="changeGameDifficulty('easy')">⭐⭐ 쉬움</button>
+                    <button class="game-diff-btn normal" onclick="changeGameDifficulty('normal')">⭐⭐⭐ 보통</button>
+                    <button class="game-diff-btn hard" onclick="changeGameDifficulty('hard')">⭐⭐⭐⭐ 어려움</button>
+                    <button class="game-diff-btn very-hard" onclick="changeGameDifficulty('very_hard')">⭐⭐⭐⭐⭐ 매우어려움</button>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('calc')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <button class="tts-btn" onclick="speakCalcProblem()" style="background: linear-gradient(135deg, #FFE0B2, #FFCC80); border-color: #FF9800; color: #E65100;">
+                <span class="tts-icon">📢</span> 문제 읽기
+            </button>
+            <div class="timer-bar"><div class="timer-fill" id="calcTimer"></div></div>
+            <div class="game-display" id="calcProblem">시작을 눌러주세요!</div>
+            <div class="calc-options" id="calcOptions"></div>
+            <div id="calcResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="calcStartBtn" onclick="startCalc()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 4. 색상 맞추기 -->
+        <div id="colorGame" class="game-screen">
+            <div class="game-header">
+                <h2>🎨 색상 맞추기</h2>
+                <div class="game-info">
+                    <span>문제: <strong id="colorQuestion">0</strong>/10</span>
+                    <span>점수: <strong id="colorScore">0</strong></span>
+                </div>
+            </div>
+            <div class="level-display" id="colorLevelDisplay"></div>
+            <div class="game-difficulty-selector">
+                <span class="game-diff-label">⚙️ 난이도:</span>
+                <div class="game-diff-btns">
+                    <button class="game-diff-btn very-easy" onclick="changeGameDifficulty('very_easy')">⭐ 매우쉬움</button>
+                    <button class="game-diff-btn easy" onclick="changeGameDifficulty('easy')">⭐⭐ 쉬움</button>
+                    <button class="game-diff-btn normal" onclick="changeGameDifficulty('normal')">⭐⭐⭐ 보통</button>
+                    <button class="game-diff-btn hard" onclick="changeGameDifficulty('hard')">⭐⭐⭐⭐ 어려움</button>
+                    <button class="game-diff-btn very-hard" onclick="changeGameDifficulty('very_hard')">⭐⭐⭐⭐⭐ 매우어려움</button>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('color')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <button class="tts-btn" onclick="speakColorProblem()" style="background: linear-gradient(135deg, #FFE0B2, #FFCC80); border-color: #FF9800; color: #E65100;">
+                <span class="tts-icon">📢</span> 문제 읽기
+            </button>
+            <div class="timer-bar"><div class="timer-fill" id="colorTimer"></div></div>
+            <p style="text-align:center;font-size:1.2rem;margin-bottom:10px;">글자의 <strong>색상</strong>을 선택하세요!</p>
+            <div class="color-word" id="colorWord">준비</div>
+            <div class="color-options" id="colorOptions">
+                <button class="color-btn red" onclick="selectColor('red')">빨강</button>
+                <button class="color-btn blue" onclick="selectColor('blue')">파랑</button>
+                <button class="color-btn green" onclick="selectColor('green')">초록</button>
+                <button class="color-btn yellow" onclick="selectColor('yellow')">노랑</button>
+            </div>
+            <div id="colorResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="colorStartBtn" onclick="startColor()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 5. 패턴 기억 -->
+        <div id="patternGame" class="game-screen">
+            <div class="game-header">
+                <h2>🔲 패턴 기억하기</h2>
+                <div class="game-info">
+                    <span>레벨: <strong id="patternLevel">1</strong></span>
+                    <span>점수: <strong id="patternScore">0</strong></span>
+                </div>
+            </div>
+            <div class="level-display" id="patternLevelDisplay"></div>
+            <div class="game-difficulty-selector">
+                <span class="game-diff-label">⚙️ 난이도:</span>
+                <div class="game-diff-btns">
+                    <button class="game-diff-btn very-easy" onclick="changeGameDifficulty('very_easy')">⭐ 매우쉬움</button>
+                    <button class="game-diff-btn easy" onclick="changeGameDifficulty('easy')">⭐⭐ 쉬움</button>
+                    <button class="game-diff-btn normal" onclick="changeGameDifficulty('normal')">⭐⭐⭐ 보통</button>
+                    <button class="game-diff-btn hard" onclick="changeGameDifficulty('hard')">⭐⭐⭐⭐ 어려움</button>
+                    <button class="game-diff-btn very-hard" onclick="changeGameDifficulty('very_hard')">⭐⭐⭐⭐⭐ 매우어려움</button>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('pattern')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <button class="chance-btn" id="patternChanceBtn" onclick="usePatternChance()" disabled>
+                <span class="chance-icon">🔍</span> 다시보기 찬스
+                <span class="chance-count" id="patternChanceCount">2</span>
+            </button>
+            <p id="patternInstruction" style="text-align:center;font-size:1.2rem;margin-bottom:15px;">패턴을 기억하세요!</p>
+            <div class="pattern-grid" id="patternGrid"></div>
+            <div id="patternResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="patternStartBtn" onclick="startPattern()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 6. 반응 속도 -->
+        <div id="reactionGame" class="game-screen">
+            <div class="game-header">
+                <h2>⚡ 반응 속도</h2>
+                <div class="game-info">
+                    <span>라운드: <strong id="reactionRound">0</strong>/5</span>
+                    <span>평균: <strong id="reactionAvg">0</strong>ms</span>
+                </div>
+            </div>
+            <div class="level-display" id="reactionLevelDisplay"></div>
+            <div class="game-difficulty-selector">
+                <span class="game-diff-label">⚙️ 난이도:</span>
+                <div class="game-diff-btns">
+                    <button class="game-diff-btn very-easy" onclick="changeGameDifficulty('very_easy')">⭐ 매우쉬움</button>
+                    <button class="game-diff-btn easy" onclick="changeGameDifficulty('easy')">⭐⭐ 쉬움</button>
+                    <button class="game-diff-btn normal" onclick="changeGameDifficulty('normal')">⭐⭐⭐ 보통</button>
+                    <button class="game-diff-btn hard" onclick="changeGameDifficulty('hard')">⭐⭐⭐⭐ 어려움</button>
+                    <button class="game-diff-btn very-hard" onclick="changeGameDifficulty('very_hard')">⭐⭐⭐⭐⭐ 매우어려움</button>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('reaction')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <div class="reaction-box waiting" id="reactionBox" onclick="reactionClick()">
+                <span id="reactionText">클릭하여 시작</span>
+            </div>
+            <div id="reactionResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="reactionStartBtn" onclick="startReaction()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 7. 다른 것 찾기 -->
+        <div id="findDiffGame" class="game-screen">
+            <div class="game-header">
+                <h2>🔍 다른 것 찾기</h2>
+                <div class="game-info">
+                    <span>문제: <strong id="findDiffQuestion">0</strong>/10</span>
+                    <span>점수: <strong id="findDiffScore">0</strong></span>
+                </div>
+            </div>
+            <div class="level-display" id="findDiffLevelDisplay"></div>
+            <div class="game-difficulty-selector">
+                <span class="game-diff-label">⚙️ 난이도:</span>
+                <div class="game-diff-btns">
+                    <button class="game-diff-btn very-easy" onclick="changeGameDifficulty('very_easy')">⭐ 매우쉬움</button>
+                    <button class="game-diff-btn easy" onclick="changeGameDifficulty('easy')">⭐⭐ 쉬움</button>
+                    <button class="game-diff-btn normal" onclick="changeGameDifficulty('normal')">⭐⭐⭐ 보통</button>
+                    <button class="game-diff-btn hard" onclick="changeGameDifficulty('hard')">⭐⭐⭐⭐ 어려움</button>
+                    <button class="game-diff-btn very-hard" onclick="changeGameDifficulty('very_hard')">⭐⭐⭐⭐⭐ 매우어려움</button>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('findDiff')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <div class="timer-bar"><div class="timer-fill" id="findDiffTimer"></div></div>
+            <p style="text-align:center;font-size:1.2rem;margin-bottom:15px;">다른 하나를 찾으세요!</p>
+            <div class="find-diff-grid" id="findDiffGrid"></div>
+            <div id="findDiffResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="findDiffStartBtn" onclick="startFindDiff()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 8. 순서 정렬 -->
+        <div id="sortingGame" class="game-screen">
+            <div class="game-header">
+                <h2>📊 순서 정렬</h2>
+                <div class="game-info">
+                    <span>레벨: <strong id="sortLevel">1</strong></span>
+                    <span>점수: <strong id="sortScore">0</strong></span>
+                </div>
+            </div>
+            <div class="level-display" id="sortingLevelDisplay"></div>
+            <div class="game-difficulty-selector">
+                <span class="game-diff-label">⚙️ 난이도:</span>
+                <div class="game-diff-btns">
+                    <button class="game-diff-btn very-easy" onclick="changeGameDifficulty('very_easy')">⭐ 매우쉬움</button>
+                    <button class="game-diff-btn easy" onclick="changeGameDifficulty('easy')">⭐⭐ 쉬움</button>
+                    <button class="game-diff-btn normal" onclick="changeGameDifficulty('normal')">⭐⭐⭐ 보통</button>
+                    <button class="game-diff-btn hard" onclick="changeGameDifficulty('hard')">⭐⭐⭐⭐ 어려움</button>
+                    <button class="game-diff-btn very-hard" onclick="changeGameDifficulty('very_hard')">⭐⭐⭐⭐⭐ 매우어려움</button>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('sorting')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <div class="timer-bar"><div class="timer-fill" id="sortTimer"></div></div>
+            <p style="text-align:center;font-size:1.2rem;margin-bottom:15px;">1부터 순서대로 클릭하세요!</p>
+            <div class="sort-grid" id="sortGrid"></div>
+            <div id="sortResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="sortStartBtn" onclick="startSorting()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 9. 방향 맞추기 -->
+        <div id="directionGame" class="game-screen">
+            <div class="game-header">
+                <h2>🧭 방향 맞추기</h2>
+                <div class="game-info">
+                    <span>문제: <strong id="dirQuestion">0</strong>/10</span>
+                    <span>점수: <strong id="dirScore">0</strong></span>
+                </div>
+            </div>
+            <div class="level-display" id="directionLevelDisplay"></div>
+            <div class="game-difficulty-selector">
+                <span class="game-diff-label">⚙️ 난이도:</span>
+                <div class="game-diff-btns">
+                    <button class="game-diff-btn very-easy" onclick="changeGameDifficulty('very_easy')">⭐ 매우쉬움</button>
+                    <button class="game-diff-btn easy" onclick="changeGameDifficulty('easy')">⭐⭐ 쉬움</button>
+                    <button class="game-diff-btn normal" onclick="changeGameDifficulty('normal')">⭐⭐⭐ 보통</button>
+                    <button class="game-diff-btn hard" onclick="changeGameDifficulty('hard')">⭐⭐⭐⭐ 어려움</button>
+                    <button class="game-diff-btn very-hard" onclick="changeGameDifficulty('very_hard')">⭐⭐⭐⭐⭐ 매우어려움</button>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('direction')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <div class="timer-bar"><div class="timer-fill" id="dirTimer"></div></div>
+            <div class="arrow-display" id="arrowDisplay">🎯</div>
+            <div class="direction-btns">
+                <div class="dir-btn empty"></div>
+                <button class="dir-btn" onclick="selectDirection('up')">⬆️</button>
+                <div class="dir-btn empty"></div>
+                <button class="dir-btn" onclick="selectDirection('left')">⬅️</button>
+                <div class="dir-btn empty"></div>
+                <button class="dir-btn" onclick="selectDirection('right')">➡️</button>
+                <div class="dir-btn empty"></div>
+                <button class="dir-btn" onclick="selectDirection('down')">⬇️</button>
+                <div class="dir-btn empty"></div>
+            </div>
+            <div id="dirResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="dirStartBtn" onclick="startDirection()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 10. 단어 완성 -->
+        <div id="wordGame" class="game-screen">
+            <div class="game-header">
+                <h2>📝 단어 완성</h2>
+                <div class="game-info">
+                    <span>문제: <strong id="wordQuestion">0</strong>/10</span>
+                    <span>점수: <strong id="wordScore">0</strong></span>
+                </div>
+            </div>
+            <div class="level-display" id="wordLevelDisplay"></div>
+            <div class="game-difficulty-selector">
+                <span class="game-diff-label">⚙️ 난이도:</span>
+                <div class="game-diff-btns">
+                    <button class="game-diff-btn very-easy" onclick="changeGameDifficulty('very_easy')">⭐ 매우쉬움</button>
+                    <button class="game-diff-btn easy" onclick="changeGameDifficulty('easy')">⭐⭐ 쉬움</button>
+                    <button class="game-diff-btn normal" onclick="changeGameDifficulty('normal')">⭐⭐⭐ 보통</button>
+                    <button class="game-diff-btn hard" onclick="changeGameDifficulty('hard')">⭐⭐⭐⭐ 어려움</button>
+                    <button class="game-diff-btn very-hard" onclick="changeGameDifficulty('very_hard')">⭐⭐⭐⭐⭐ 매우어려움</button>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('word')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <button class="tts-btn" onclick="speakWordProblem()" style="background: linear-gradient(135deg, #FFE0B2, #FFCC80); border-color: #FF9800; color: #E65100;">
+                <span class="tts-icon">📢</span> 힌트 듣기
+            </button>
+            <div class="timer-bar"><div class="timer-fill" id="wordTimer"></div></div>
+            <div class="word-display" id="wordDisplay">_ _ _</div>
+            <div class="letter-input" id="letterInput"></div>
+            <div id="wordResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="wordStartBtn" onclick="startWord()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 11. 개수 세기 -->
+        <div id="countingGame" class="game-screen">
+            <div class="game-header">
+                <h2>🔢 개수 세기</h2>
+                <div class="game-info">
+                    <span>문제: <strong id="countQuestion">0</strong>/10</span>
+                    <span>점수: <strong id="countScore">0</strong></span>
+                </div>
+            </div>
+            <div class="level-display" id="countingLevelDisplay"></div>
+            <div class="game-difficulty-selector">
+                <span class="game-diff-label">⚙️ 난이도:</span>
+                <div class="game-diff-btns">
+                    <button class="game-diff-btn very-easy" onclick="changeGameDifficulty('very_easy')">⭐ 매우쉬움</button>
+                    <button class="game-diff-btn easy" onclick="changeGameDifficulty('easy')">⭐⭐ 쉬움</button>
+                    <button class="game-diff-btn normal" onclick="changeGameDifficulty('normal')">⭐⭐⭐ 보통</button>
+                    <button class="game-diff-btn hard" onclick="changeGameDifficulty('hard')">⭐⭐⭐⭐ 어려움</button>
+                    <button class="game-diff-btn very-hard" onclick="changeGameDifficulty('very_hard')">⭐⭐⭐⭐⭐ 매우어려움</button>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('counting')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <button class="tts-btn" onclick="speakCountingProblem()" style="background: linear-gradient(135deg, #FFE0B2, #FFCC80); border-color: #FF9800; color: #E65100;">
+                <span class="tts-icon">📢</span> 문제 읽기
+            </button>
+            <div class="timer-bar"><div class="timer-fill" id="countTimer"></div></div>
+            <p id="countTarget" style="text-align:center;font-size:1.3rem;margin-bottom:15px;">🍎의 개수는?</p>
+            <div class="counting-grid" id="countingGrid"></div>
+            <div class="count-options" id="countOptions"></div>
+            <div id="countResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="countStartBtn" onclick="startCounting()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 12. 짝 연결 -->
+        <div id="pairingGame" class="game-screen">
+            <div class="game-header">
+                <h2>🔗 짝 연결</h2>
+                <div class="game-info">
+                    <span>맞춤: <strong id="pairMatches">0</strong>/<strong id="pairTotal">4</strong></span>
+                    <span>점수: <strong id="pairScore">0</strong></span>
+                </div>
+            </div>
+            <div class="level-display" id="pairingLevelDisplay"></div>
+            <div class="game-difficulty-selector">
+                <span class="game-diff-label">⚙️ 난이도:</span>
+                <div class="game-diff-btns">
+                    <button class="game-diff-btn very-easy" onclick="changeGameDifficulty('very_easy')">⭐ 매우쉬움</button>
+                    <button class="game-diff-btn easy" onclick="changeGameDifficulty('easy')">⭐⭐ 쉬움</button>
+                    <button class="game-diff-btn normal" onclick="changeGameDifficulty('normal')">⭐⭐⭐ 보통</button>
+                    <button class="game-diff-btn hard" onclick="changeGameDifficulty('hard')">⭐⭐⭐⭐ 어려움</button>
+                    <button class="game-diff-btn very-hard" onclick="changeGameDifficulty('very_hard')">⭐⭐⭐⭐⭐ 매우어려움</button>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('pairing')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <button class="tts-btn" onclick="speakPairingWords()" style="background: linear-gradient(135deg, #FFE0B2, #FFCC80); border-color: #FF9800; color: #E65100;">
+                <span class="tts-icon">📢</span> 단어 읽기
+            </button>
+            <p style="text-align:center;font-size:1.2rem;margin-bottom:15px;">관련있는 단어끼리 연결하세요!</p>
+            <div class="pair-grid" id="pairGrid">
+                <div class="pair-column" id="pairLeft"></div>
+                <div class="pair-column" id="pairRight"></div>
+            </div>
+            <div id="pairResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="pairStartBtn" onclick="startPairing()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 13. 시간 맞추기 -->
+        <div id="timingGame" class="game-screen">
+            <div class="game-header">
+                <h2>⏱️ 시간 맞추기</h2>
+                <div class="game-info">
+                    <span>라운드: <strong id="timingRound">0</strong>/5</span>
+                    <span>점수: <strong id="timingScore">0</strong></span>
+                </div>
+            </div>
+            <div class="level-display" id="timingLevelDisplay"></div>
+            <div class="game-difficulty-selector">
+                <span class="game-diff-label">⚙️ 난이도:</span>
+                <div class="game-diff-btns">
+                    <button class="game-diff-btn very-easy" onclick="changeGameDifficulty('very_easy')">⭐ 매우쉬움</button>
+                    <button class="game-diff-btn easy" onclick="changeGameDifficulty('easy')">⭐⭐ 쉬움</button>
+                    <button class="game-diff-btn normal" onclick="changeGameDifficulty('normal')">⭐⭐⭐ 보통</button>
+                    <button class="game-diff-btn hard" onclick="changeGameDifficulty('hard')">⭐⭐⭐⭐ 어려움</button>
+                    <button class="game-diff-btn very-hard" onclick="changeGameDifficulty('very_hard')">⭐⭐⭐⭐⭐ 매우어려움</button>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('timing')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <div class="time-target" id="timeTarget">목표: 3.00초에 멈추세요!</div>
+            <div class="time-display" id="timeDisplay">0.00</div>
+            <button class="stop-btn" id="stopBtn" onclick="stopTiming()">STOP!</button>
+            <div id="timingResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="timingStartBtn" onclick="startTiming()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 14. 거꾸로 말하기 -->
+        <div id="reverseGame" class="game-screen">
+            <div class="game-header">
+                <h2>🔄 거꾸로 말하기</h2>
+                <div class="game-info">
+                    <span>문제: <strong id="reverseQuestion">0</strong>/10</span>
+                    <span>점수: <strong id="reverseScore">0</strong></span>
+                </div>
+            </div>
+            <div class="level-display" id="reverseLevelDisplay"></div>
+            <div class="game-difficulty-selector">
+                <span class="game-diff-label">⚙️ 난이도:</span>
+                <div class="game-diff-btns">
+                    <button class="game-diff-btn very-easy" onclick="changeGameDifficulty('very_easy')">⭐ 매우쉬움</button>
+                    <button class="game-diff-btn easy" onclick="changeGameDifficulty('easy')">⭐⭐ 쉬움</button>
+                    <button class="game-diff-btn normal" onclick="changeGameDifficulty('normal')">⭐⭐⭐ 보통</button>
+                    <button class="game-diff-btn hard" onclick="changeGameDifficulty('hard')">⭐⭐⭐⭐ 어려움</button>
+                    <button class="game-diff-btn very-hard" onclick="changeGameDifficulty('very_hard')">⭐⭐⭐⭐⭐ 매우어려움</button>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('reverse')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <button class="tts-btn" onclick="speakReverseWord()" style="background: linear-gradient(135deg, #FFE0B2, #FFCC80); border-color: #FF9800; color: #E65100;">
+                <span class="tts-icon">📢</span> 단어 읽기
+            </button>
+            <div class="timer-bar"><div class="timer-fill" id="reverseTimer"></div></div>
+            <p style="text-align:center;font-size:1.2rem;margin-bottom:10px;">아래 단어를 거꾸로 입력하세요!</p>
+            <div class="game-display" id="reverseWord">단어</div>
+            <div class="user-input-display" id="reverseInput"></div>
+            <div class="letter-input" id="reverseLetters"></div>
+            <button class="btn clear-action-btn" id="reverseClearBtn" onclick="clearReverseInput()" style="display:none;">🗑️ 다시 선택하기</button>
+            <div id="reverseResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="reverseStartBtn" onclick="startReverse()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 15. 카테고리 분류 -->
+        <div id="categoryGame" class="game-screen">
+            <div class="game-header">
+                <h2>📂 분류하기</h2>
+                <div class="game-info">
+                    <span>문제: <strong id="categoryQuestion">0</strong>/10</span>
+                    <span>점수: <strong id="categoryScore">0</strong></span>
+                </div>
+            </div>
+            <div class="level-display" id="categoryLevelDisplay"></div>
+            <div class="game-difficulty-selector">
+                <span class="game-diff-label">⚙️ 난이도:</span>
+                <div class="game-diff-btns">
+                    <button class="game-diff-btn very-easy" onclick="changeGameDifficulty('very_easy')">⭐ 매우쉬움</button>
+                    <button class="game-diff-btn easy" onclick="changeGameDifficulty('easy')">⭐⭐ 쉬움</button>
+                    <button class="game-diff-btn normal" onclick="changeGameDifficulty('normal')">⭐⭐⭐ 보통</button>
+                    <button class="game-diff-btn hard" onclick="changeGameDifficulty('hard')">⭐⭐⭐⭐ 어려움</button>
+                    <button class="game-diff-btn very-hard" onclick="changeGameDifficulty('very_hard')">⭐⭐⭐⭐⭐ 매우어려움</button>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('category')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <div class="timer-bar"><div class="timer-fill" id="categoryTimer"></div></div>
+            <div class="category-display">
+                <div class="category-title" id="categoryTitle">🍎 과일을 모두 고르세요!</div>
+            </div>
+            <div class="category-options" id="categoryOptions">
+                <!-- 선택지가 여기에 표시됨 -->
+            </div>
+            <button class="btn btn-primary" id="categorySubmitBtn" onclick="submitCategory()" style="display:none;">✓ 선택 완료</button>
+            <div id="categoryResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="categoryStartBtn" onclick="startCategory()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 16. 이야기 순서 -->
+        <div id="storyGame" class="game-screen">
+            <div class="game-header">
+                <h2>📚 이야기 순서</h2>
+                <div class="game-info">
+                    <span>문제: <strong id="storyQuestion">0</strong>/10</span>
+                    <span>점수: <strong id="storyScore">0</strong></span>
+                </div>
+            </div>
+            <div class="level-display" id="storyLevelDisplay"></div>
+            <div class="game-difficulty-selector">
+                <span class="game-diff-label">⚙️ 난이도:</span>
+                <div class="game-diff-btns">
+                    <button class="game-diff-btn very-easy" onclick="changeGameDifficulty('very_easy')">⭐ 매우쉬움</button>
+                    <button class="game-diff-btn easy" onclick="changeGameDifficulty('easy')">⭐⭐ 쉬움</button>
+                    <button class="game-diff-btn normal" onclick="changeGameDifficulty('normal')">⭐⭐⭐ 보통</button>
+                    <button class="game-diff-btn hard" onclick="changeGameDifficulty('hard')">⭐⭐⭐⭐ 어려움</button>
+                    <button class="game-diff-btn very-hard" onclick="changeGameDifficulty('very_hard')">⭐⭐⭐⭐⭐ 매우어려움</button>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('story')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <div class="timer-bar"><div class="timer-fill" id="storyTimer"></div></div>
+            <div class="story-display">
+                <p class="story-instruction" id="storyInstruction">아래 그림을 순서대로 눌러주세요!</p>
+            </div>
+            <div class="story-cards" id="storyCards">
+                <!-- 카드가 여기에 표시됨 -->
+            </div>
+            <div class="story-order" id="storyOrder">
+                <span class="order-label">선택 순서:</span>
+                <div class="order-display" id="orderDisplay"></div>
+            </div>
+            <button class="btn clear-action-btn" id="storyClearBtn" onclick="clearStoryOrder()" style="display:none;">🗑️ 다시 선택</button>
+            <div id="storyResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="storyStartBtn" onclick="startStory()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 17. 미로 탈출 (공간지각) -->
+        <div id="mazeGame" class="game-screen">
+            <div class="game-header">
+                <h2>🏰 미로 탈출</h2>
+                <div class="game-info">
+                    <span>레벨: <strong id="mazeLevel">1</strong></span>
+                    <span>이동: <strong id="mazeMoves">0</strong></span>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('maze')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <p style="text-align:center;font-size:1.1rem;margin:10px 0;color:var(--text-light);">화살표 버튼으로 🐭를 🧀까지 이동시키세요!</p>
+            <div class="maze-container" id="mazeContainer"></div>
+            <div class="maze-controls">
+                <button class="maze-btn" onclick="moveMaze('up')">⬆️</button>
+                <div class="maze-btn-row">
+                    <button class="maze-btn" onclick="moveMaze('left')">⬅️</button>
+                    <button class="maze-btn" onclick="moveMaze('down')">⬇️</button>
+                    <button class="maze-btn" onclick="moveMaze('right')">➡️</button>
+                </div>
+            </div>
+            <div id="mazeResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="mazeStartBtn" onclick="startMaze()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 18. 멜로디 기억 (기억력) -->
+        <div id="melodyGame" class="game-screen">
+            <div class="game-header">
+                <h2>🎵 멜로디 기억</h2>
+                <div class="game-info">
+                    <span>레벨: <strong id="melodyLevel">1</strong></span>
+                    <span>점수: <strong id="melodyScore">0</strong></span>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('melody')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <p id="melodyInstruction" style="text-align:center;font-size:1.2rem;margin:15px 0;">멜로디를 듣고 따라 눌러주세요!</p>
+            <div class="melody-piano" id="melodyPiano">
+                <button class="piano-key" data-note="0" onclick="playNote(0)">도</button>
+                <button class="piano-key" data-note="1" onclick="playNote(1)">레</button>
+                <button class="piano-key" data-note="2" onclick="playNote(2)">미</button>
+                <button class="piano-key" data-note="3" onclick="playNote(3)">파</button>
+                <button class="piano-key" data-note="4" onclick="playNote(4)">솔</button>
+                <button class="piano-key" data-note="5" onclick="playNote(5)">라</button>
+                <button class="piano-key" data-note="6" onclick="playNote(6)">시</button>
+            </div>
+            <div id="melodyResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="melodyStartBtn" onclick="startMelody()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 19. 퍼즐 맞추기 (공간지각) -->
+        <div id="puzzleGame" class="game-screen">
+            <div class="game-header">
+                <h2>🧩 퍼즐 맞추기</h2>
+                <div class="game-info">
+                    <span>레벨: <strong id="puzzleLevel">1</strong></span>
+                    <span>이동: <strong id="puzzleMoves">0</strong></span>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('puzzle')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <p style="text-align:center;font-size:1.1rem;margin:10px 0;color:var(--text-light);">빈칸 옆의 조각을 클릭해서 퍼즐을 맞추세요!</p>
+            <div class="puzzle-container" id="puzzleContainer"></div>
+            <div id="puzzleResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="puzzleStartBtn" onclick="startPuzzle()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 20. 보물 찾기 (탐구력) -->
+        <div id="treasureGame" class="game-screen">
+            <div class="game-header">
+                <h2>💎 보물 찾기</h2>
+                <div class="game-info">
+                    <span>레벨: <strong id="treasureLevel">1</strong></span>
+                    <span>시도: <strong id="treasureTries">0</strong>/5</span>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('treasure')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <p id="treasureHint" style="text-align:center;font-size:1.2rem;margin:15px 0;background:#FFF3E0;padding:15px;border-radius:15px;">💡 힌트가 여기에 표시됩니다</p>
+            <div class="treasure-grid" id="treasureGrid"></div>
+            <div id="treasureResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="treasureStartBtn" onclick="startTreasure()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 21. 그림자 매칭 (공간지각) -->
+        <div id="shadowGame" class="game-screen">
+            <div class="game-header">
+                <h2>👤 그림자 매칭</h2>
+                <div class="game-info">
+                    <span>레벨: <strong id="shadowLevel">1</strong></span>
+                    <span>문제: <strong id="shadowQuestion">0</strong>/10</span>
+                    <span>점수: <strong id="shadowScore">0</strong></span>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('shadow')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <div class="timer-bar"><div class="timer-fill" id="shadowTimer"></div></div>
+            <div class="shadow-main" id="shadowMain">
+                <div class="shadow-object" id="shadowObject">🍎</div>
+                <p style="margin-top:10px;font-size:1rem;">위 물체의 그림자를 찾으세요!</p>
+            </div>
+            <div class="shadow-options" id="shadowOptions"></div>
+            <div id="shadowResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="shadowStartBtn" onclick="startShadow()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 22. 집중 타겟 (집중력) -->
+        <div id="focusGame" class="game-screen">
+            <div class="game-header">
+                <h2>🎯 집중 타겟</h2>
+                <div class="game-info">
+                    <span>레벨: <strong id="focusLevel">1</strong></span>
+                    <span>점수: <strong id="focusScore">0</strong></span>
+                    <span>남은 시간: <strong id="focusTime">30</strong>초</span>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('focus')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <p style="text-align:center;font-size:1.1rem;margin:10px 0;color:var(--text-light);">⭐만 클릭하세요! ❌는 피하세요!</p>
+            <div class="focus-arena" id="focusArena"></div>
+            <div id="focusResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="focusStartBtn" onclick="startFocus()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 23. 기억의 방 (기억력) -->
+        <div id="palaceGame" class="game-screen">
+            <div class="game-header">
+                <h2>🏛️ 기억의 방</h2>
+                <div class="game-info">
+                    <span>레벨: <strong id="palaceLevel">1</strong></span>
+                    <span>점수: <strong id="palaceScore">0</strong></span>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('palace')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <p id="palaceInstruction" style="text-align:center;font-size:1.2rem;margin:15px 0;">물건들의 위치를 기억하세요!</p>
+            <div class="palace-room" id="palaceRoom"></div>
+            <div class="palace-question" id="palaceQuestion" style="display:none;">
+                <p id="palaceAsk">❓가 어디에 있었나요?</p>
+                <div class="palace-choices" id="palaceChoices"></div>
+            </div>
+            <div id="palaceResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="palaceStartBtn" onclick="startPalace()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 24. 도형 회전 (공간지각) -->
+        <div id="rotateGame" class="game-screen">
+            <div class="game-header">
+                <h2>🔷 도형 회전</h2>
+                <div class="game-info">
+                    <span>레벨: <strong id="rotateLevel">1</strong></span>
+                    <span>문제: <strong id="rotateQuestion">0</strong>/10</span>
+                    <span>점수: <strong id="rotateScore">0</strong></span>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('rotate')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <div class="timer-bar"><div class="timer-fill" id="rotateTimer"></div></div>
+            <div class="rotate-main">
+                <div class="rotate-original" id="rotateOriginal">
+                    <p style="margin-bottom:10px;font-size:0.9rem;">원본 도형</p>
+                    <div class="rotate-shape" id="originalShape"></div>
+                </div>
+            </div>
+            <p style="text-align:center;font-size:1.1rem;margin:10px 0;">위 도형을 회전하면 어떤 모양이 될까요?</p>
+            <div class="rotate-options" id="rotateOptions"></div>
+            <div id="rotateResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="rotateStartBtn" onclick="startRotate()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 25. 연쇄 반응 (집중력) -->
+        <div id="chainGame" class="game-screen">
+            <div class="game-header">
+                <h2>⛓️ 연쇄 반응</h2>
+                <div class="game-info">
+                    <span>레벨: <strong id="chainLevel">1</strong></span>
+                    <span>점수: <strong id="chainScore">0</strong></span>
+                </div>
+            </div>
+            <button class="tts-btn" onclick="speakGameGuide('chain')">
+                <span class="tts-icon">🔊</span> 설명 듣기
+            </button>
+            <p id="chainInstruction" style="text-align:center;font-size:1.2rem;margin:15px 0;">숫자 순서대로 빠르게 터치하세요!</p>
+            <div class="timer-bar"><div class="timer-fill" id="chainTimer"></div></div>
+            <div class="chain-arena" id="chainArena"></div>
+            <div id="chainResult" class="result-message" style="display:none;"></div>
+            <div class="btn-group">
+                <button class="btn btn-back" onclick="goBack()">← 돌아가기</button>
+                <button class="btn btn-primary" id="chainStartBtn" onclick="startChain()">시작</button>
+            </div>
+        </div>
+        
+        <!-- 게임 완료 -->
+        <div id="gameComplete" class="game-screen">
+            <div class="game-complete">
+                <h2>🎉 훌륭합니다!</h2>
+                <div class="current-level-display" id="completeLevelDisplay">
+                    <span class="level-badge">Level <span id="completeLevelNum">1</span></span>
+                </div>
+                <div class="final-score" id="finalScore">0점</div>
+                <p id="completeMessage">정말 잘하셨어요!</p>
+                
+                <!-- 능력 리포트 섹션 -->
+                <div class="ability-report" id="abilityReport">
+                    <h3>📊 훈련 효과 리포트</h3>
+                    <div class="ability-grid">
+                        <div class="ability-item" id="memoryAbility">
+                            <span class="ability-icon">🧠</span>
+                            <span class="ability-name">기억력</span>
+                            <div class="ability-bar"><div class="ability-fill" id="memoryFill"></div></div>
+                            <span class="ability-value" id="memoryValue">-</span>
+                        </div>
+                        <div class="ability-item" id="reactionAbility">
+                            <span class="ability-icon">⚡</span>
+                            <span class="ability-name">반응속도</span>
+                            <div class="ability-bar"><div class="ability-fill" id="reactionFill"></div></div>
+                            <span class="ability-value" id="reactionValue">-</span>
+                        </div>
+                        <div class="ability-item" id="focusAbility">
+                            <span class="ability-icon">🎯</span>
+                            <span class="ability-name">집중력</span>
+                            <div class="ability-bar"><div class="ability-fill" id="focusFill"></div></div>
+                            <span class="ability-value" id="focusValue">-</span>
+                        </div>
+                        <div class="ability-item" id="motorAbility">
+                            <span class="ability-icon">✋</span>
+                            <span class="ability-name">손근육</span>
+                            <div class="ability-bar"><div class="ability-fill" id="motorFill"></div></div>
+                            <span class="ability-value" id="motorValue">-</span>
+                        </div>
+                    </div>
+                    <div class="improvement-tip" id="improvementTip">
+                        <span class="tip-icon">💡</span>
+                        <span class="tip-text" id="tipText">다음 훈련 팁이 여기에 표시됩니다.</span>
+                    </div>
+                </div>
+                
+                <div id="levelUpNotice" class="level-up-notice" style="display: none;">
+                    <span>🎊 레벨업! 다음 단계로 진행하세요!</span>
+                </div>
+                <div class="btn-group" id="completeButtons">
+                    <button class="btn btn-back" onclick="goBack()">메뉴로</button>
+                    <button class="btn btn-primary" id="playAgainBtn" onclick="playAgain()">다시 하기</button>
+                    <button class="btn btn-danger" onclick="resetCurrentGameLevel();">이 게임 레벨 초기화</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+        <script defer src="scripts/core/accessibility.js"></script>
+    <script defer src="scripts/core/tts.js"></script>
+    <script defer src="scripts/core/profile.js"></script>
+    <script defer src="scripts/core/difficulty.js"></script>
+    <script defer src="scripts/core/levels.js"></script>
+    <script defer src="scripts/core/utils.js"></script>
+    <script defer src="scripts/core/effects.js"></script>
+    <script defer src="scripts/core/graphs.js"></script>
+    <script defer src="scripts/games/games-basic.js"></script>
+    <script defer src="scripts/games/games-extended.js"></script>
+    <script defer src="scripts/games/games-advanced.js"></script>
+    <script defer src="scripts/core/app.js"></script>
+</body>
+</html>
+
