@@ -152,7 +152,7 @@
                         // 레벨 클리어 체크
                         if (matchPairs === matchTotalPairs) {
                             matchLevel++;
-                            if (matchLevel > 5) {
+                        if (matchLevel > 10) {
                                 // 게임 완료
                                 currentGameData = { 
                                     consecutive: matchMaxConsecutive,
@@ -352,7 +352,7 @@
                 playCorrectSound();
                 miniConfetti();
                 checkLevelUp(true, 'sequence');
-                if (seqLevel > 7) {
+                if (seqLevel > 10) {
                     currentGameData = { sequenceLength: seqLevel - 1, finalLevel: getGameLevel('sequence') };
                     setTimeout(() => endGame('sequence', seqScore), 1200);
                 }
@@ -703,7 +703,7 @@
                 playCorrectSound();
                 miniConfetti();
                 checkLevelUp(true, 'pattern');
-                if (patternLevel > 6) {
+                if (patternLevel > 10) {
                     currentGameData = { patternLevel: patternLevel - 1, finalLevel: getGameLevel('pattern') };
                     setTimeout(() => endGame('pattern', patternScore), 1200);
                 }
@@ -950,7 +950,7 @@
                 playCorrectSound();
                 miniConfetti();
                 checkLevelUp(true, 'sorting');
-                if (sortLevel > 5) { 
+                if (sortLevel > 10) { 
                     currentGameData = { items: sortNumbers.length, finalLevel: getGameLevel('sorting') }; 
                     setTimeout(() => endGame('sorting', sortScore), 1200); 
                 }

@@ -81,17 +81,22 @@
             addScore(score);
             gameState.correctAnswers++; gameState.totalAnswers++;
             gameLevelCounts['maze'] = (gameLevelCounts['maze'] || 0) + 1;
+            let leveledUp = false;
             if(gameLevelCounts['maze'] >= 2 && mazeLevel < 10) {
                 mazeLevel++; 
                 gameLevels['maze'] = mazeLevel; 
                 gameLevelCounts['maze'] = 0;
+                leveledUp = true;
                 showLevelUpMessage('maze');
             }
             saveLevel();
             document.getElementById('mazeLevel').textContent = mazeLevel;
             updateLevelDisplay('maze');
             document.getElementById('mazeStartBtn').textContent = '다음 문제';
-            document.getElementById('mazeStartBtn').style.display = '';
+            document.getElementById('mazeStartBtn').style.display = leveledUp ? 'none' : '';
+            if (leveledUp) {
+                setTimeout(() => startMaze(), 500);
+            }
         }
         
         // 18. 멜로디 기억 (기억력)
@@ -173,10 +178,12 @@
                 showGameResult('melodyResult', true, `🎉 정답! +${score}점`);
                 addScore(score); gameState.correctAnswers++; gameState.totalAnswers++;
                 gameLevelCounts['melody'] = (gameLevelCounts['melody'] || 0) + 1;
+                let leveledUp = false;
                 if(gameLevelCounts['melody'] >= 2 && melodyLevel < 10) {
                     melodyLevel++; 
                     gameLevels['melody'] = melodyLevel; 
                     gameLevelCounts['melody'] = 0;
+                    leveledUp = true;
                     showLevelUpMessage('melody');
                 }
                 saveLevel();
@@ -185,7 +192,10 @@
                 updateLevelDisplay('melody');
                 enablePiano(false);
                 document.getElementById('melodyStartBtn').textContent = '다음 문제';
-                document.getElementById('melodyStartBtn').style.display = '';
+                document.getElementById('melodyStartBtn').style.display = leveledUp ? 'none' : '';
+                if (leveledUp) {
+                    setTimeout(() => startMelody(), 500);
+                }
             }
         }
         
@@ -266,17 +276,22 @@
             showGameResult('puzzleResult', true, `🎉 퍼즐 완성! +${score}점`);
             addScore(score); gameState.correctAnswers++; gameState.totalAnswers++;
             gameLevelCounts['puzzle'] = (gameLevelCounts['puzzle'] || 0) + 1;
+            let leveledUp = false;
             if(gameLevelCounts['puzzle'] >= 2 && puzzleLevel < 10) {
                 puzzleLevel++; 
                 gameLevels['puzzle'] = puzzleLevel; 
                 gameLevelCounts['puzzle'] = 0;
+                leveledUp = true;
                 showLevelUpMessage('puzzle');
             }
             saveLevel();
             document.getElementById('puzzleLevel').textContent = puzzleLevel;
             updateLevelDisplay('puzzle');
             document.getElementById('puzzleStartBtn').textContent = '다음 문제';
-            document.getElementById('puzzleStartBtn').style.display = '';
+            document.getElementById('puzzleStartBtn').style.display = leveledUp ? 'none' : '';
+            if (leveledUp) {
+                setTimeout(() => startPuzzle(), 500);
+            }
         }
         
         // 20. 보물 찾기 (탐구력)
@@ -330,17 +345,22 @@
                 showGameResult('treasureResult', true, `🎉 보물 발견! +${score}점`);
                 addScore(score); gameState.correctAnswers++; gameState.totalAnswers++;
                 gameLevelCounts['treasure'] = (gameLevelCounts['treasure'] || 0) + 1;
+                let leveledUp = false;
                 if(gameLevelCounts['treasure'] >= 2 && treasureLevel < 10) {
                     treasureLevel++; 
                     gameLevels['treasure'] = treasureLevel; 
                     gameLevelCounts['treasure'] = 0;
+                    leveledUp = true;
                     showLevelUpMessage('treasure');
                 }
                 saveLevel();
                 document.getElementById('treasureLevel').textContent = treasureLevel;
                 updateLevelDisplay('treasure');
                 document.getElementById('treasureStartBtn').textContent = '다음 문제';
-                document.getElementById('treasureStartBtn').style.display = '';
+                document.getElementById('treasureStartBtn').style.display = leveledUp ? 'none' : '';
+                if (leveledUp) {
+                    setTimeout(() => startTreasure(), 500);
+                }
             } else {
                 cell.textContent = '💨'; cell.classList.add('revealed');
                 const hints = [];
@@ -419,10 +439,12 @@
         function completeShadowGame() {
             addScore(shadowScore);
             gameLevelCounts['shadow'] = (gameLevelCounts['shadow'] || 0) + 1;
+            let leveledUp = false;
             if(gameLevelCounts['shadow'] >= 2 && shadowLevel < 10) {
                 shadowLevel++; 
                 gameLevels['shadow'] = shadowLevel; 
                 gameLevelCounts['shadow'] = 0;
+                leveledUp = true;
                 showLevelUpMessage('shadow');
             }
             saveLevel();
@@ -430,7 +452,10 @@
             updateLevelDisplay('shadow');
             showGameResult('shadowResult', true, `🎉 완료! ${shadowScore}점 획득!`);
             document.getElementById('shadowStartBtn').textContent = '다시 하기';
-            document.getElementById('shadowStartBtn').style.display = '';
+            document.getElementById('shadowStartBtn').style.display = leveledUp ? 'none' : '';
+            if (leveledUp) {
+                setTimeout(() => startShadow(), 500);
+            }
         }
         
         // 22. 집중 타겟 (집중력)
@@ -494,10 +519,12 @@
             document.getElementById('focusArena').innerHTML = '';
             addScore(focusScore);
             gameLevelCounts['focus'] = (gameLevelCounts['focus'] || 0) + 1;
+            let leveledUp = false;
             if(gameLevelCounts['focus'] >= 2 && focusLevel < 10) {
                 focusLevel++; 
                 gameLevels['focus'] = focusLevel; 
                 gameLevelCounts['focus'] = 0;
+                leveledUp = true;
                 showLevelUpMessage('focus');
             }
             saveLevel();
@@ -505,7 +532,10 @@
             updateLevelDisplay('focus');
             showGameResult('focusResult', focusScore >= 60, focusScore >= 60 ? `🎉 종료! ${focusScore}점 획득!` : `게임 종료! ${focusScore}점`);
             document.getElementById('focusStartBtn').textContent = '다시 하기';
-            document.getElementById('focusStartBtn').style.display = '';
+            document.getElementById('focusStartBtn').style.display = leveledUp ? 'none' : '';
+            if (leveledUp) {
+                setTimeout(() => startFocus(), 500);
+            }
         }
         
         // 23. 기억의 방 (기억력)
@@ -577,15 +607,23 @@
                 showGameResult('palaceResult', true, `⭕ 정답! +${score}점`);
                 addScore(score); gameState.correctAnswers++;
                 gameLevelCounts['palace'] = (gameLevelCounts['palace'] || 0) + 1;
+                let leveledUp = false;
                 if(gameLevelCounts['palace'] >= 2 && palaceLevel < 10) {
                     palaceLevel++; 
                     gameLevels['palace'] = palaceLevel; 
                     gameLevelCounts['palace'] = 0;
+                    leveledUp = true;
                     showLevelUpMessage('palace');
                 }
                 saveLevel();
                 document.getElementById('palaceLevel').textContent = palaceLevel;
                 updateLevelDisplay('palace');
+                document.getElementById('palaceStartBtn').textContent = '다음 문제';
+                document.getElementById('palaceStartBtn').style.display = leveledUp ? 'none' : '';
+                if (leveledUp) {
+                    setTimeout(() => startPalace(), 500);
+                }
+                return;
             } else { showGameResult('palaceResult', false, '❌ 틀렸어요!'); }
             document.getElementById('palaceStartBtn').textContent = '다음 문제';
             document.getElementById('palaceStartBtn').style.display = '';
@@ -653,10 +691,12 @@
         function completeRotateGame() {
             addScore(rotateScore);
             gameLevelCounts['rotate'] = (gameLevelCounts['rotate'] || 0) + 1;
+            let leveledUp = false;
             if(gameLevelCounts['rotate'] >= 2 && rotateLevel < 10) {
                 rotateLevel++; 
                 gameLevels['rotate'] = rotateLevel; 
                 gameLevelCounts['rotate'] = 0;
+                leveledUp = true;
                 showLevelUpMessage('rotate');
             }
             saveLevel();
@@ -664,7 +704,10 @@
             updateLevelDisplay('rotate');
             showGameResult('rotateResult', true, `🎉 완료! ${rotateScore}점 획득!`);
             document.getElementById('rotateStartBtn').textContent = '다시 하기';
-            document.getElementById('rotateStartBtn').style.display = '';
+            document.getElementById('rotateStartBtn').style.display = leveledUp ? 'none' : '';
+            if (leveledUp) {
+                setTimeout(() => startRotate(), 500);
+            }
         }
         
         // 25. 연쇄 반응 (집중력)
@@ -727,17 +770,22 @@
                     showGameResult('chainResult', true, `🎉 완료! +${score}점`);
                     addScore(score); gameState.correctAnswers++; gameState.totalAnswers++;
                     gameLevelCounts['chain'] = (gameLevelCounts['chain'] || 0) + 1;
+                    let leveledUp = false;
                     if(gameLevelCounts['chain'] >= 2 && chainLevel < 10) {
                         chainLevel++; 
                         gameLevels['chain'] = chainLevel; 
                         gameLevelCounts['chain'] = 0;
+                        leveledUp = true;
                         showLevelUpMessage('chain');
                     }
                     saveLevel();
                     document.getElementById('chainLevel').textContent = chainLevel;
                     updateLevelDisplay('chain');
                     document.getElementById('chainStartBtn').textContent = '다음 문제';
-                    document.getElementById('chainStartBtn').style.display = '';
+                    document.getElementById('chainStartBtn').style.display = leveledUp ? 'none' : '';
+                    if (leveledUp) {
+                        setTimeout(() => startChain(), 500);
+                    }
                 }
             } else {
                 el.classList.add('wrong');
