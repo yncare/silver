@@ -13,18 +13,60 @@
             regDifficultyChoice = value;
         }
         
+        function getDifficultyByAge(age) {
+            if (!Number.isInteger(age)) return 'normal';
+            if (age >= 80) return 'very_easy';
+            if (age >= 70) return 'easy';
+            if (age >= 60) return 'normal';
+            if (age >= 50) return 'hard';
+            return 'very_hard';
+        }
+        
+        function applyDifficultyFromAge(age) {
+            const select = document.getElementById('difficultySelect');
+            const hint = document.getElementById('difficultyAutoHint');
+            const ageNumber = Number.isInteger(age) ? age : null;
+            const diff = ageNumber ? getDifficultyByAge(ageNumber) : 'normal';
+            
+            regDifficultyChoice = diff;
+            if (select) select.value = diff;
+            if (hint) {
+                if (ageNumber) {
+                    const diffName = typeof getDifficultyName === 'function' ? getDifficultyName(diff) : diff;
+                    hint.textContent = `나이에 따라 난이도가 "${diffName}"로 자동 설정되었습니다.`;
+                } else {
+                    hint.textContent = '나이를 입력하면 난이도가 자동으로 적용됩니다.';
+                }
+            }
+        }
+        
         function checkFormComplete() {
             const nameEl = document.getElementById('userName');
+    const ageEl = document.getElementById('userAge');
             const registerBtn = document.getElementById('registerBtn');
             if (!nameEl || !registerBtn) return;
             
             const name = nameEl.value.trim();
-            registerBtn.disabled = !(name && userProfile.gender);
+    const age = ageEl ? parseInt(ageEl.value, 10) : null;
+    const ageValid = Number.isInteger(age) && age >= 1 && age <= 120;
+    registerBtn.disabled = !(name && userProfile.gender && ageValid);
         }
         
         document.addEventListener('DOMContentLoaded', () => {
             const nameEl = document.getElementById('userName');
+    const ageEl = document.getElementById('userAge');
             if (nameEl) nameEl.addEventListener('input', checkFormComplete);
+    if (ageEl) {
+        ageEl.addEventListener('input', () => {
+            const age = parseInt(ageEl.value, 10);
+            if (Number.isNaN(age)) {
+                applyDifficultyFromAge(null);
+            } else {
+                applyDifficultyFromAge(age);
+            }
+            checkFormComplete();
+        });
+    }
         });
         
         function showMainContent() {
@@ -66,15 +108,15 @@
             
             // 폼 초기화
             document.getElementById('userName').value = '';
+    document.getElementById('userAge').value = '';
             document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('selected'));
             document.getElementById('registerBtn').disabled = true;
-            document.getElementById('difficultySelect').value = 'normal';
-            regDifficultyChoice = 'normal';
+    applyDifficultyFromAge(null);
             document.getElementById('newUserForm').classList.remove('active');
             document.getElementById('existingUsersSection').style.display = 'block';
             document.getElementById('enterBtn').style.display = 'none';
             
-            userProfile = { id: '', name: '', gender: null, difficulty: 'normal' };
+    userProfile = { id: '', name: '', age: null, gender: null, difficulty: 'normal' };
             selectedUserId = null;
             
             // 사용자 목록 갱신
@@ -100,15 +142,15 @@
                 
                 // 폼 초기화
                 document.getElementById('userName').value = '';
+            document.getElementById('userAge').value = '';
                 document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('selected'));
                 document.getElementById('registerBtn').disabled = true;
-                document.getElementById('difficultySelect').value = 'normal';
-                regDifficultyChoice = 'normal';
+            applyDifficultyFromAge(null);
                 document.getElementById('newUserForm').classList.remove('active');
                 document.getElementById('existingUsersSection').style.display = 'block';
                 document.getElementById('enterBtn').style.display = 'none';
                 
-                userProfile = { id: '', name: '', gender: null, difficulty: 'normal' };
+                userProfile = { id: '', name: '', age: null, gender: null, difficulty: 'normal' };
                 selectedUserId = null;
                 
                 // 사용자 목록 갱신

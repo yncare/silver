@@ -230,6 +230,11 @@
                         <label>✏️ 이름</label>
                         <input type="text" id="userName" maxlength="10" placeholder="이름을 입력하세요" style="text-align:center;">
                     </div>
+
+                <div class="form-group">
+                    <label>🎂 나이</label>
+                    <input type="number" id="userAge" min="1" max="120" inputmode="numeric" placeholder="나이를 입력하세요" style="text-align:center;">
+                </div>
                     
                     <div class="form-group">
                         <label>👤 성별</label>
@@ -244,9 +249,9 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>⚙️ 난이도</label>
-                        <p style="font-size:0.9rem;color:#666;margin-bottom:10px;">원하시는 난이도를 선택해주세요!</p>
-                        <select id="difficultySelect" class="difficulty-select" onchange="selectRegDifficulty(this.value)">
+                    <label>⚙️ 난이도 (나이 자동 설정)</label>
+                    <p id="difficultyAutoHint" style="font-size:0.9rem;color:#666;margin-bottom:10px;">나이를 입력하면 난이도가 자동으로 적용됩니다.</p>
+                    <select id="difficultySelect" class="difficulty-select" onchange="selectRegDifficulty(this.value)" disabled>
                             <option value="normal">⭐⭐⭐ 보통 (기본)</option>
                             <option value="very_easy">⭐ 매우 쉬움</option>
                             <option value="easy">⭐⭐ 쉬움</option>

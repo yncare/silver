@@ -254,10 +254,10 @@
                 enterBtn.style.display = 'none';
                 // 폼 초기화
                 document.getElementById('userName').value = '';
+            document.getElementById('userAge').value = '';
                 document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('selected'));
                 document.getElementById('registerBtn').disabled = true;
-                document.getElementById('difficultySelect').value = 'normal';
-                regDifficultyChoice = 'normal';
+            applyDifficultyFromAge(null);
                 userProfile.gender = null;
             }
         }
@@ -265,8 +265,9 @@
         // 새 사용자 등록
         function registerNewUser() {
             const name = document.getElementById('userName').value.trim();
+            const age = parseInt(document.getElementById('userAge').value, 10);
             
-            if (!name || !userProfile.gender) return;
+            if (!name || !userProfile.gender || !Number.isInteger(age) || age < 1 || age > 120) return;
             
             const userId = generateUserId(name, userProfile.gender);
             
@@ -284,6 +285,7 @@
             userProfile = {
                 id: userId,
                 name: name,
+                age: age,
                 gender: userProfile.gender,
                 difficulty: selectedDiff
             };
