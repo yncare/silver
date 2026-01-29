@@ -2269,7 +2269,8 @@
         }
         .shadow-option {
             aspect-ratio: 1;
-            background: #333;
+            background: #fff2b3; /* 밝은 노랑 배경으로 대비 강화 */
+            border: 2px solid #d4a900;
             border-radius: 15px;
             display: flex;
             align-items: center;
@@ -2277,9 +2278,20 @@
             font-size: 2.5rem;
             cursor: pointer;
             transition: all 0.3s;
-            filter: brightness(0) invert(0);
+            color: #111;
+            filter: brightness(0) saturate(0) contrast(2.2);
+            text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9), 0 0 10px rgba(0, 0, 0, 0.25);
         }
-        .shadow-option:hover { transform: scale(1.1); background: #444; }
+        .shadow-option:hover { transform: scale(1.1); background: #ffe36e; border-color: #b8860b; }
+
+        /* 고대비 모드에서도 검은 배경이 되지 않도록 강제 */
+        body.high-contrast .shadow-option {
+            background: #fff2b3 !important;
+            border-color: #111 !important;
+            color: #111 !important;
+            filter: brightness(0) saturate(0) contrast(2.6) !important;
+        }
+        body.high-contrast .shadow-option:hover { background: #ffe36e !important; }
         
         /* 22. 집중 타겟 */
         .focus-arena {

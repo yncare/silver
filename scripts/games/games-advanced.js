@@ -1,4 +1,6 @@
 ﻿// ==================== 새로운 9종 게임 (레벨 1~10) ====================
+        const ADV_LEVEL_UP_SUCCESSES = 10; // 문제 성공 10회 시 레벨 업
+        const ADV_AUTO_ADVANCE_MS = 500;   // 성공 시 자동 다음 문제 진행 딜레이
         
         // 17. 미로 탈출 (공간지각)
         let mazeLevel = 1, mazeMoves = 0, mazeGrid = [], playerPos = {x:0, y:0}, goalPos = {x:0, y:0}, mazeStarted = false;
@@ -70,6 +72,7 @@
             playerPos = {x: nx, y: ny};
             mazeMoves++;
             document.getElementById('mazeMoves').textContent = mazeMoves;
+            if (typeof playMoveSound === 'function') playMoveSound();
             renderMaze();
             if(nx === goalPos.x && ny === goalPos.y) completeMaze();
         }
@@ -82,7 +85,7 @@
             gameState.correctAnswers++; gameState.totalAnswers++;
             gameLevelCounts['maze'] = (gameLevelCounts['maze'] || 0) + 1;
             let leveledUp = false;
-            if(gameLevelCounts['maze'] >= 2 && mazeLevel < 10) {
+            if(gameLevelCounts['maze'] >= ADV_LEVEL_UP_SUCCESSES && mazeLevel < 10) {
                 mazeLevel++; 
                 gameLevels['maze'] = mazeLevel; 
                 gameLevelCounts['maze'] = 0;
@@ -93,10 +96,8 @@
             document.getElementById('mazeLevel').textContent = mazeLevel;
             updateLevelDisplay('maze');
             document.getElementById('mazeStartBtn').textContent = '다음 문제';
-            document.getElementById('mazeStartBtn').style.display = leveledUp ? 'none' : '';
-            if (leveledUp) {
-                setTimeout(() => startMaze(), 500);
-            }
+            document.getElementById('mazeStartBtn').style.display = 'none';
+            setTimeout(() => startMaze(), ADV_AUTO_ADVANCE_MS);
         }
         
         // 18. 멜로디 기억 (기억력)
@@ -179,7 +180,7 @@
                 addScore(score); gameState.correctAnswers++; gameState.totalAnswers++;
                 gameLevelCounts['melody'] = (gameLevelCounts['melody'] || 0) + 1;
                 let leveledUp = false;
-                if(gameLevelCounts['melody'] >= 2 && melodyLevel < 10) {
+                if(gameLevelCounts['melody'] >= ADV_LEVEL_UP_SUCCESSES && melodyLevel < 10) {
                     melodyLevel++; 
                     gameLevels['melody'] = melodyLevel; 
                     gameLevelCounts['melody'] = 0;
@@ -192,10 +193,8 @@
                 updateLevelDisplay('melody');
                 enablePiano(false);
                 document.getElementById('melodyStartBtn').textContent = '다음 문제';
-                document.getElementById('melodyStartBtn').style.display = leveledUp ? 'none' : '';
-                if (leveledUp) {
-                    setTimeout(() => startMelody(), 500);
-                }
+                document.getElementById('melodyStartBtn').style.display = 'none';
+                setTimeout(() => startMelody(), ADV_AUTO_ADVANCE_MS);
             }
         }
         
@@ -277,7 +276,7 @@
             addScore(score); gameState.correctAnswers++; gameState.totalAnswers++;
             gameLevelCounts['puzzle'] = (gameLevelCounts['puzzle'] || 0) + 1;
             let leveledUp = false;
-            if(gameLevelCounts['puzzle'] >= 2 && puzzleLevel < 10) {
+            if(gameLevelCounts['puzzle'] >= ADV_LEVEL_UP_SUCCESSES && puzzleLevel < 10) {
                 puzzleLevel++; 
                 gameLevels['puzzle'] = puzzleLevel; 
                 gameLevelCounts['puzzle'] = 0;
@@ -288,10 +287,8 @@
             document.getElementById('puzzleLevel').textContent = puzzleLevel;
             updateLevelDisplay('puzzle');
             document.getElementById('puzzleStartBtn').textContent = '다음 문제';
-            document.getElementById('puzzleStartBtn').style.display = leveledUp ? 'none' : '';
-            if (leveledUp) {
-                setTimeout(() => startPuzzle(), 500);
-            }
+            document.getElementById('puzzleStartBtn').style.display = 'none';
+            setTimeout(() => startPuzzle(), ADV_AUTO_ADVANCE_MS);
         }
         
         // 20. 보물 찾기 (탐구력)
@@ -346,7 +343,7 @@
                 addScore(score); gameState.correctAnswers++; gameState.totalAnswers++;
                 gameLevelCounts['treasure'] = (gameLevelCounts['treasure'] || 0) + 1;
                 let leveledUp = false;
-                if(gameLevelCounts['treasure'] >= 2 && treasureLevel < 10) {
+                if(gameLevelCounts['treasure'] >= ADV_LEVEL_UP_SUCCESSES && treasureLevel < 10) {
                     treasureLevel++; 
                     gameLevels['treasure'] = treasureLevel; 
                     gameLevelCounts['treasure'] = 0;
@@ -357,10 +354,8 @@
                 document.getElementById('treasureLevel').textContent = treasureLevel;
                 updateLevelDisplay('treasure');
                 document.getElementById('treasureStartBtn').textContent = '다음 문제';
-                document.getElementById('treasureStartBtn').style.display = leveledUp ? 'none' : '';
-                if (leveledUp) {
-                    setTimeout(() => startTreasure(), 500);
-                }
+                document.getElementById('treasureStartBtn').style.display = 'none';
+                setTimeout(() => startTreasure(), ADV_AUTO_ADVANCE_MS);
             } else {
                 cell.textContent = '💨'; cell.classList.add('revealed');
                 const hints = [];
@@ -432,30 +427,28 @@
                 shadowScore += 10 + shadowLevel; document.getElementById('shadowScore').textContent = shadowScore;
                 gameState.correctAnswers++;
                 showGameResult('shadowResult', true, '⭕ 정답!');
+                gameLevelCounts['shadow'] = (gameLevelCounts['shadow'] || 0) + 1;
+                if (gameLevelCounts['shadow'] >= ADV_LEVEL_UP_SUCCESSES && shadowLevel < 10) {
+                    shadowLevel++;
+                    gameLevels['shadow'] = shadowLevel;
+                    gameLevelCounts['shadow'] = 0;
+                    saveLevel();
+                    document.getElementById('shadowLevel').textContent = shadowLevel;
+                    updateLevelDisplay('shadow');
+                    showLevelUpMessage('shadow');
+                }
             } else { showGameResult('shadowResult', false, '❌ 틀렸어요!'); }
             setTimeout(() => { document.getElementById('shadowResult').style.display = 'none'; nextShadow(); }, 800);
         }
         
         function completeShadowGame() {
             addScore(shadowScore);
-            gameLevelCounts['shadow'] = (gameLevelCounts['shadow'] || 0) + 1;
-            let leveledUp = false;
-            if(gameLevelCounts['shadow'] >= 2 && shadowLevel < 10) {
-                shadowLevel++; 
-                gameLevels['shadow'] = shadowLevel; 
-                gameLevelCounts['shadow'] = 0;
-                leveledUp = true;
-                showLevelUpMessage('shadow');
-            }
             saveLevel();
             document.getElementById('shadowLevel').textContent = shadowLevel;
             updateLevelDisplay('shadow');
             showGameResult('shadowResult', true, `🎉 완료! ${shadowScore}점 획득!`);
             document.getElementById('shadowStartBtn').textContent = '다시 하기';
-            document.getElementById('shadowStartBtn').style.display = leveledUp ? 'none' : '';
-            if (leveledUp) {
-                setTimeout(() => startShadow(), 500);
-            }
+            document.getElementById('shadowStartBtn').style.display = '';
         }
         
         // 22. 집중 타겟 (집중력)
@@ -518,9 +511,14 @@
             focusInterval = null; focusSpawnInterval = null;
             document.getElementById('focusArena').innerHTML = '';
             addScore(focusScore);
-            gameLevelCounts['focus'] = (gameLevelCounts['focus'] || 0) + 1;
+            const focusSuccess = focusScore >= 60;
+            if (focusSuccess) {
+                gameLevelCounts['focus'] = (gameLevelCounts['focus'] || 0) + 1;
+            } else {
+                gameLevelCounts['focus'] = 0;
+            }
             let leveledUp = false;
-            if(gameLevelCounts['focus'] >= 2 && focusLevel < 10) {
+            if(gameLevelCounts['focus'] >= ADV_LEVEL_UP_SUCCESSES && focusLevel < 10) {
                 focusLevel++; 
                 gameLevels['focus'] = focusLevel; 
                 gameLevelCounts['focus'] = 0;
@@ -530,11 +528,13 @@
             saveLevel();
             document.getElementById('focusLevel').textContent = focusLevel;
             updateLevelDisplay('focus');
-            showGameResult('focusResult', focusScore >= 60, focusScore >= 60 ? `🎉 종료! ${focusScore}점 획득!` : `게임 종료! ${focusScore}점`);
-            document.getElementById('focusStartBtn').textContent = '다시 하기';
-            document.getElementById('focusStartBtn').style.display = leveledUp ? 'none' : '';
-            if (leveledUp) {
-                setTimeout(() => startFocus(), 500);
+            showGameResult('focusResult', focusSuccess, focusSuccess ? `🎉 종료! ${focusScore}점 획득!` : `게임 종료! ${focusScore}점`);
+            document.getElementById('focusStartBtn').textContent = focusSuccess ? '다음 문제' : '다시 하기';
+            if (focusSuccess) {
+                document.getElementById('focusStartBtn').style.display = 'none';
+                setTimeout(() => startFocus(), ADV_AUTO_ADVANCE_MS);
+            } else {
+                document.getElementById('focusStartBtn').style.display = '';
             }
         }
         
@@ -608,7 +608,7 @@
                 addScore(score); gameState.correctAnswers++;
                 gameLevelCounts['palace'] = (gameLevelCounts['palace'] || 0) + 1;
                 let leveledUp = false;
-                if(gameLevelCounts['palace'] >= 2 && palaceLevel < 10) {
+                if(gameLevelCounts['palace'] >= ADV_LEVEL_UP_SUCCESSES && palaceLevel < 10) {
                     palaceLevel++; 
                     gameLevels['palace'] = palaceLevel; 
                     gameLevelCounts['palace'] = 0;
@@ -619,10 +619,8 @@
                 document.getElementById('palaceLevel').textContent = palaceLevel;
                 updateLevelDisplay('palace');
                 document.getElementById('palaceStartBtn').textContent = '다음 문제';
-                document.getElementById('palaceStartBtn').style.display = leveledUp ? 'none' : '';
-                if (leveledUp) {
-                    setTimeout(() => startPalace(), 500);
-                }
+                document.getElementById('palaceStartBtn').style.display = 'none';
+                setTimeout(() => startPalace(), ADV_AUTO_ADVANCE_MS);
                 return;
             } else { showGameResult('palaceResult', false, '❌ 틀렸어요!'); }
             document.getElementById('palaceStartBtn').textContent = '다음 문제';
@@ -631,7 +629,8 @@
         
         // 24. 도형 회전 (공간지각)
         let rotateQ = 0, rotateScore = 0, rotateLevel = 1, rotateTimer = null;
-        const rotateShapes = ['🔺','🔷','⬛','⭐','❤️','🔶','⬜','🟣','🔻','💠'];
+        // 90도 회전 시 모양이 동일해지는 대칭 도형(정사각형/별/다이아 등) 제외
+        const rotateShapes = ['🔺','🔻','▶️','◀️','🔼','🔽','⬆️','➡️','⬇️','⬅️'];
         
         function initRotateGame() {
             rotateLevel = gameLevels['rotate'] || 1;
@@ -684,30 +683,28 @@
                 rotateScore += 10 + rotateLevel; document.getElementById('rotateScore').textContent = rotateScore;
                 gameState.correctAnswers++;
                 showGameResult('rotateResult', true, '⭕ 정답!');
+                gameLevelCounts['rotate'] = (gameLevelCounts['rotate'] || 0) + 1;
+                if (gameLevelCounts['rotate'] >= ADV_LEVEL_UP_SUCCESSES && rotateLevel < 10) {
+                    rotateLevel++;
+                    gameLevels['rotate'] = rotateLevel;
+                    gameLevelCounts['rotate'] = 0;
+                    saveLevel();
+                    document.getElementById('rotateLevel').textContent = rotateLevel;
+                    updateLevelDisplay('rotate');
+                    showLevelUpMessage('rotate');
+                }
             } else { showGameResult('rotateResult', false, '❌ 틀렸어요!'); }
             setTimeout(() => { document.getElementById('rotateResult').style.display = 'none'; nextRotate(); }, 800);
         }
         
         function completeRotateGame() {
             addScore(rotateScore);
-            gameLevelCounts['rotate'] = (gameLevelCounts['rotate'] || 0) + 1;
-            let leveledUp = false;
-            if(gameLevelCounts['rotate'] >= 2 && rotateLevel < 10) {
-                rotateLevel++; 
-                gameLevels['rotate'] = rotateLevel; 
-                gameLevelCounts['rotate'] = 0;
-                leveledUp = true;
-                showLevelUpMessage('rotate');
-            }
             saveLevel();
             document.getElementById('rotateLevel').textContent = rotateLevel;
             updateLevelDisplay('rotate');
             showGameResult('rotateResult', true, `🎉 완료! ${rotateScore}점 획득!`);
             document.getElementById('rotateStartBtn').textContent = '다시 하기';
-            document.getElementById('rotateStartBtn').style.display = leveledUp ? 'none' : '';
-            if (leveledUp) {
-                setTimeout(() => startRotate(), 500);
-            }
+            document.getElementById('rotateStartBtn').style.display = '';
         }
         
         // 25. 연쇄 반응 (집중력)
@@ -771,7 +768,7 @@
                     addScore(score); gameState.correctAnswers++; gameState.totalAnswers++;
                     gameLevelCounts['chain'] = (gameLevelCounts['chain'] || 0) + 1;
                     let leveledUp = false;
-                    if(gameLevelCounts['chain'] >= 2 && chainLevel < 10) {
+                    if(gameLevelCounts['chain'] >= ADV_LEVEL_UP_SUCCESSES && chainLevel < 10) {
                         chainLevel++; 
                         gameLevels['chain'] = chainLevel; 
                         gameLevelCounts['chain'] = 0;
@@ -782,10 +779,8 @@
                     document.getElementById('chainLevel').textContent = chainLevel;
                     updateLevelDisplay('chain');
                     document.getElementById('chainStartBtn').textContent = '다음 문제';
-                    document.getElementById('chainStartBtn').style.display = leveledUp ? 'none' : '';
-                    if (leveledUp) {
-                        setTimeout(() => startChain(), 500);
-                    }
+                    document.getElementById('chainStartBtn').style.display = 'none';
+                    setTimeout(() => startChain(), ADV_AUTO_ADVANCE_MS);
                 }
             } else {
                 el.classList.add('wrong');

@@ -134,6 +134,29 @@ function playWrongSound() {
     }
 }
 
+// 이동/클릭 등 짧은 효과음 (예: 미로 탈출 이동)
+function playMoveSound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.type = 'square';
+        oscillator.frequency.setValueAtTime(420, audioContext.currentTime);
+        
+        gainNode.gain.setValueAtTime(0.06, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.07);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.08);
+    } catch (e) {
+        // 사운드 미지원 환경이면 무시
+    }
+}
+
 function miniConfetti() {
     const container = document.getElementById('confettiContainer');
     const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4'];
