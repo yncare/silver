@@ -272,24 +272,6 @@
         
         <!-- 메인 콘텐츠 -->
         <div id="mainContent" class="hidden">
-            <!-- 음성 안내 설정 -->
-            <div class="tts-auto-toggle">
-                <span>🔊</span>
-                <label for="ttsAutoToggle" style="cursor:pointer;">자동 음성 안내</label>
-                <label class="tts-toggle-switch" for="ttsAutoToggle">
-                    <input type="checkbox" id="ttsAutoToggle" onchange="toggleAutoTTS()">
-                    <span class="tts-slider"></span>
-                </label>
-                <div class="tts-speed-control">
-                    <label for="ttsSpeedSelect">속도:</label>
-                    <select id="ttsSpeedSelect" onchange="changeTTSSpeed()">
-                        <option value="0.7">느리게</option>
-                        <option value="0.85" selected>보통</option>
-                        <option value="1.0">빠르게</option>
-                    </select>
-                </div>
-            </div>
-            
             <!-- 메인 메뉴 (게임 카테고리 4개) -->
             <div id="mainMenu" class="main-menu-wrapper">
                 <!-- 카테고리 바로가기(상단 고정) -->
