@@ -388,13 +388,8 @@
             try {
                 const wrapper = document.getElementById('mainMenu');
                 if (!wrapper) return;
-                
-                const sections = wrapper.querySelectorAll('.menu-category');
-                sections.forEach(sec => {
-                    const secCat = sec.getAttribute('data-cat');
-                    const show = (cat === 'all') || (secCat === cat);
-                    sec.style.display = show ? '' : 'none';
-                });
+                // 첫 화면은 항상 "전체보기"로 노출하고,
+                // 버튼 클릭은 필터(숨김) 대신 카테고리 섹션으로 스크롤 이동만 수행한다.
                 
                 const buttons = wrapper.querySelectorAll('.category-nav .cat-btn');
                 buttons.forEach(btn => {
@@ -404,14 +399,14 @@
                 if (opts && opts.scroll && cat !== 'all') {
                     const target = document.getElementById('cat-' + cat);
                     if (target) {
-                        const offset = 120;
+                        const offset = 140;
                         const top = target.getBoundingClientRect().top + window.scrollY - offset;
                         window.scrollTo({ top, behavior: 'smooth' });
                     }
                 } else if (opts && opts.scroll && cat === 'all') {
                     const nav = document.getElementById('categoryNav');
                     if (nav) {
-                        const offset = 120;
+                        const offset = 140;
                         const top = nav.getBoundingClientRect().top + window.scrollY - offset;
                         window.scrollTo({ top, behavior: 'smooth' });
                     }

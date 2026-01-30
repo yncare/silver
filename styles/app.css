@@ -996,19 +996,19 @@
             display: block;
         }
 
-        /* 카테고리 바로가기(상단 고정) */
+        /* 카테고리 바로가기(메인 중간 라인 배치) */
         .category-nav {
-            position: sticky;
-            top: 8px;
-            z-index: 50;
+            position: relative;
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            padding: 12px;
-            border-radius: 18px;
-            background: rgba(255, 255, 255, 0.92);
-            border: 2px solid rgba(0,0,0,0.08);
-            backdrop-filter: blur(8px);
+            justify-content: center;
+            padding: 16px 14px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.96);
+            border: 2px solid rgba(0,0,0,0.10);
+            box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+            margin: 18px auto 10px;
         }
         .cat-btn {
             --cat-color: var(--primary);
@@ -1016,10 +1016,10 @@
             border: 2px solid var(--cat-color);
             background: transparent;
             color: var(--cat-color);
-            padding: 10px 14px;
+            padding: 14px 18px;
             border-radius: 999px;
-            font-size: calc(0.95rem * var(--font-scale));
-            font-weight: 700;
+            font-size: calc(1.05rem * var(--font-scale));
+            font-weight: 800;
             cursor: pointer;
             transition: all 0.2s ease;
         }
