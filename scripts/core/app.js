@@ -275,6 +275,14 @@
         
         function startGame(game) {
             try {
+                // 시작한 카테고리를 기록해두었다가 돌아가기 시 복귀 (기본: 전체보기)
+                try {
+                    const cat = window.selectedMenuCategory || 'all';
+                    if (typeof gameState === 'object' && gameState) {
+                        gameState.menuCategoryBeforeGame = cat;
+                    }
+                } catch (e) { /* ignore */ }
+
                 // 모든 게임 화면 비활성화 먼저 실행
                 document.querySelectorAll('.game-screen').forEach(s => s.classList.remove('active'));
                 
@@ -376,7 +384,8 @@
 
                 // 뒤로가기 후에도 "전체보기" 상태로 복귀
                 if (typeof filterMenuCategory === 'function') {
-                    filterMenuCategory('all', { scroll: false });
+                    const cat = (typeof gameState === 'object' && gameState && gameState.menuCategoryBeforeGame) ? gameState.menuCategoryBeforeGame : (window.selectedMenuCategory || 'all');
+                    filterMenuCategory(cat, { scroll: false });
                 }
             } catch (error) {
                 console.error('뒤로가기 처리 중 오류:', error);
@@ -401,6 +410,9 @@
                 buttons.forEach(btn => {
                     btn.classList.toggle('active', btn.getAttribute('data-cat') === cat);
                 });
+
+                // 현재 선택 카테고리 저장 (게임 시작/복귀에 사용)
+                window.selectedMenuCategory = cat;
                 
                 if (opts && opts.scroll && cat !== 'all') {
                     const target = document.getElementById('cat-' + cat);
