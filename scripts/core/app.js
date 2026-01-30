@@ -355,7 +355,8 @@
                 document.querySelectorAll('.game-screen').forEach(s => s.classList.remove('active'));
                 
                 const mainMenu = document.getElementById('mainMenu');
-                if (mainMenu) mainMenu.style.display = 'grid';
+                // 카테고리 섹션 구조를 위해 mainMenu는 wrapper(block)로 표시
+                if (mainMenu) mainMenu.style.display = 'block';
                 
                 const todayStats = document.querySelector('.today-stats');
                 if (todayStats) todayStats.style.display = 'block';
@@ -372,10 +373,54 @@
                 clearAllTimers();
                 if (typeof saveUserData === 'function') saveUserData(); // 사용자 데이터 저장
                 if (typeof updateUI === 'function') updateUI();
+
+                // 뒤로가기 후에도 "전체보기" 상태로 복귀
+                if (typeof filterMenuCategory === 'function') {
+                    filterMenuCategory('all', { scroll: false });
+                }
             } catch (error) {
                 console.error('뒤로가기 처리 중 오류:', error);
             }
         }
+
+        // ==================== 메인 메뉴 카테고리 필터 ====================
+        function filterMenuCategory(cat, opts = { scroll: true }) {
+            try {
+                const wrapper = document.getElementById('mainMenu');
+                if (!wrapper) return;
+                
+                const sections = wrapper.querySelectorAll('.menu-category');
+                sections.forEach(sec => {
+                    const secCat = sec.getAttribute('data-cat');
+                    const show = (cat === 'all') || (secCat === cat);
+                    sec.style.display = show ? '' : 'none';
+                });
+                
+                const buttons = wrapper.querySelectorAll('.category-nav .cat-btn');
+                buttons.forEach(btn => {
+                    btn.classList.toggle('active', btn.getAttribute('data-cat') === cat);
+                });
+                
+                if (opts && opts.scroll && cat !== 'all') {
+                    const target = document.getElementById('cat-' + cat);
+                    if (target) {
+                        const offset = 120;
+                        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+                        window.scrollTo({ top, behavior: 'smooth' });
+                    }
+                } else if (opts && opts.scroll && cat === 'all') {
+                    const nav = document.getElementById('categoryNav');
+                    if (nav) {
+                        const offset = 120;
+                        const top = nav.getBoundingClientRect().top + window.scrollY - offset;
+                        window.scrollTo({ top, behavior: 'smooth' });
+                    }
+                }
+            } catch (e) {
+                console.error('카테고리 필터 오류:', e);
+            }
+        }
+        window.filterMenuCategory = filterMenuCategory;
         
         function clearAllTimers() {
             try {

@@ -290,130 +290,173 @@
                 </div>
             </div>
             
-            <!-- 메인 메뉴 (16개 게임) -->
-            <div id="mainMenu" class="main-menu">
-                <div class="menu-card" onclick="startGame('match')" style="padding:0;overflow:hidden;">
-                    <img src="assets/card_match.png" alt="카드 짝 맞추기" style="width:100%;height:100%;object-fit:cover;border-radius:20px;">
+            <!-- 메인 메뉴 (게임 카테고리 4개) -->
+            <div id="mainMenu" class="main-menu-wrapper">
+                <!-- 카테고리 바로가기(상단 고정) -->
+                <div class="category-nav" id="categoryNav">
+                    <button class="cat-btn active" data-cat="all" onclick="filterMenuCategory('all')">전체보기</button>
+                    <button class="cat-btn" data-cat="memory" style="--cat-color:#4CAF50" onclick="filterMenuCategory('memory')">기억력 훈련</button>
+                    <button class="cat-btn" data-cat="calcLang" style="--cat-color:#2196F3" onclick="filterMenuCategory('calcLang')">계산/언어 훈련</button>
+                    <button class="cat-btn" data-cat="focusReaction" style="--cat-color:#FF9800" onclick="filterMenuCategory('focusReaction')">집중/반응 훈련</button>
+                    <button class="cat-btn" data-cat="spatial" style="--cat-color:#9C27B0" onclick="filterMenuCategory('spatial')">공간/지각 훈련</button>
                 </div>
-                <div class="menu-card" onclick="startGame('sequence')" style="padding:0;overflow:hidden;">
-                    <img src="assets/sequence.png" alt="숫자 기억하기" style="width:100%;height:100%;object-fit:cover;border-radius:20px;">
-                </div>
-                <div class="menu-card" onclick="startGame('calc')">
-                    <span class="icon">➕</span>
-                    <h3>시장 계산</h3>
-                    <p>덧셈 뺄셈</p>
-                </div>
-                <div class="menu-card" onclick="startGame('color')">
-                    <span class="icon">🌈</span>
-                    <h3>무지개 색깔</h3>
-                    <p>색상 맞추기</p>
-                </div>
-                <div class="menu-card" onclick="startGame('pattern')">
-                    <span class="icon">🔲</span>
-                    <h3>창문 기억</h3>
-                    <p>불 켜진 위치</p>
-                </div>
-                <div class="menu-card" onclick="startGame('reaction')">
-                    <span class="icon">🚦</span>
-                    <h3>신호등 게임</h3>
-                    <p>초록불에 출발</p>
-                </div>
-                <div class="menu-card" onclick="startGame('findDiff')">
-                    <span class="icon">👀</span>
-                    <h3>다른 것 찾기</h3>
-                    <p>숨은 그림 찾기</p>
-                </div>
-                <div class="menu-card" onclick="startGame('sorting')">
-                    <span class="icon">📊</span>
-                    <h3>계단 오르기</h3>
-                    <p>순서대로 누르기</p>
-                </div>
-                <div class="menu-card" onclick="startGame('direction')">
-                    <span class="icon">🚗</span>
-                    <h3>길 찾기</h3>
-                    <p>화살표 따라가기</p>
-                </div>
-                <div class="menu-card" onclick="startGame('word')">
-                    <span class="icon">📖</span>
-                    <h3>낱말 퍼즐</h3>
-                    <p>빈칸 채우기</p>
-                </div>
-                <div class="menu-card" onclick="startGame('counting')">
-                    <span class="icon">🛒</span>
-                    <h3>장바구니 세기</h3>
-                    <p>과일 개수 세기</p>
-                </div>
-                <div class="menu-card" onclick="startGame('pairing')">
-                    <span class="icon">🔗</span>
-                    <h3>짝 연결하기</h3>
-                    <p>관련 단어 연결</p>
-                </div>
-                <div class="menu-card" onclick="startGame('timing')">
-                    <span class="icon">⏰</span>
-                    <h3>알람 맞추기</h3>
-                    <p>정확한 시간에 멈춤</p>
-                </div>
-                <div class="menu-card" onclick="startGame('reverse')">
-                    <span class="icon">🔄</span>
-                    <h3>거울 놀이</h3>
-                    <p>거꾸로 말하기</p>
-                </div>
-                <div class="menu-card" onclick="startGame('category')">
-                    <span class="icon">📂</span>
-                    <h3>분류하기</h3>
-                    <p>같은 종류 찾기</p>
-                </div>
-                <div class="menu-card" onclick="startGame('story')">
-                    <span class="icon">📚</span>
-                    <h3>이야기 순서</h3>
-                    <p>순서대로 정렬</p>
-                </div>
-                <!-- 새로운 9종 게임 -->
-                <div class="menu-card" onclick="startGame('maze')">
-                    <span class="icon">🏰</span>
-                    <h3>미로 탈출</h3>
-                    <p>출구를 찾아라</p>
-                </div>
-                <div class="menu-card" onclick="startGame('melody')">
-                    <span class="icon">🎵</span>
-                    <h3>멜로디 기억</h3>
-                    <p>음악 패턴 따라하기</p>
-                </div>
-                <div class="menu-card" onclick="startGame('puzzle')">
-                    <span class="icon">🧩</span>
-                    <h3>퍼즐 맞추기</h3>
-                    <p>조각으로 그림 완성</p>
-                </div>
-                <div class="menu-card" onclick="startGame('treasure')">
-                    <span class="icon">💎</span>
-                    <h3>보물 찾기</h3>
-                    <p>힌트로 위치 추리</p>
-                </div>
-                <div class="menu-card" onclick="startGame('shadow')">
-                    <span class="icon">👤</span>
-                    <h3>그림자 매칭</h3>
-                    <p>물체와 그림자 연결</p>
-                </div>
-                <div class="menu-card" onclick="startGame('focus')">
-                    <span class="icon">🎯</span>
-                    <h3>집중 타겟</h3>
-                    <p>움직이는 표적 맞추기</p>
-                </div>
-                <div class="menu-card" onclick="startGame('palace')">
-                    <span class="icon">🏛️</span>
-                    <h3>기억의 방</h3>
-                    <p>물건 위치 기억하기</p>
-                </div>
-                <div class="menu-card" onclick="startGame('rotate')">
-                    <span class="icon">🔷</span>
-                    <h3>도형 회전</h3>
-                    <p>회전된 모양 찾기</p>
-                </div>
-                <div class="menu-card" onclick="startGame('chain')">
-                    <span class="icon">⛓️</span>
-                    <h3>연쇄 반응</h3>
-                    <p>순서대로 빠르게 터치</p>
-                </div>
+                
+                <!-- 1) 기억력 훈련 -->
+                <section class="menu-category" id="cat-memory" data-cat="memory" style="--cat-color:#4CAF50">
+                    <div class="menu-category-header">
+                        <h3 class="menu-category-title">기억력 훈련</h3>
+                    </div>
+                    <div class="main-menu category-grid">
+                        <div class="menu-card" onclick="startGame('match')" style="padding:0;overflow:hidden;">
+                            <img src="assets/card_match.png" alt="카드 짝 맞추기" style="width:100%;height:100%;object-fit:cover;border-radius:20px;">
+                        </div>
+                        <div class="menu-card" onclick="startGame('sequence')" style="padding:0;overflow:hidden;">
+                            <img src="assets/sequence.png" alt="숫자 기억하기" style="width:100%;height:100%;object-fit:cover;border-radius:20px;">
+                        </div>
+                        <div class="menu-card" onclick="startGame('pattern')">
+                            <span class="icon">🔲</span>
+                            <h3>창문 기억</h3>
+                            <p>불 켜진 위치</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('melody')">
+                            <span class="icon">🎵</span>
+                            <h3>멜로디 기억</h3>
+                            <p>음악 패턴 따라하기</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('palace')">
+                            <span class="icon">🏛️</span>
+                            <h3>기억의 방</h3>
+                            <p>물건 위치 기억하기</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('treasure')">
+                            <span class="icon">💎</span>
+                            <h3>보물 찾기</h3>
+                            <p>힌트로 위치 추리</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 2) 계산/언어 훈련 -->
+                <section class="menu-category" id="cat-calcLang" data-cat="calcLang" style="--cat-color:#2196F3">
+                    <div class="menu-category-header">
+                        <h3 class="menu-category-title">계산/언어 훈련</h3>
+                    </div>
+                    <div class="main-menu category-grid">
+                        <div class="menu-card" onclick="startGame('calc')">
+                            <span class="icon">➕</span>
+                            <h3>시장 계산</h3>
+                            <p>덧셈 뺄셈</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('counting')">
+                            <span class="icon">🛒</span>
+                            <h3>장바구니 세기</h3>
+                            <p>과일 개수 세기</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('word')">
+                            <span class="icon">📖</span>
+                            <h3>낱말 퍼즐</h3>
+                            <p>빈칸 채우기</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('reverse')">
+                            <span class="icon">🔄</span>
+                            <h3>거울 놀이</h3>
+                            <p>거꾸로 말하기</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('story')">
+                            <span class="icon">📚</span>
+                            <h3>이야기 순서</h3>
+                            <p>순서대로 정렬</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('category')">
+                            <span class="icon">📂</span>
+                            <h3>분류하기</h3>
+                            <p>같은 종류 찾기</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 3) 집중/반응 훈련 -->
+                <section class="menu-category" id="cat-focusReaction" data-cat="focusReaction" style="--cat-color:#FF9800">
+                    <div class="menu-category-header">
+                        <h3 class="menu-category-title">집중/반응 훈련</h3>
+                    </div>
+                    <div class="main-menu category-grid">
+                        <div class="menu-card" onclick="startGame('reaction')">
+                            <span class="icon">🚦</span>
+                            <h3>신호등 게임</h3>
+                            <p>초록불에 출발</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('findDiff')">
+                            <span class="icon">👀</span>
+                            <h3>다른 것 찾기</h3>
+                            <p>숨은 그림 찾기</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('timing')">
+                            <span class="icon">⏰</span>
+                            <h3>알람 맞추기</h3>
+                            <p>정확한 시간에 멈춤</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('focus')">
+                            <span class="icon">🎯</span>
+                            <h3>집중 타겟</h3>
+                            <p>움직이는 표적 맞추기</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('chain')">
+                            <span class="icon">⛓️</span>
+                            <h3>연쇄 반응</h3>
+                            <p>순서대로 빠르게 터치</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('color')">
+                            <span class="icon">🌈</span>
+                            <h3>무지개 색깔</h3>
+                            <p>색상 맞추기</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 4) 공간/지각 훈련 -->
+                <section class="menu-category" id="cat-spatial" data-cat="spatial" style="--cat-color:#9C27B0">
+                    <div class="menu-category-header">
+                        <h3 class="menu-category-title">공간/지각 훈련</h3>
+                    </div>
+                    <div class="main-menu category-grid">
+                        <div class="menu-card" onclick="startGame('direction')">
+                            <span class="icon">🚗</span>
+                            <h3>길 찾기</h3>
+                            <p>화살표 따라가기</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('maze')">
+                            <span class="icon">🏰</span>
+                            <h3>미로 탈출</h3>
+                            <p>출구를 찾아라</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('puzzle')">
+                            <span class="icon">🧩</span>
+                            <h3>퍼즐 맞추기</h3>
+                            <p>조각으로 그림 완성</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('rotate')">
+                            <span class="icon">🔷</span>
+                            <h3>도형 회전</h3>
+                            <p>회전된 모양 찾기</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('shadow')">
+                            <span class="icon">👤</span>
+                            <h3>그림자 매칭</h3>
+                            <p>물체와 그림자 연결</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('sorting')">
+                            <span class="icon">📊</span>
+                            <h3>계단 오르기</h3>
+                            <p>순서대로 누르기</p>
+                        </div>
+                        <div class="menu-card" onclick="startGame('pairing')">
+                            <span class="icon">🔗</span>
+                            <h3>짝 연결하기</h3>
+                            <p>관련 단어 연결</p>
+                        </div>
+                    </div>
+                </section>
             </div>
             
             <div class="today-stats">

@@ -990,6 +990,91 @@
             gap: 20px;
             padding: 20px 0;
         }
+
+        /* 메인 메뉴(카테고리 래퍼) */
+        .main-menu-wrapper {
+            display: block;
+        }
+
+        /* 카테고리 바로가기(상단 고정) */
+        .category-nav {
+            position: sticky;
+            top: 8px;
+            z-index: 50;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 12px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 2px solid rgba(0,0,0,0.08);
+            backdrop-filter: blur(8px);
+        }
+        .cat-btn {
+            --cat-color: var(--primary);
+            appearance: none;
+            border: 2px solid var(--cat-color);
+            background: transparent;
+            color: var(--cat-color);
+            padding: 10px 14px;
+            border-radius: 999px;
+            font-size: calc(0.95rem * var(--font-scale));
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .cat-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+        }
+        .cat-btn.active {
+            background: var(--cat-color);
+            color: #fff;
+        }
+
+        /* 카테고리 섹션 */
+        .menu-category {
+            margin-top: 18px;
+            padding-top: 6px;
+        }
+        .menu-category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(0,0,0,0.04), rgba(0,0,0,0.02));
+            border: 2px solid rgba(0,0,0,0.06);
+        }
+        .menu-category-title {
+            margin: 0;
+            font-size: calc(1.15rem * var(--font-scale));
+            font-weight: 800;
+            color: var(--cat-color);
+        }
+        .category-grid {
+            margin-top: 12px;
+        }
+
+        body.high-contrast .category-nav {
+            background: #111 !important;
+            border-color: #FFD700 !important;
+        }
+        body.high-contrast .cat-btn {
+            border-color: #FFD700 !important;
+            color: #FFD700 !important;
+        }
+        body.high-contrast .cat-btn.active {
+            background: #FFD700 !important;
+            color: #000 !important;
+        }
+        body.high-contrast .menu-category-header {
+            background: #111 !important;
+            border-color: #FFD700 !important;
+        }
+        body.high-contrast .menu-category-title {
+            color: #FFD700 !important;
+        }
         
         .menu-card {
             background: var(--card-bg);
