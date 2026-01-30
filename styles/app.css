@@ -1022,6 +1022,16 @@
             font-weight: 800;
             cursor: pointer;
             transition: all 0.2s ease;
+            line-height: 1.25;
+        }
+        .cat-btn .cat-tagline {
+            font-weight: 700;
+            font-size: calc(0.88rem * var(--font-scale));
+            opacity: 0.85;
+            margin-left: 6px;
+        }
+        .cat-btn.active .cat-tagline {
+            opacity: 0.95;
         }
         .cat-btn:hover {
             transform: translateY(-1px);
