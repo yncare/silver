@@ -2252,8 +2252,8 @@
         .shadow-main {
             text-align: center;
             padding: 20px;
-            background: #fff8dc; /* 밝은 배경으로 문제(물체) 가시성 확보 */
-            border: 2px solid #d4a900;
+            background: #fff8dc !important; /* 밝은 배경으로 문제(물체) 가시성 확보 */
+            border: 2px solid #d4a900 !important;
             border-radius: 20px;
             margin: 15px 0;
         }
