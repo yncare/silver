@@ -388,8 +388,14 @@
             try {
                 const wrapper = document.getElementById('mainMenu');
                 if (!wrapper) return;
-                // 첫 화면은 항상 "전체보기"로 노출하고,
-                // 버튼 클릭은 필터(숨김) 대신 카테고리 섹션으로 스크롤 이동만 수행한다.
+                
+                // 카테고리 섹션 표시/숨김
+                const sections = wrapper.querySelectorAll('.menu-category');
+                sections.forEach(sec => {
+                    const secCat = sec.getAttribute('data-cat');
+                    const show = (cat === 'all') || (secCat === cat);
+                    sec.style.display = show ? '' : 'none';
+                });
                 
                 const buttons = wrapper.querySelectorAll('.category-nav .cat-btn');
                 buttons.forEach(btn => {
