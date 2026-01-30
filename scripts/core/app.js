@@ -422,6 +422,172 @@
             }
         }
         window.filterMenuCategory = filterMenuCategory;
+
+        // ==================== 오늘의 추천 훈련 (일일 고정) ====================
+        const DAILY_RECO_STORAGE_KEY = 'dailyRecommendations.v1';
+        const DAILY_RECO_CATEGORIES = {
+            memory: {
+                label: '기억력 훈련',
+                color: '#4CAF50',
+                games: ['match', 'sequence', 'pattern', 'melody', 'palace', 'treasure']
+            },
+            calcLang: {
+                label: '계산/언어 훈련',
+                color: '#2196F3',
+                games: ['calc', 'counting', 'word', 'reverse', 'story']
+            },
+            focusReaction: {
+                label: '집중/반응 훈련',
+                color: '#FF9800',
+                games: ['reaction', 'findDiff', 'timing', 'focus', 'chain', 'color']
+            },
+            spatial: {
+                label: '공간/지각 훈련',
+                color: '#9C27B0',
+                games: ['direction', 'maze', 'puzzle', 'rotate', 'shadow', 'sorting', 'pairing']
+            }
+        };
+
+        function getTodayKey() {
+            const d = new Date();
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        function pickOne(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function loadDailyRecommendations() {
+            try {
+                const raw = localStorage.getItem(DAILY_RECO_STORAGE_KEY);
+                if (!raw) return null;
+                return JSON.parse(raw);
+            } catch {
+                return null;
+            }
+        }
+
+        function saveDailyRecommendations(data) {
+            try {
+                localStorage.setItem(DAILY_RECO_STORAGE_KEY, JSON.stringify(data));
+            } catch {
+                // ignore
+            }
+        }
+
+        function ensureDailyRecommendations() {
+            const today = getTodayKey();
+            const existing = loadDailyRecommendations();
+            if (existing && existing.date === today && existing.picks) return existing;
+            
+            const picks = {};
+            Object.keys(DAILY_RECO_CATEGORIES).forEach(cat => {
+                picks[cat] = pickOne(DAILY_RECO_CATEGORIES[cat].games);
+            });
+            const data = { date: today, picks };
+            saveDailyRecommendations(data);
+            return data;
+        }
+
+        function getCardInfo(gameId) {
+            // 메뉴 카드에서 title/icon/desc를 최대한 가져온다.
+            try {
+                const cards = document.querySelectorAll('#mainMenu .menu-card');
+                for (const card of cards) {
+                    const onclick = card.getAttribute('onclick') || '';
+                    const m = onclick.match(/startGame\\('([^']+)'\\)/);
+                    if (!m) continue;
+                    if (m[1] !== gameId) continue;
+                    
+                    const h3 = card.querySelector('h3');
+                    const p = card.querySelector('p');
+                    const iconSpan = card.querySelector('.icon');
+                    const img = card.querySelector('img');
+                    
+                    return {
+                        title: h3 ? h3.textContent.trim() : (img ? img.alt : gameId),
+                        desc: p ? p.textContent.trim() : '',
+                        iconText: iconSpan ? iconSpan.textContent.trim() : '',
+                        imgSrc: img ? img.getAttribute('src') : ''
+                    };
+                }
+            } catch {
+                // ignore
+            }
+            return { title: gameId, desc: '', iconText: '', imgSrc: '' };
+        }
+
+        function applyRecommendationBadges(reco) {
+            try {
+                document.querySelectorAll('#mainMenu .menu-card.is-recommended').forEach(el => el.classList.remove('is-recommended'));
+                const picks = (reco && reco.picks) ? reco.picks : {};
+                const pickedIds = new Set(Object.values(picks));
+                document.querySelectorAll('#mainMenu .menu-card').forEach(card => {
+                    const onclick = card.getAttribute('onclick') || '';
+                    const m = onclick.match(/startGame\\('([^']+)'\\)/);
+                    if (m && pickedIds.has(m[1])) card.classList.add('is-recommended');
+                });
+            } catch {
+                // ignore
+            }
+        }
+
+        function openTodayRecommendations() {
+            const reco = ensureDailyRecommendations();
+            applyRecommendationBadges(reco);
+            
+            const modal = document.getElementById('recommendModal');
+            const list = document.getElementById('recommendList');
+            if (!modal || !list) return;
+            
+            const itemsHtml = Object.keys(DAILY_RECO_CATEGORIES).map(cat => {
+                const meta = DAILY_RECO_CATEGORIES[cat];
+                const gameId = reco.picks[cat];
+                const info = getCardInfo(gameId);
+                const iconHtml = info.imgSrc
+                    ? `<img src="${info.imgSrc}" alt="${info.title}" style="width:100%;height:100%;object-fit:cover;">`
+                    : (info.iconText ? info.iconText : '🎮');
+                
+                return `
+                    <div class="recommend-item" style="--cat-color:${meta.color}" onclick="startGame('${gameId}'); closeTodayRecommendations();">
+                        <div class="cat-pill">• ${meta.label}</div>
+                        <div class="rec-title">
+                            <span class="rec-icon">${iconHtml}</span>
+                            <span>${info.title}</span>
+                        </div>
+                        <p class="rec-desc">${info.desc || '추천 훈련을 시작해보세요!'}</p>
+                    </div>
+                `;
+            }).join('');
+            
+            list.innerHTML = itemsHtml;
+            modal.style.display = 'flex';
+            
+            // 외부 클릭 닫기(1회 바인딩)
+            if (!modal.dataset.bound) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeTodayRecommendations();
+                });
+                modal.dataset.bound = '1';
+            }
+        }
+
+        function closeTodayRecommendations() {
+            const modal = document.getElementById('recommendModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        window.openTodayRecommendations = openTodayRecommendations;
+        window.closeTodayRecommendations = closeTodayRecommendations;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 오늘의 추천을 미리 생성 + 카드 배지 표시(랜덤은 하루 고정)
+            const reco = ensureDailyRecommendations();
+            applyRecommendationBadges(reco);
+        });
         
         function clearAllTimers() {
             try {

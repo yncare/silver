@@ -281,6 +281,9 @@
                     <button class="cat-btn" data-cat="calcLang" style="--cat-color:#2196F3" onclick="filterMenuCategory('calcLang')">계산/언어 훈련</button>
                     <button class="cat-btn" data-cat="focusReaction" style="--cat-color:#FF9800" onclick="filterMenuCategory('focusReaction')">집중/반응 훈련</button>
                     <button class="cat-btn" data-cat="spatial" style="--cat-color:#9C27B0" onclick="filterMenuCategory('spatial')">공간/지각 훈련</button>
+                    <button class="recommend-btn" onclick="openTodayRecommendations()">
+                        ⭐ 오늘의 추천 훈련
+                    </button>
                 </div>
                 
                 <!-- 1) 기억력 훈련 -->
@@ -1368,6 +1371,21 @@
                     <button class="btn btn-primary" id="playAgainBtn" onclick="playAgain()">다시 하기</button>
                     <button class="btn btn-danger" onclick="resetCurrentGameLevel();">이 게임 레벨 초기화</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 오늘의 추천 훈련 모달 -->
+    <div class="recommend-modal" id="recommendModal" style="display:none;">
+        <div class="recommend-modal-content">
+            <div class="recommend-modal-header">
+                <h2>⭐ 오늘의 추천 훈련</h2>
+                <button class="recommend-close" onclick="closeTodayRecommendations()">✕</button>
+            </div>
+            <p class="recommend-subtitle">매일 각 카테고리에서 1개씩, 총 4개의 게임을 추천합니다. (오늘은 고정)</p>
+            <div class="recommend-list" id="recommendList"></div>
+            <div class="recommend-footer">
+                <button class="btn btn-back" onclick="closeTodayRecommendations()">닫기</button>
             </div>
         </div>
     </div>
