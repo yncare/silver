@@ -1,4 +1,4 @@
-﻿// ==================== 초기화 ====================
+// ==================== 초기화 ====================
         function selectGender(gender, btn) {
             userProfile.gender = gender;
             document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('selected'));
@@ -92,6 +92,12 @@
             
             checkDayReset();
             updateUI();
+
+            // 메인 진입 시 기본 "전체보기" 레이아웃(4개 대분류 2x2) 적용
+            try {
+                const cat = window.selectedMenuCategory || 'all';
+                filterMenuCategory(cat, { scroll: false });
+            } catch (e) { /* ignore */ }
         }
         
         function changeProfile() {
@@ -363,8 +369,8 @@
                 document.querySelectorAll('.game-screen').forEach(s => s.classList.remove('active'));
                 
                 const mainMenu = document.getElementById('mainMenu');
-                // 카테고리 섹션 구조를 위해 mainMenu는 wrapper(block)로 표시
-                if (mainMenu) mainMenu.style.display = 'block';
+                // 홈 복귀 시 레이아웃(특히 전체보기 grid)이 CSS로 적용되도록 inline display는 제거
+                if (mainMenu) mainMenu.style.display = '';
                 
                 const todayStats = document.querySelector('.today-stats');
                 if (todayStats) todayStats.style.display = 'block';
@@ -397,6 +403,9 @@
             try {
                 const wrapper = document.getElementById('mainMenu');
                 if (!wrapper) return;
+
+                // "전체보기"일 때만 4개 대분류를 2x2 그리드로 배치
+                wrapper.classList.toggle('all-view', cat === 'all');
                 
                 // 카테고리 섹션 표시/숨김
                 const sections = wrapper.querySelectorAll('.menu-category');

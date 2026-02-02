@@ -1,4 +1,4 @@
-﻿// ==================== 0. 동물/식물 짝맞추기 ====================
+// ==================== 0. 동물/식물 짝맞추기 ====================
         const animalEmojis = ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🐔'];
         const plantEmojis = ['🌸','🌺','🌻','🌹','🌷','🌼','🌿','🍀','🌵','🌴','🌲','🎋','🌾','🍁','🍂','🌳'];
         
@@ -13,6 +13,15 @@
         let matchStage = 'animal'; // animal, plant, mixed
         let matchConsecutive = 0;
         let matchMaxConsecutive = 0;
+
+        function setTextById(id, text) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = String(text);
+        }
+
+        function setTextByIds(ids, text) {
+            ids.forEach(id => setTextById(id, text));
+        }
         
         function initMatchGame() {
             matchLevel = 1;
@@ -24,10 +33,10 @@
             matchConsecutive = 0;
             matchMaxConsecutive = 0;
             
-            document.getElementById('matchLevel').textContent = '1';
-            document.getElementById('matchScore').textContent = '0';
-            document.getElementById('matchTries').textContent = '0';
-            document.getElementById('matchMatches').textContent = '0';
+            setTextByIds(['matchLevel', 'matchLevel2'], 1);
+            setTextById('matchScore', 0);
+            setTextById('matchTries', 0);
+            setTextByIds(['matchMatches', 'matchMatches2'], 0);
             document.getElementById('matchGrid').innerHTML = '';
             document.getElementById('matchStartBtn').style.display = 'inline-block';
             document.getElementById('stageButtons').style.display = 'flex';
@@ -44,7 +53,7 @@
         
         function updateMatchStageDisplay() {
             const stageNames = { animal: '🐾 동물', plant: '🌿 식물', mixed: '🎨 혼합' };
-            document.getElementById('matchStage').textContent = stageNames[matchStage];
+            setTextById('matchStage', stageNames[matchStage]);
         }
         
         function startMatchGame() {
@@ -78,9 +87,9 @@
             matchFlipped = [];
             matchCanFlip = true;
             
-            document.getElementById('matchLevel').textContent = matchLevel;
-            document.getElementById('matchMatches').textContent = '0';
-            document.getElementById('matchTotal').textContent = matchTotalPairs;
+            setTextByIds(['matchLevel', 'matchLevel2'], matchLevel);
+            setTextByIds(['matchMatches', 'matchMatches2'], 0);
+            setTextById('matchTotal', matchTotalPairs);
             
             // 그리드 클래스 결정
             let gridClass = 'grid-2x4';
@@ -135,11 +144,11 @@
                     matchConsecutive++;
                     if (matchConsecutive > matchMaxConsecutive) matchMaxConsecutive = matchConsecutive;
                     gameState.correctAnswers++;
-                    document.getElementById('matchMatches').textContent = matchPairs;
+                    setTextByIds(['matchMatches', 'matchMatches2'], matchPairs);
                     
                     const pts = 10 + matchLevel * 2;
                     matchScore += pts;
-                    document.getElementById('matchScore').textContent = matchScore;
+                    setTextById('matchScore', matchScore);
                     
                     playCorrectSound();
                     
