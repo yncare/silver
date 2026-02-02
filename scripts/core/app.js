@@ -532,6 +532,27 @@
             return { title: gameId, desc: '', iconText: '', imgSrc: '' };
         }
 
+        function getMenuCardPreviewHtml(gameId) {
+            try {
+                const cards = document.querySelectorAll('#mainMenu .menu-card');
+                for (const card of cards) {
+                    const onclick = card.getAttribute('onclick') || '';
+                    const m = onclick.match(/startGame\\('([^']+)'\\)/);
+                    if (!m) continue;
+                    if (m[1] !== gameId) continue;
+                    
+                    const clone = card.cloneNode(true);
+                    clone.classList.add('rec-menu-card');
+                    clone.classList.remove('is-recommended');
+                    clone.removeAttribute('onclick');
+                    return clone.outerHTML;
+                }
+            } catch {
+                // ignore
+            }
+            return '';
+        }
+
         function applyRecommendationBadges(reco) {
             try {
                 document.querySelectorAll('#mainMenu .menu-card.is-recommended').forEach(el => el.classList.remove('is-recommended'));
@@ -558,19 +579,13 @@
             const itemsHtml = Object.keys(DAILY_RECO_CATEGORIES).map(cat => {
                 const meta = DAILY_RECO_CATEGORIES[cat];
                 const gameId = reco.picks[cat];
-                const info = getCardInfo(gameId);
-                const iconHtml = info.imgSrc
-                    ? `<img src="${info.imgSrc}" alt="${info.title}" style="width:100%;height:100%;object-fit:cover;">`
-                    : (info.iconText ? info.iconText : '🎮');
+                const previewHtml = getMenuCardPreviewHtml(gameId);
                 
                 return `
                     <div class="recommend-item" style="--cat-color:${meta.color}" onclick="startGame('${gameId}'); closeTodayRecommendations();">
-                        <div class="cat-pill">• ${meta.label}</div>
-                        <div class="rec-title">
-                            <span class="rec-icon">${iconHtml}</span>
-                            <span>${info.title}</span>
+                        <div class="recommend-preview">
+                            ${previewHtml || `<div class="recommend-fallback">${meta.label}</div>`}
                         </div>
-                        <p class="rec-desc">${info.desc || '추천 훈련을 시작해보세요!'}</p>
                     </div>
                 `;
             }).join('');
