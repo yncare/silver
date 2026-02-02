@@ -540,12 +540,12 @@
                     const m = onclick.match(/startGame\\(\\s*(['"])([^'"]+)\\1\\s*\\)/);
                     if (!m) continue;
                     if (m[2] !== gameId) continue;
-                    
-                    const clone = card.cloneNode(true);
-                    clone.classList.add('rec-menu-card');
-                    clone.classList.remove('is-recommended');
-                    clone.removeAttribute('onclick');
-                    return clone.outerHTML;
+
+                    // cloneNode/outerHTML 방식이 일부 환경에서 누락되는 케이스가 있어,
+                    // 원본 카드의 style + innerHTML을 그대로 재구성한다.
+                    const styleAttr = card.getAttribute('style');
+                    const styleHtml = styleAttr ? ` style="${styleAttr.replace(/"/g, '&quot;')}"` : '';
+                    return `<div class="menu-card rec-menu-card"${styleHtml}>${card.innerHTML}</div>`;
                 }
             } catch {
                 // ignore
