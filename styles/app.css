@@ -1025,17 +1025,20 @@
             line-height: 1.25;
         }
         .menu-category-header {
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
-            gap: 4px;
+            justify-content: center;
+            gap: 0;
             text-align: center;
         }
         .menu-category-subtitle {
-            font-size: calc(0.9rem * var(--font-scale));
-            font-weight: 600;
-            color: var(--text-light);
-            opacity: 0.9;
+            font-size: inherit; /* same as title */
+            font-weight: inherit; /* same weight as title */
+            color: inherit; /* same color as title */
+            opacity: 0.92;
             letter-spacing: -0.01em;
+            margin-left: 6px;
+            white-space: nowrap;
         }
         .cat-btn:hover {
             transform: translateY(-1px);
