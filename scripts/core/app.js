@@ -553,6 +553,18 @@
             return '';
         }
 
+        function buildFallbackMenuCardHtml(gameId, meta) {
+            const info = getCardInfo(gameId);
+            const safeTitle = (info && info.title) ? info.title : (meta && meta.label ? meta.label : gameId);
+            const img = (info && info.imgSrc) ? `<img src="${info.imgSrc}" alt="${safeTitle}" style="width:100%;height:100%;object-fit:cover;border-radius:20px;">` : '';
+            // 아이콘/영문 제거: 이미지가 없으면 제목만 크게 보여준다.
+            return `
+                <div class="menu-card rec-menu-card" style="border-color: rgba(0,0,0,0.08);">
+                    ${img || `<h3 style="margin:0;color:var(--cat-color);font-weight:900;">${safeTitle}</h3>`}
+                </div>
+            `;
+        }
+
         function applyRecommendationBadges(reco) {
             try {
                 document.querySelectorAll('#mainMenu .menu-card.is-recommended').forEach(el => el.classList.remove('is-recommended'));
@@ -584,7 +596,7 @@
                 return `
                     <div class="recommend-item" style="--cat-color:${meta.color}" onclick="startGame('${gameId}'); closeTodayRecommendations();">
                         <div class="recommend-preview">
-                            ${previewHtml || `<div class="recommend-fallback">${meta.label}</div>`}
+                            ${previewHtml || buildFallbackMenuCardHtml(gameId, meta)}
                         </div>
                     </div>
                 `;
