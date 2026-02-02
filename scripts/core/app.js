@@ -510,9 +510,9 @@
                 const cards = document.querySelectorAll('#mainMenu .menu-card');
                 for (const card of cards) {
                     const onclick = card.getAttribute('onclick') || '';
-                    const m = onclick.match(/startGame\\('([^']+)'\\)/);
+                    const m = onclick.match(/startGame\\(\\s*(['"])([^'"]+)\\1\\s*\\)/);
                     if (!m) continue;
-                    if (m[1] !== gameId) continue;
+                    if (m[2] !== gameId) continue;
                     
                     const h3 = card.querySelector('h3');
                     const p = card.querySelector('p');
@@ -537,9 +537,9 @@
                 const cards = document.querySelectorAll('#mainMenu .menu-card');
                 for (const card of cards) {
                     const onclick = card.getAttribute('onclick') || '';
-                    const m = onclick.match(/startGame\\('([^']+)'\\)/);
+                    const m = onclick.match(/startGame\\(\\s*(['"])([^'"]+)\\1\\s*\\)/);
                     if (!m) continue;
-                    if (m[1] !== gameId) continue;
+                    if (m[2] !== gameId) continue;
                     
                     const clone = card.cloneNode(true);
                     clone.classList.add('rec-menu-card');
@@ -560,8 +560,8 @@
                 const pickedIds = new Set(Object.values(picks));
                 document.querySelectorAll('#mainMenu .menu-card').forEach(card => {
                     const onclick = card.getAttribute('onclick') || '';
-                    const m = onclick.match(/startGame\\('([^']+)'\\)/);
-                    if (m && pickedIds.has(m[1])) card.classList.add('is-recommended');
+                    const m = onclick.match(/startGame\\(\\s*(['"])([^'"]+)\\1\\s*\\)/);
+                    if (m && pickedIds.has(m[2])) card.classList.add('is-recommended');
                 });
             } catch {
                 // ignore
