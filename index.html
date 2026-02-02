@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>굿실버 건강한 두뇌훈련</title>
-    <link rel="stylesheet" href="styles/app.css?v=1558f0a">
+    <link rel="stylesheet" href="styles/app.css?v=1558f12">
 </head>
 <body>
     <!-- 폭죽 효과 컨테이너 -->
@@ -293,17 +293,12 @@
                         ⭐ 오늘의 추천 훈련
                     </button>
                 </div>
-                <div class="category-subnav" id="categorySubNav">
-                    <span class="cat-subtag" style="--cat-color:#4CAF50">기억력 훈련 <span class="cat-subtag-text">(매일 기억력 쑥쑥)</span></span>
-                    <span class="cat-subtag" style="--cat-color:#2196F3">계산/언어 훈련 <span class="cat-subtag-text">(똑똑한 생활력 향상)</span></span>
-                    <span class="cat-subtag" style="--cat-color:#FF9800">집중/반응 훈련 <span class="cat-subtag-text">(초롱초롱 집중력 향상)</span></span>
-                    <span class="cat-subtag" style="--cat-color:#9C27B0">공간/지각 훈련 <span class="cat-subtag-text">(두뇌회전 논리력 향상)</span></span>
-                </div>
                 
                 <!-- 1) 기억력 훈련 -->
                 <section class="menu-category" id="cat-memory" data-cat="memory" style="--cat-color:#4CAF50">
                     <div class="menu-category-header">
                         <h3 class="menu-category-title">기억력 훈련</h3>
+                        <div class="menu-category-subtitle">(매일 기억력 쑥쑥)</div>
                     </div>
                     <div class="main-menu category-grid">
                         <div class="menu-card" onclick="startGame('match')" style="padding:0;overflow:hidden;">
@@ -339,6 +334,7 @@
                 <section class="menu-category" id="cat-calcLang" data-cat="calcLang" style="--cat-color:#2196F3">
                     <div class="menu-category-header">
                         <h3 class="menu-category-title">계산/언어 훈련</h3>
+                        <div class="menu-category-subtitle">(똑똑한 생활력 향상)</div>
                     </div>
                     <div class="main-menu category-grid">
                         <div class="menu-card" onclick="startGame('calc')">
@@ -378,6 +374,7 @@
                 <section class="menu-category" id="cat-focusReaction" data-cat="focusReaction" style="--cat-color:#FF9800">
                     <div class="menu-category-header">
                         <h3 class="menu-category-title">집중/반응 훈련</h3>
+                        <div class="menu-category-subtitle">(초롱초롱 집중력 향상)</div>
                     </div>
                     <div class="main-menu category-grid">
                         <div class="menu-card" onclick="startGame('reaction')">
@@ -417,6 +414,7 @@
                 <section class="menu-category" id="cat-spatial" data-cat="spatial" style="--cat-color:#9C27B0">
                     <div class="menu-category-header">
                         <h3 class="menu-category-title">공간/지각 훈련</h3>
+                        <div class="menu-category-subtitle">(두뇌회전 논리력 향상)</div>
                     </div>
                     <div class="main-menu category-grid">
                         <div class="menu-card" onclick="startGame('direction')">
