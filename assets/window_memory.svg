@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-label="창문 기억 아이콘">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0E3A7A"/>
+      <stop offset="0.55" stop-color="#0B2C5E"/>
+      <stop offset="1" stop-color="#071D3E"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="38%" r="65%">
+      <stop offset="0" stop-color="#FFF3B0" stop-opacity="0.95"/>
+      <stop offset="0.45" stop-color="#FFE37A" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#FFE37A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFF2A8"/>
+      <stop offset="0.45" stop-color="#FFD35A"/>
+      <stop offset="1" stop-color="#F4A62A"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+    <filter id="textShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#03122D" flood-opacity="0.85"/>
+    </filter>
+  </defs>
+
+  <!-- outer rounded card -->
+  <rect x="52" y="52" width="920" height="920" rx="92" fill="#FFFFFF" opacity="0.92"/>
+  <rect x="78" y="78" width="868" height="868" rx="78" fill="url(#bg)"/>
+  <rect x="78" y="78" width="868" height="868" rx="78" fill="url(#glow)"/>
+
+  <!-- sparkle dots -->
+  <g opacity="0.75">
+    <circle cx="196" cy="214" r="8" fill="#FFE37A"/>
+    <circle cx="860" cy="262" r="7" fill="#FFE37A"/>
+    <circle cx="170" cy="740" r="6" fill="#FFE37A"/>
+    <circle cx="874" cy="742" r="6" fill="#FFE37A"/>
+    <circle cx="260" cy="328" r="5" fill="#FFF2A8"/>
+    <circle cx="790" cy="356" r="5" fill="#FFF2A8"/>
+  </g>
+
+  <!-- left window -->
+  <g filter="url(#softShadow)">
+    <rect x="120" y="190" width="232" height="540" rx="24" fill="#2A1F12" opacity="0.95"/>
+    <rect x="140" y="210" width="192" height="500" rx="18" fill="#D9A33B"/>
+    <rect x="156" y="232" width="160" height="456" rx="14" fill="#74C7FF" opacity="0.95"/>
+    <path d="M156 350 C210 280, 300 280, 316 350 L316 232 L156 232 Z" fill="#BFE9FF" opacity="0.65"/>
+    <path d="M156 548 C210 498, 292 516, 316 566 L316 688 L156 688 Z" fill="#3EA6E3" opacity="0.25"/>
+    <rect x="156" y="454" width="160" height="8" fill="#E7C46B" opacity="0.8"/>
+    <rect x="232" y="232" width="8" height="456" fill="#E7C46B" opacity="0.8"/>
+  </g>
+
+  <!-- right window -->
+  <g filter="url(#softShadow)">
+    <rect x="672" y="190" width="232" height="540" rx="24" fill="#2A1F12" opacity="0.95"/>
+    <rect x="692" y="210" width="192" height="500" rx="18" fill="#D9A33B"/>
+    <rect x="708" y="232" width="160" height="456" rx="14" fill="#74C7FF" opacity="0.95"/>
+    <path d="M708 352 C760 292, 850 292, 868 352 L868 232 L708 232 Z" fill="#BFE9FF" opacity="0.65"/>
+    <path d="M708 546 C766 504, 846 520, 868 562 L868 688 L708 688 Z" fill="#3EA6E3" opacity="0.25"/>
+    <rect x="708" y="454" width="160" height="8" fill="#E7C46B" opacity="0.8"/>
+    <rect x="784" y="232" width="8" height="456" fill="#E7C46B" opacity="0.8"/>
+  </g>
+
+  <!-- center title text -->
+  <g filter="url(#textShadow)">
+    <text x="512" y="520"
+          text-anchor="middle"
+          font-size="190"
+          font-weight="900"
+          font-family="Pretendard, 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif"
+          fill="url(#gold)"
+          stroke="#061B44"
+          stroke-width="22"
+          paint-order="stroke fill">
+      창문
+    </text>
+    <text x="512" y="705"
+          text-anchor="middle"
+          font-size="190"
+          font-weight="900"
+          font-family="Pretendard, 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif"
+          fill="url(#gold)"
+          stroke="#061B44"
+          stroke-width="22"
+          paint-order="stroke fill">
+      기억
+    </text>
+  </g>
+</svg>
