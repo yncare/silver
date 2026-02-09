@@ -133,44 +133,65 @@
             // 사용자 목록 갱신
             renderExistingUsers();
         }
+
+        // 홈으로 이동: 팝업 없이 저장 후 로그인(첫 화면)으로 이동
+        function goHome() {
+            try {
+                // 데이터 저장
+                if (typeof saveUserData === 'function') saveUserData();
+
+                // 배지 획득 팝업 비활성화
+                window.__allowBadgeUnlockPopup = false;
+
+                // 첫 화면에서 사용자 리스트는 다시 숨김
+                try { hasOpenedUserList = false; } catch (e) { /* ignore */ }
+
+                // 화면 전환
+                const main = document.getElementById('mainContent');
+                const welcome = document.getElementById('welcomeScreen');
+                if (main) main.classList.add('hidden');
+                if (welcome) welcome.classList.remove('hidden');
+
+                // 헤더 숨김
+                const headerUserBadge = document.getElementById('headerUserBadge');
+                if (headerUserBadge) headerUserBadge.style.display = 'none';
+                const headerScore = document.getElementById('headerScore');
+                if (headerScore) headerScore.style.display = 'none';
+
+                // 신규 등록 폼 닫고 초기화
+                const form = document.getElementById('newUserForm');
+                if (form) form.classList.remove('active');
+                const section = document.getElementById('existingUsersSection');
+                if (section) section.style.display = 'block';
+
+                const enterBtn = document.getElementById('enterBtn');
+                if (enterBtn) enterBtn.style.display = 'none';
+
+                const nameEl = document.getElementById('userName');
+                if (nameEl) nameEl.value = '';
+                const ageEl = document.getElementById('userAge');
+                if (ageEl) ageEl.value = '';
+                document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('selected'));
+
+                const registerBtn = document.getElementById('registerBtn');
+                if (registerBtn) registerBtn.disabled = true;
+                try { applyDifficultyFromAge(null); } catch (e) { /* ignore */ }
+
+                // 로그인 상태 초기화
+                userProfile = { id: '', name: '', age: null, gender: null, difficulty: 'normal', userType: 'personal' };
+                selectedUserId = null;
+
+                // 사용자 목록 갱신
+                if (typeof renderExistingUsers === 'function') renderExistingUsers();
+            } catch (error) {
+                console.error('홈 이동 중 오류:', error);
+            }
+        }
         
         // 앱 종료 (데이터 저장 후 종료)
         function exitApp() {
-            // 데이터 저장
-            saveUserData();
-            
-            // 종료 확인
-            const confirmed = confirm(`${userProfile.name}님의 훈련 데이터가 저장되었습니다.\n\n오늘의 기록:\n• 점수: ${gameState.todayScore}점\n• 게임 횟수: ${gameState.gamesPlayed}회\n\n종료하시겠습니까?`);
-            
-            if (confirmed) {
-                // 화면 전환
-                document.getElementById('mainContent').classList.add('hidden');
-                document.getElementById('welcomeScreen').classList.remove('hidden');
-                
-                // 헤더 사용자 배지 및 점수 숨김
-                document.getElementById('headerUserBadge').style.display = 'none';
-                const headerScore = document.getElementById('headerScore');
-                if (headerScore) headerScore.style.display = 'none';
-                
-                // 폼 초기화
-                document.getElementById('userName').value = '';
-            document.getElementById('userAge').value = '';
-                document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('selected'));
-                document.getElementById('registerBtn').disabled = true;
-            applyDifficultyFromAge(null);
-                document.getElementById('newUserForm').classList.remove('active');
-                document.getElementById('existingUsersSection').style.display = 'block';
-                document.getElementById('enterBtn').style.display = 'none';
-                
-                userProfile = { id: '', name: '', age: null, gender: null, difficulty: 'normal' };
-                selectedUserId = null;
-                
-                // 사용자 목록 갱신
-                renderExistingUsers();
-                
-                // 저장 완료 메시지
-                showSaveCompleteMessage();
-            }
+            // 기존 "종료"는 홈 이동으로 대체 (팝업 없음)
+            goHome();
         }
         
         // 저장 완료 메시지 표시

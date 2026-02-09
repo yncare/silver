@@ -379,13 +379,14 @@
             transform: scale(1.05);
         }
         
-        .header-badge-btn.exit {
-            background: rgba(255,100,100,0.3);
-            border-color: rgba(255,150,150,0.5);
+        .header-badge-btn.home {
+            background: rgba(255,255,255,0.28);
+            border-color: rgba(255,255,255,0.65);
+            font-weight: 900;
         }
         
-        .header-badge-btn.exit:hover {
-            background: rgba(255,100,100,0.5);
+        .header-badge-btn.home:hover {
+            background: rgba(255,255,255,0.40);
         }
         
         /* 환영/로그인 화면(밝은 톤) */
