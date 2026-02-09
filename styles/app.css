@@ -393,8 +393,12 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             padding: 34px 22px;
             border-radius: 26px;
+            /* 헤더가 위에 고정되어 있으므로 남은 뷰포트 영역에서 로그인 카드가 가운데 오도록 높이 확보 */
+            min-height: calc(100vh - 170px);
+            min-height: calc(100svh - 170px);
             background:
                 radial-gradient(1200px 420px at 50% -20%, rgba(33,150,243,0.18), rgba(33,150,243,0) 65%),
                 radial-gradient(900px 380px at 10% 10%, rgba(76,175,80,0.14), rgba(76,175,80,0) 60%),
