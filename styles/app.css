@@ -438,9 +438,10 @@
             gap: 10px;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            padding: 6px 4px 10px;
-            margin: 0 auto 14px;
+            padding: 10px 6px 14px;
+            margin: 6px auto 12px;
             scroll-snap-type: x mandatory;
+            justify-content: center;
         }
         .account-type-strip::-webkit-scrollbar { height: 8px; }
         .account-type-strip::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 999px; }
@@ -450,33 +451,46 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 12px 14px;
+            padding: 16px 18px;
             border-radius: 999px;
             border: 2px solid rgba(0,0,0,0.10);
-            background: rgba(0,0,0,0.03);
+            background: rgba(255,255,255,0.92);
             cursor: pointer;
             font-weight: 900;
-            font-size: calc(1.05rem * var(--font-scale));
+            font-size: calc(1.18rem * var(--font-scale));
             color: var(--primary-dark);
             scroll-snap-align: start;
             transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
             font-family: inherit;
+            box-shadow: 0 10px 26px rgba(0,0,0,0.10);
         }
-        .account-type-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(0,0,0,0.10); }
+        .account-type-btn:hover { transform: translateY(-2px); box-shadow: 0 16px 32px rgba(0,0,0,0.14); }
         .account-type-btn.active {
             border-color: rgba(76, 175, 80, 0.55);
-            background: rgba(76, 175, 80, 0.14);
+            background: rgba(76, 175, 80, 0.16);
         }
         .account-type-icon {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 18px;
-            height: 18px;
+            width: 28px;
+            height: 28px;
             line-height: 1;
         }
         .account-type-icon svg { width: 100%; height: 100%; }
         .account-type-label { line-height: 1; white-space: nowrap; }
+
+        /* 첫 화면: 사용자 리스트는 기본 숨김 */
+        .user-select-section.is-hidden {
+            display: none;
+        }
+
+        /* 신규 등록(상단) 버튼은 더 눈에 띄게 */
+        #newUserTogglePrimary {
+            margin: 6px auto 16px;
+            box-shadow: 0 14px 34px rgba(76, 175, 80, 0.18);
+            background: rgba(255,255,255,0.95);
+        }
 
         .welcome-icon img { 
             width: 150px; 

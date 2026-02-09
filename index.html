@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>굿실버 건강한 두뇌훈련</title>
-    <link rel="stylesheet" href="styles/app.css?v=1558f46">
+    <link rel="stylesheet" href="styles/app.css?v=1558f47">
     <script>
         // 캐시(특히 index.html)로 인해 최신 스크립트/스타일이 반영되지 않는 문제 방지용
         (function () {
@@ -236,8 +236,19 @@
                     </button>
                 </div>
                 
-                <!-- 기존 사용자 선택 -->
-                <div class="user-select-section" id="existingUsersSection">
+                <!-- 신규 등록(리스트 숨김 상태에서도 접근 가능) -->
+                <div class="new-user-toggle" id="newUserTogglePrimary" onclick="toggleNewUserForm()">
+                    <span class="ui-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 5v14"></path>
+                            <path d="M5 12h14"></path>
+                        </svg>
+                    </span>
+                    신규 등록
+                </div>
+
+                <!-- 기존 사용자 선택 (처음엔 숨김, 개인/기관 클릭 시 표시) -->
+                <div class="user-select-section is-hidden" id="existingUsersSection">
                     <h3>
                         <span class="ui-icon" aria-hidden="true">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -251,15 +262,6 @@
                     </h3>
                     <div class="existing-users" id="existingUsersList">
                         <!-- 사용자 목록이 여기에 표시됨 -->
-                    </div>
-                    <div class="new-user-toggle" onclick="toggleNewUserForm()">
-                        <span class="ui-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 5v14"></path>
-                                <path d="M5 12h14"></path>
-                            </svg>
-                        </span>
-                        신규 등록
                     </div>
                 </div>
                 
@@ -1488,7 +1490,7 @@
     
         <script defer src="scripts/core/accessibility.js"></script>
     <script defer src="scripts/core/tts.js"></script>
-    <script defer src="scripts/core/profile.js?v=1558f46"></script>
+    <script defer src="scripts/core/profile.js?v=1558f47"></script>
     <script defer src="scripts/core/difficulty.js"></script>
     <script defer src="scripts/core/levels.js"></script>
     <script defer src="scripts/core/utils.js"></script>

@@ -4,9 +4,12 @@
 
         // 개인/기관 탭 상태
         let selectedAccountType = localStorage.getItem('selectedAccountType') || 'personal';
+        // 첫 로그인 화면에서는 사용자 리스트를 기본 숨김 → 탭(개인/기관) 클릭 시에만 펼침
+        let hasOpenedUserList = false;
         function setAccountType(type) {
             selectedAccountType = (type === 'institution') ? 'institution' : 'personal';
             localStorage.setItem('selectedAccountType', selectedAccountType);
+            hasOpenedUserList = true;
 
             // 탭 UI 업데이트
             try {
@@ -22,7 +25,20 @@
             selectedUserId = null;
             const enterBtn = document.getElementById('enterBtn');
             if (enterBtn) enterBtn.style.display = 'none';
+
+            // 리스트 섹션 표시(처음 클릭 시)
+            try {
+                const section = document.getElementById('existingUsersSection');
+                if (section) section.classList.remove('is-hidden');
+            } catch (e) { /* ignore */ }
+
             renderExistingUsers();
+
+            // 리스트가 보이도록 스크롤
+            try {
+                const section = document.getElementById('existingUsersSection');
+                if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } catch (e) { /* ignore */ }
         }
         
         // 전체 사용자 목록 (localStorage에서 로드)
@@ -198,12 +214,16 @@
                 container.innerHTML = '<div class="no-data" style="padding:20px;">등록된 사용자가 없습니다.</div>';
                 document.getElementById('existingUsersSection').querySelector('h3').style.display = 'none';
                 document.getElementById('newUserForm').classList.add('active');
-                document.getElementById('existingUsersSection').querySelector('.new-user-toggle').style.display = 'none';
+                // 첫 화면에서는 리스트 섹션 자체를 숨김(신규 등록 폼으로 유도)
+                try {
+                    const section = document.getElementById('existingUsersSection');
+                    if (section) section.classList.add('is-hidden');
+                } catch (e) { /* ignore */ }
                 return;
             }
             
             document.getElementById('existingUsersSection').querySelector('h3').style.display = 'block';
-            document.getElementById('existingUsersSection').querySelector('.new-user-toggle').style.display = 'flex';
+            // 신규 등록 버튼은 상단에 별도로 노출됨(섹션 내부 토글 제거됨)
             
             // 최근 활동순으로 정렬
             const sortedUsers = userIds.map(id => ({
@@ -220,6 +240,18 @@
                     });
                 }
             } catch (e) { /* ignore */ }
+
+            // 첫 화면에서는 리스트 숨김 (탭 클릭 이후에만 표시)
+            try {
+                const section = document.getElementById('existingUsersSection');
+                if (section) {
+                    section.classList.toggle('is-hidden', !hasOpenedUserList);
+                }
+            } catch (e) { /* ignore */ }
+            if (!hasOpenedUserList) {
+                // 리스트는 펼치지 않되, 등록 폼 등 다른 UI는 정상 동작해야 함
+                return;
+            }
 
             // 개인/기관 필터
             const filteredUsers = sortedUsers.filter(u => {
