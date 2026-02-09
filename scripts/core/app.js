@@ -187,6 +187,39 @@
                 console.error('홈 이동 중 오류:', error);
             }
         }
+
+        // 헤더 로고/타이틀 클릭 시 메인 화면(메인 메뉴)으로 이동
+        function goMainMenuFromHeader() {
+            try {
+                const mainContent = document.getElementById('mainContent');
+                if (!mainContent || mainContent.classList.contains('hidden')) {
+                    // 로그인 상태가 아니면(첫 화면) 아무 것도 하지 않음
+                    return;
+                }
+
+                // 게임 화면이 열려있으면 뒤로가기 로직으로 메인 복귀
+                const activeGame = document.querySelector('.game-screen.active');
+                if (activeGame && typeof goBack === 'function') {
+                    goBack();
+                    return;
+                }
+
+                // 메인 메뉴가 숨겨져 있으면 다시 표시
+                const mainMenu = document.getElementById('mainMenu');
+                if (mainMenu) mainMenu.style.display = '';
+
+                // 현재 선택 카테고리로 레이아웃 동기화
+                if (typeof filterMenuCategory === 'function') {
+                    const cat = window.selectedMenuCategory || 'all';
+                    filterMenuCategory(cat, { scroll: false });
+                }
+
+                // 화면 상단으로 이동
+                try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); }
+            } catch (error) {
+                console.error('헤더 메인 이동 중 오류:', error);
+            }
+        }
         
         // 앱 종료 (데이터 저장 후 종료)
         function exitApp() {

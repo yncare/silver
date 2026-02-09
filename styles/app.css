@@ -336,6 +336,18 @@
             align-items: flex-start;
             flex-shrink: 0;
         }
+
+        /* 헤더 타이틀/로고 클릭으로 메인 이동 */
+        .header-home-link {
+            cursor: pointer;
+            user-select: none;
+        }
+        .header-home-link:hover {
+            filter: brightness(1.05);
+        }
+        .header-home-link:active {
+            transform: translateY(1px);
+        }
         
         header h1 { font-size: calc(1.6rem * var(--font-scale)); font-weight: 900; margin-bottom: 3px; display: flex; align-items: center; gap: 8px; }
         header p { font-size: calc(0.85rem * var(--font-scale)); opacity: 0.95; margin: 0; }
