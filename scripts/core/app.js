@@ -80,8 +80,9 @@
             badge.textContent = settings.name + ' ▼';
             badge.className = 'difficulty-badge clickable ' + settings.badgeClass;
             
-            // 헤더 사용자 배지 및 점수 표시
-            document.getElementById('headerUserBadge').style.display = 'flex';
+            // 첫 로그인 화면 → 메인 진입 시에는 헤더 배지(중앙 메뉴)를 숨김
+            // (훈련을 실제로 시작할 때 startGame()에서 표시)
+            document.getElementById('headerUserBadge').style.display = 'none';
             const headerScore = document.getElementById('headerScore');
             if (headerScore) headerScore.style.display = 'flex';
             
@@ -294,6 +295,10 @@
         
         function startGame(game) {
             try {
+                // 훈련 시작 시점부터 헤더 배지(중앙 메뉴) 표시
+                const headerUserBadge = document.getElementById('headerUserBadge');
+                if (headerUserBadge) headerUserBadge.style.display = 'flex';
+
                 // 시작한 카테고리를 기록해두었다가 돌아가기 시 복귀 (기본: 전체보기)
                 try {
                     const cat = window.selectedMenuCategory || 'all';
