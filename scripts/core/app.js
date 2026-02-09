@@ -82,7 +82,8 @@
             
             // 헤더 사용자 배지 및 점수 표시
             document.getElementById('headerUserBadge').style.display = 'flex';
-            document.getElementById('headerScore').style.display = 'flex';
+            const headerScore = document.getElementById('headerScore');
+            if (headerScore) headerScore.style.display = 'flex';
             
             // 마지막 사용자 ID 저장
             localStorage.setItem('lastUserId', userProfile.id);
@@ -110,7 +111,8 @@
             
             // 헤더 사용자 배지 및 점수 숨김
             document.getElementById('headerUserBadge').style.display = 'none';
-            document.getElementById('headerScore').style.display = 'none';
+            const headerScore = document.getElementById('headerScore');
+            if (headerScore) headerScore.style.display = 'none';
             
             // 폼 초기화
             document.getElementById('userName').value = '';
@@ -144,7 +146,8 @@
                 
                 // 헤더 사용자 배지 및 점수 숨김
                 document.getElementById('headerUserBadge').style.display = 'none';
-                document.getElementById('headerScore').style.display = 'none';
+                const headerScore = document.getElementById('headerScore');
+                if (headerScore) headerScore.style.display = 'none';
                 
                 // 폼 초기화
                 document.getElementById('userName').value = '';
@@ -209,13 +212,23 @@
         }
         
         function updateUI() {
-            document.getElementById('todayScore').textContent = gameState.todayScore;
-            document.getElementById('highScore').textContent = gameState.highScore;
-            document.getElementById('gamesPlayed').textContent = gameState.gamesPlayed;
-            document.getElementById('correctAnswers').textContent = gameState.correctAnswers;
+            const todayScoreEl = document.getElementById('todayScore');
+            if (todayScoreEl) todayScoreEl.textContent = gameState.todayScore;
+
+            const highScoreEl = document.getElementById('highScore');
+            if (highScoreEl) highScoreEl.textContent = gameState.highScore;
+
+            const gamesPlayedEl = document.getElementById('gamesPlayed');
+            if (gamesPlayedEl) gamesPlayedEl.textContent = gameState.gamesPlayed;
+
+            const correctAnswersEl = document.getElementById('correctAnswers');
+            if (correctAnswersEl) correctAnswersEl.textContent = gameState.correctAnswers;
             const acc = gameState.totalAnswers > 0 ? Math.round((gameState.correctAnswers / gameState.totalAnswers) * 100) : 0;
-            document.getElementById('accuracy').textContent = acc + '%';
-            document.getElementById('trainTime').textContent = gameState.trainTime + '분';
+            const accuracyEl = document.getElementById('accuracy');
+            if (accuracyEl) accuracyEl.textContent = acc + '%';
+
+            const trainTimeEl = document.getElementById('trainTime');
+            if (trainTimeEl) trainTimeEl.textContent = gameState.trainTime + '분';
         }
 
         // 새 게임 전용 점수 반영 (게임 완료 화면 없이 처리)
