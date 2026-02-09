@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>굿실버 건강한 두뇌훈련</title>
-    <link rel="stylesheet" href="styles/app.css?v=1558f42">
+    <link rel="stylesheet" href="styles/app.css?v=1558f45">
     <script>
         // 캐시(특히 index.html)로 인해 최신 스크립트/스타일이 반영되지 않는 문제 방지용
         (function () {
@@ -210,8 +210,19 @@
         <div id="welcomeScreen" class="welcome-screen">
             <div class="welcome-card">
                 <div class="welcome-icon">🎉👏🎊</div>
-                <h2>환영합니다!</h2>
                 <p class="subtitle">사용자를 선택하거나 새로 등록하세요</p>
+
+                <!-- 개인/기관 선택 (가로 스크롤) -->
+                <div class="account-type-strip" id="accountTypeStrip" aria-label="가입자 유형 선택">
+                    <button class="account-type-btn active" data-type="personal" onclick="setAccountType('personal')">
+                        <span class="account-type-icon">👤</span>
+                        <span class="account-type-label">개인</span>
+                    </button>
+                    <button class="account-type-btn" data-type="institution" onclick="setAccountType('institution')">
+                        <span class="account-type-icon">🏢</span>
+                        <span class="account-type-label">기관</span>
+                    </button>
+                </div>
                 
                 <!-- 기존 사용자 선택 -->
                 <div class="user-select-section" id="existingUsersSection">
@@ -220,13 +231,13 @@
                         <!-- 사용자 목록이 여기에 표시됨 -->
                     </div>
                     <div class="new-user-toggle" onclick="toggleNewUserForm()">
-                        ➕ 새 사용자 등록
+                        ➕ 신규 등록
                     </div>
                 </div>
                 
                 <!-- 새 사용자 등록 폼 -->
                 <div class="new-user-form" id="newUserForm">
-                    <h3>✨ 새 사용자 등록</h3>
+                    <h3>✨ 신규 등록</h3>
                     
                     <div class="form-group">
                         <label>✏️ 이름</label>
@@ -1401,7 +1412,7 @@
     
         <script defer src="scripts/core/accessibility.js"></script>
     <script defer src="scripts/core/tts.js"></script>
-    <script defer src="scripts/core/profile.js?v=1558f44"></script>
+    <script defer src="scripts/core/profile.js?v=1558f45"></script>
     <script defer src="scripts/core/difficulty.js"></script>
     <script defer src="scripts/core/levels.js"></script>
     <script defer src="scripts/core/utils.js"></script>

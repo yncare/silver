@@ -402,8 +402,46 @@
         }
         
         .welcome-card h2 { font-size: calc(1.8rem * var(--font-scale)); color: var(--primary-dark); margin-bottom: 10px; }
-        .welcome-card .subtitle { font-size: calc(1.1rem * var(--font-scale)); color: var(--text-light); margin-bottom: 30px; }
+        .welcome-card .subtitle { font-size: calc(1.1rem * var(--font-scale)); color: var(--text-light); margin-bottom: 16px; }
         .welcome-icon { font-size: 4rem; margin-bottom: 15px; }
+        /* 개인/기관 선택 탭(가로 스크롤) */
+        .account-type-strip {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 6px 4px 10px;
+            margin: 0 auto 14px;
+            scroll-snap-type: x mandatory;
+        }
+        .account-type-strip::-webkit-scrollbar { height: 8px; }
+        .account-type-strip::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 999px; }
+
+        .account-type-btn {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 14px;
+            border-radius: 999px;
+            border: 2px solid rgba(0,0,0,0.10);
+            background: rgba(0,0,0,0.03);
+            cursor: pointer;
+            font-weight: 900;
+            font-size: calc(1.05rem * var(--font-scale));
+            color: var(--primary-dark);
+            scroll-snap-align: start;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+            font-family: inherit;
+        }
+        .account-type-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(0,0,0,0.10); }
+        .account-type-btn.active {
+            border-color: rgba(76, 175, 80, 0.55);
+            background: rgba(76, 175, 80, 0.14);
+        }
+        .account-type-icon { font-size: 1.35em; line-height: 1; }
+        .account-type-label { line-height: 1; white-space: nowrap; }
+
         .welcome-icon img { 
             width: 150px; 
             height: 150px; 

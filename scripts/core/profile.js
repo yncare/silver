@@ -1,6 +1,29 @@
 ﻿// ==================== 사용자 프로필 ====================
-        let userProfile = { id: '', name: '', age: null, gender: null, difficulty: 'normal' };
+        let userProfile = { id: '', name: '', age: null, gender: null, difficulty: 'normal', userType: 'personal' };
         let selectedUserId = null;
+
+        // 개인/기관 탭 상태
+        let selectedAccountType = localStorage.getItem('selectedAccountType') || 'personal';
+        function setAccountType(type) {
+            selectedAccountType = (type === 'institution') ? 'institution' : 'personal';
+            localStorage.setItem('selectedAccountType', selectedAccountType);
+
+            // 탭 UI 업데이트
+            try {
+                const strip = document.getElementById('accountTypeStrip');
+                if (strip) {
+                    strip.querySelectorAll('.account-type-btn').forEach(btn => {
+                        btn.classList.toggle('active', btn.getAttribute('data-type') === selectedAccountType);
+                    });
+                }
+            } catch (e) { /* ignore */ }
+
+            // 선택 초기화 후 목록 재렌더
+            selectedUserId = null;
+            const enterBtn = document.getElementById('enterBtn');
+            if (enterBtn) enterBtn.style.display = 'none';
+            renderExistingUsers();
+        }
         
         // 전체 사용자 목록 (localStorage에서 로드)
         let allUsers = JSON.parse(localStorage.getItem('allUsers')) || {};
@@ -11,7 +34,8 @@
         
         // 사용자 ID 생성
         function generateUserId(name, gender) {
-            return `${name}_${gender}`;
+            const t = selectedAccountType || 'personal';
+            return `${t}_${name}_${gender}`;
         }
         
         // 사용자 데이터 로드
@@ -40,6 +64,11 @@
                     }
                     if (!user.profile.difficulty) {
                         user.profile.difficulty = 'normal';
+                        updated = true;
+                    }
+                    // 개인/기관 타입 (기존 사용자는 개인으로 기본값)
+                    if (!user.profile.userType) {
+                        user.profile.userType = 'personal';
                         updated = true;
                     }
                 }
@@ -181,8 +210,30 @@
                 id,
                 ...allUsers[id]
             })).sort((a, b) => new Date(b.lastActive || 0) - new Date(a.lastActive || 0));
+
+            // 탭 UI active 상태 동기화(초기 렌더 포함)
+            try {
+                const strip = document.getElementById('accountTypeStrip');
+                if (strip) {
+                    strip.querySelectorAll('.account-type-btn').forEach(btn => {
+                        btn.classList.toggle('active', btn.getAttribute('data-type') === selectedAccountType);
+                    });
+                }
+            } catch (e) { /* ignore */ }
+
+            // 개인/기관 필터
+            const filteredUsers = sortedUsers.filter(u => {
+                const t = (u.profile && u.profile.userType) ? u.profile.userType : 'personal';
+                return t === selectedAccountType;
+            });
+
+            if (filteredUsers.length === 0) {
+                container.innerHTML = `<div class="no-data" style="padding:20px;">등록된 사용자가 없습니다.</div>`;
+                document.getElementById('enterBtn').style.display = 'none';
+                return;
+            }
             
-            container.innerHTML = sortedUsers.map(user => {
+            container.innerHTML = filteredUsers.map(user => {
                 const profile = user.profile;
                 const totalScore = (user.trainingHistory || []).reduce((sum, r) => sum + (r.totalScore || 0), 0);
                 const totalGames = (user.trainingHistory || []).reduce((sum, r) => sum + (r.gamesPlayed || 0), 0);
@@ -287,7 +338,8 @@
                 name: name,
                 age: age,
                 gender: userProfile.gender,
-                difficulty: selectedDiff
+                difficulty: selectedDiff,
+                userType: selectedAccountType || 'personal'
             };
             
             // 새 사용자 데이터 초기화
