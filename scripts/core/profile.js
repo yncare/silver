@@ -233,17 +233,36 @@
                 return;
             }
             
+            const genderIconSvg = (gender) => {
+                const g = (gender === 'male') ? 'male' : 'female';
+                if (g === 'male') {
+                    return `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M14 3h7v7"></path>
+                            <path d="M21 3l-7 7"></path>
+                            <circle cx="10" cy="14" r="6"></circle>
+                        </svg>
+                    `;
+                }
+                return `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="9" r="6"></circle>
+                        <path d="M12 15v7"></path>
+                        <path d="M9 19h6"></path>
+                    </svg>
+                `;
+            };
+
             container.innerHTML = filteredUsers.map(user => {
                 const profile = user.profile;
                 const totalScore = (user.trainingHistory || []).reduce((sum, r) => sum + (r.totalScore || 0), 0);
                 const totalGames = (user.trainingHistory || []).reduce((sum, r) => sum + (r.gamesPlayed || 0), 0);
-                const genderIcon = profile.gender === 'male' ? '👨' : '👩';
                 const isSelected = selectedUserId === user.id;
                 
                 return `
                     <div class="user-card ${isSelected ? 'selected' : ''}" onclick="selectUser('${user.id}')">
                         <div class="user-card-info">
-                            <span class="user-card-icon">${genderIcon}</span>
+                            <span class="user-card-icon">${genderIconSvg(profile.gender)}</span>
                             <div class="user-card-details">
                                 <div class="user-card-name">${profile.name}</div>
                                 <div class="user-card-meta">${getDifficultyName(profile.difficulty)}</div>
