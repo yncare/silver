@@ -423,13 +423,18 @@
             
             if (newBadges.length > 0) {
                 saveBadgeData();
-                // 새 배지 알림 표시 (순차적으로)
-                showBadgeUnlocks(newBadges, 0);
+                // 새 배지 알림(팝업)은 "게임 플레이 중"에만 표시
+                const allowPopup = (typeof window !== 'undefined') && (window.__allowBadgeUnlockPopup === true);
+                if (allowPopup) {
+                    showBadgeUnlocks(newBadges, 0);
+                }
             }
         }
         
         // 새 배지 알림 표시
         function showBadgeUnlocks(badges, index) {
+            const allowPopup = (typeof window !== 'undefined') && (window.__allowBadgeUnlockPopup === true);
+            if (!allowPopup) return;
             if (index >= badges.length) return;
             
             const badge = badges[index];

@@ -80,9 +80,11 @@
             badge.textContent = settings.name + ' ▼';
             badge.className = 'difficulty-badge clickable ' + settings.badgeClass;
             
-            // 첫 로그인 화면 → 메인 진입 시에는 헤더 배지(중앙 메뉴)를 숨김
-            // (훈련을 실제로 시작할 때 startGame()에서 표시)
-            document.getElementById('headerUserBadge').style.display = 'none';
+            // 헤더 배지는 메인에서도 원래처럼 표시하되,
+            // 배지 "획득 팝업(오버레이)"은 게임 플레이 중에만 뜨도록 차단 플래그를 둔다.
+            document.getElementById('headerUserBadge').style.display = 'flex';
+            window.__allowBadgeUnlockPopup = false;
+
             const headerScore = document.getElementById('headerScore');
             if (headerScore) headerScore.style.display = 'flex';
             
@@ -299,6 +301,9 @@
                 const headerUserBadge = document.getElementById('headerUserBadge');
                 if (headerUserBadge) headerUserBadge.style.display = 'flex';
 
+                // 배지 획득 팝업은 게임 플레이 중에만 허용
+                window.__allowBadgeUnlockPopup = true;
+
                 // 시작한 카테고리를 기록해두었다가 돌아가기 시 복귀 (기본: 전체보기)
                 try {
                     const cat = window.selectedMenuCategory || 'all';
@@ -405,6 +410,9 @@
                 clearAllTimers();
                 if (typeof saveUserData === 'function') saveUserData(); // 사용자 데이터 저장
                 if (typeof updateUI === 'function') updateUI();
+
+                // 메인으로 돌아왔을 때는 배지 획득 팝업 비활성화
+                window.__allowBadgeUnlockPopup = false;
 
                 // 뒤로가기 후에도 "전체보기" 상태로 복귀
                 if (typeof filterMenuCategory === 'function') {
