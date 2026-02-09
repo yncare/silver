@@ -312,13 +312,18 @@
         .container { max-width: 1350px; margin: 0 auto; padding: 20px; }
         
         header {
-            height: 120px;
-            padding: 15px 25px;
+            /* 하부 .container(1350px, padding 20px)와 헤더 가로폭을 동일하게 맞춤 */
+            width: 100%;
+            max-width: 1350px;
+            margin: 0 auto 25px;
+            box-sizing: border-box;
+            min-height: 120px;
+            height: auto;
+            padding: 15px 20px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             color: white;
             border-radius: 0 0 40px 40px;
             box-shadow: var(--shadow);
-            margin-bottom: 25px;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
