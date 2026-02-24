@@ -145,6 +145,7 @@
             if (correct) {
                 wordScore += 10;
                 gameState.correctAnswers++;
+                checkLevelUp(true, 'word');
                 document.getElementById('wordScore').textContent = wordScore;
                 document.getElementById('wordDisplay').textContent = currentWord.split('').join(' ');
                 res.textContent = '🎉 정답! +10점';
@@ -152,6 +153,7 @@
                 playCorrectSound();
                 miniConfetti();
             } else {
+                checkLevelUp(false, 'word');
                 res.textContent = timeout ? `⏰ 시간 초과! 정답: ${currentWord}` : `❌ 틀렸습니다! 정답: ${currentWord}`;
                 res.className = 'result-message error';
                 playWrongSound();
@@ -251,8 +253,22 @@
             gameState.totalAnswers++;
             document.querySelectorAll('.count-btn').forEach(b => b.style.pointerEvents = 'none');
             
-            if (correct) { countScore += 10; gameState.correctAnswers++; document.getElementById('countScore').textContent = countScore; res.textContent = '🎉 정답! +10점'; res.className = 'result-message success'; playCorrectSound(); miniConfetti(); }
-            else { res.textContent = timeout ? `⏰ 시간 초과! 정답: ${countAnswer}` : `❌ 틀렸습니다! 정답: ${countAnswer}`; res.className = 'result-message error'; playWrongSound(); }
+            if (correct) {
+                countScore += 10;
+                gameState.correctAnswers++;
+                checkLevelUp(true, 'counting');
+                document.getElementById('countScore').textContent = countScore;
+                res.textContent = '🎉 정답! +10점';
+                res.className = 'result-message success';
+                playCorrectSound();
+                miniConfetti();
+            }
+            else {
+                checkLevelUp(false, 'counting');
+                res.textContent = timeout ? `⏰ 시간 초과! 정답: ${countAnswer}` : `❌ 틀렸습니다! 정답: ${countAnswer}`;
+                res.className = 'result-message error';
+                playWrongSound();
+            }
             res.style.display = 'block';
             setTimeout(nextCount, 1200);
         }
@@ -338,6 +354,7 @@
                     pairMatches++;
                     pairScore += 15;
                     gameState.correctAnswers++;
+                    checkLevelUp(true, 'pairing');
                     document.getElementById('pairMatches').textContent = pairMatches;
                     document.getElementById('pairScore').textContent = pairScore;
                     playCorrectSound();
@@ -351,6 +368,7 @@
                         setTimeout(() => endGame('pairing', pairScore), 1500);
                     }
                 } else {
+                    checkLevelUp(false, 'pairing');
                     pairSelected.classList.add('wrong');
                     el.classList.add('wrong');
                     setTimeout(() => {
@@ -426,12 +444,14 @@
                 const pts = Math.round((1 - diff / s.tolerance) * 20) + 10;
                 timingScore += pts;
                 gameState.correctAnswers++;
+                checkLevelUp(true, 'timing');
                 document.getElementById('timingScore').textContent = timingScore;
                 res.textContent = `🎉 훌륭해요! 오차 ${diff.toFixed(2)}초, +${pts}점`;
                 res.className = 'result-message success';
                 playCorrectSound();
                 miniConfetti();
             } else {
+                checkLevelUp(false, 'timing');
                 res.textContent = `아쉬워요! 오차 ${diff.toFixed(2)}초`;
                 res.className = 'result-message error';
                 playWrongSound();
@@ -546,10 +566,12 @@
             if (correct) { 
                 reverseScore += 10; gameState.correctAnswers++; 
                 reverseConsec++; if (reverseConsec > reverseMaxConsec) reverseMaxConsec = reverseConsec;
+                checkLevelUp(true, 'reverse');
                 document.getElementById('reverseScore').textContent = reverseScore; 
                 res.textContent = '🎉 정답! +10점'; res.className = 'result-message success'; playCorrectSound(); miniConfetti(); 
             } else { 
                 reverseConsec = 0;
+                checkLevelUp(false, 'reverse');
                 res.textContent = timeout ? `⏰ 시간 초과! 정답: ${reverseAnswer}` : `❌ 틀렸습니다! 정답: ${reverseAnswer}`; 
                 res.className = 'result-message error'; playWrongSound(); 
             }
@@ -683,6 +705,7 @@
                 gameState.correctAnswers++;
                 categoryConsec++;
                 if (categoryConsec > categoryMaxConsec) categoryMaxConsec = categoryConsec;
+                checkLevelUp(true, 'category');
                 document.getElementById('categoryScore').textContent = categoryScore;
                 res.textContent = '🎉 정답! +10점';
                 res.className = 'result-message success';
@@ -690,6 +713,7 @@
                 miniConfetti();
             } else {
                 categoryConsec = 0;
+                checkLevelUp(false, 'category');
                 const missedItems = correctItems.filter(item => !selectedItems.includes(item));
                 res.textContent = timeout ? `⏰ 시간 초과! 정답: ${correctItems.join(', ')}` : `❌ 틀렸습니다! 정답: ${correctItems.join(', ')}`;
                 res.className = 'result-message error';
@@ -884,6 +908,7 @@
                 gameState.correctAnswers++;
                 storyConsec++;
                 if (storyConsec > storyMaxConsec) storyMaxConsec = storyConsec;
+                checkLevelUp(true, 'story');
                 document.getElementById('storyScore').textContent = storyScore;
                 res.textContent = '🎉 정답! +10점';
                 res.className = 'result-message success';
@@ -891,6 +916,7 @@
                 miniConfetti();
             } else {
                 storyConsec = 0;
+                checkLevelUp(false, 'story');
                 res.textContent = timeout ? '⏰ 시간 초과!' : '❌ 순서가 틀렸습니다!';
                 res.className = 'result-message error';
                 playWrongSound();

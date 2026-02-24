@@ -351,6 +351,10 @@
         
         function startGame(game) {
             try {
+                // 레벨업 후 자동 진행 타이머가 남아있으면 정리
+                if (typeof clearAutoAdvanceAfterLevelUpTimer === 'function') {
+                    clearAutoAdvanceAfterLevelUpTimer();
+                }
                 // 훈련 시작 시점부터 헤더 배지(중앙 메뉴) 표시
                 const headerUserBadge = document.getElementById('headerUserBadge');
                 if (headerUserBadge) headerUserBadge.style.display = 'flex';
@@ -439,6 +443,10 @@
         
         function goBack() {
             try {
+                // 레벨업 후 자동 진행 타이머가 남아있으면 정리
+                if (typeof clearAutoAdvanceAfterLevelUpTimer === 'function') {
+                    clearAutoAdvanceAfterLevelUpTimer();
+                }
                 if (gameState.startTime) {
                     gameState.trainTime += Math.round((Date.now() - gameState.startTime) / 60000);
                 }
@@ -737,9 +745,19 @@
         
         // 게임별 추가 데이터 저장용
         let currentGameData = {};
+
+        // 레벨업 후 자동 다음 단계(재시작) 타이머
+        let autoAdvanceAfterLevelUpTimer = null;
+        function clearAutoAdvanceAfterLevelUpTimer() {
+            if (autoAdvanceAfterLevelUpTimer) {
+                clearTimeout(autoAdvanceAfterLevelUpTimer);
+                autoAdvanceAfterLevelUpTimer = null;
+            }
+        }
         
         function endGame(game, score) {
             try {
+                clearAutoAdvanceAfterLevelUpTimer();
                 clearAllTimers();
                 gameState.gamesPlayed++;
                 gameState.todayScore += score;
@@ -824,6 +842,20 @@
                 
                 // 능력 리포트 생성
                 generateAbilityReport(game, score, accuracy);
+
+                // 레벨업이 발생한 경우: 팝업 없이 자동으로 다음 단계(같은 게임 재시작)로 진행
+                if (leveledUp) {
+                    autoAdvanceAfterLevelUpTimer = setTimeout(() => {
+                        try {
+                            const gc = document.getElementById('gameComplete');
+                            // 사용자가 이미 메뉴로 나간 경우에는 자동 진행하지 않음
+                            if (!gc || !gc.classList.contains('active')) return;
+                            playAgain(game);
+                        } catch (e) {
+                            console.error('레벨업 후 자동 진행 중 오류:', e);
+                        }
+                    }, 1900); // 레벨업 오버레이(약 1.8s) 표시 이후 진행
+                }
             } catch (error) {
                 console.error('게임 종료 처리 중 오류:', error);
             }

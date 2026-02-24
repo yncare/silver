@@ -144,6 +144,7 @@
                     matchConsecutive++;
                     if (matchConsecutive > matchMaxConsecutive) matchMaxConsecutive = matchConsecutive;
                     gameState.correctAnswers++;
+                    checkLevelUp(true, 'match');
                     setTextByIds(['matchMatches', 'matchMatches2'], matchPairs);
                     
                     const pts = 10 + matchLevel * 2;
@@ -178,6 +179,7 @@
                 } else {
                     // 매칭 실패
                     matchConsecutive = 0;
+                    checkLevelUp(false, 'match');
                     playWrongSound();
                     
                     setTimeout(() => {
@@ -790,6 +792,7 @@
                 box.className = 'reaction-box early';
                 document.getElementById('reactionText').textContent = '너무 빨랐어요!';
                 reactionState = 'idle';
+                checkLevelUp(false, 'reaction');
                 res.textContent = '⚠️ 초록색이 될 때까지 기다리세요!';
                 res.className = 'result-message error';
                 res.style.display = 'block';
@@ -798,6 +801,7 @@
                 const time = Date.now() - reactionStart;
                 reactionTimes.push(time);
                 reactionState = 'idle';
+                checkLevelUp(true, 'reaction');
                 
                 const avg = Math.round(reactionTimes.reduce((a, b) => a + b, 0) / reactionTimes.length);
                 document.getElementById('reactionAvg').textContent = avg;
