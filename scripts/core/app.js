@@ -558,6 +558,35 @@
             }
         };
 
+        /** 메인 메뉴와 동일 — 추천 모달/DOM 조회 폴백용 */
+        const MAIN_MENU_GAME_ICON_SRC = {
+            match: 'assets/card_match.png',
+            sequence: 'assets/game-icons/game_a1.png',
+            pattern: 'assets/game-icons/game_a2.png',
+            melody: 'assets/game-icons/game_a3.png',
+            palace: 'assets/game-icons/game_a4.png',
+            treasure: 'assets/game-icons/game_a5.png',
+            calc: 'assets/game-icons/game_b1.png',
+            counting: 'assets/game-icons/game_b2.png',
+            word: 'assets/game-icons/game_b3.png',
+            reverse: 'assets/game-icons/game_b4.png',
+            story: 'assets/game-icons/game_b5.png',
+            category: 'assets/game-icons/game_b6.png',
+            reaction: 'assets/game-icons/game_c1.png',
+            findDiff: 'assets/game-icons/game_c2.png',
+            timing: 'assets/game-icons/game_c3.png',
+            focus: 'assets/game-icons/game_c4.png',
+            chain: 'assets/game-icons/game_c5.png',
+            color: 'assets/game-icons/game_c6.png',
+            direction: 'assets/game-icons/game_d1.png',
+            maze: 'assets/game-icons/game_d2.png',
+            puzzle: 'assets/game-icons/game_d3.png',
+            rotate: 'assets/game-icons/game_d4.png',
+            shadow: 'assets/game-icons/game_d5.png',
+            sorting: 'assets/game-icons/game_d6.png',
+            pairing: 'assets/game-icons/game_d7.png'
+        };
+
         function getTodayKey() {
             const d = new Date();
             const yyyy = d.getFullYear();
@@ -608,7 +637,7 @@
                 const cards = document.querySelectorAll('#mainMenu .menu-card');
                 for (const card of cards) {
                     const onclick = card.getAttribute('onclick') || '';
-                    const m = onclick.match(/startGame\\(\\s*(['"])([^'"]+)\\1\\s*\\)/);
+                    const m = onclick.match(/startGame\(\s*(['"])([^'"]+)\1\s*\)/);
                     if (!m) continue;
                     if (m[2] !== gameId) continue;
                     
@@ -616,18 +645,19 @@
                     const p = card.querySelector('p');
                     const iconSpan = card.querySelector('.icon');
                     const img = card.querySelector('img');
+                    const srcFromImg = img ? img.getAttribute('src') : '';
                     
                     return {
                         title: h3 ? h3.textContent.trim() : (img ? img.alt : gameId),
                         desc: p ? p.textContent.trim() : '',
                         iconText: iconSpan ? iconSpan.textContent.trim() : '',
-                        imgSrc: img ? img.getAttribute('src') : ''
+                        imgSrc: srcFromImg || MAIN_MENU_GAME_ICON_SRC[gameId] || ''
                     };
                 }
             } catch {
                 // ignore
             }
-            return { title: gameId, desc: '', iconText: '', imgSrc: '' };
+            return { title: gameId, desc: '', iconText: '', imgSrc: MAIN_MENU_GAME_ICON_SRC[gameId] || '' };
         }
 
         function getMenuCardPreviewHtml(gameId) {
@@ -635,7 +665,7 @@
                 const cards = document.querySelectorAll('#mainMenu .menu-card');
                 for (const card of cards) {
                     const onclick = card.getAttribute('onclick') || '';
-                    const m = onclick.match(/startGame\\(\\s*(['"])([^'"]+)\\1\\s*\\)/);
+                    const m = onclick.match(/startGame\(\s*(['"])([^'"]+)\1\s*\)/);
                     if (!m) continue;
                     if (m[2] !== gameId) continue;
 
@@ -648,7 +678,11 @@
             } catch {
                 // ignore
             }
-            return '';
+            const src = MAIN_MENU_GAME_ICON_SRC[gameId];
+            if (!src) return '';
+            const info = getCardInfo(gameId);
+            const alt = (info && info.title) ? info.title : gameId;
+            return `<div class="menu-card rec-menu-card" style="padding:0;overflow:hidden;"><img src="${src}" alt="${alt}" style="width:100%;height:100%;object-fit:cover;border-radius:20px;"></div>`;
         }
 
         function buildFallbackMenuCardHtml(gameId, meta) {
@@ -670,7 +704,7 @@
                 const pickedIds = new Set(Object.values(picks));
                 document.querySelectorAll('#mainMenu .menu-card').forEach(card => {
                     const onclick = card.getAttribute('onclick') || '';
-                    const m = onclick.match(/startGame\\(\\s*(['"])([^'"]+)\\1\\s*\\)/);
+                    const m = onclick.match(/startGame\(\s*(['"])([^'"]+)\1\s*\)/);
                     if (m && pickedIds.has(m[2])) card.classList.add('is-recommended');
                 });
             } catch {
