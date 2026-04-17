@@ -1264,9 +1264,17 @@
         }
         .recommend-modal-header h2 {
             margin: 0;
-            font-size: calc(0.84rem * var(--font-scale));
+            flex: 1;
+            font-size: calc(1.22rem * var(--font-scale));
             font-weight: 900;
-            color: var(--primary-dark);
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+            line-height: 1.25;
+            padding: 10px 16px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #fff9c4 0%, #FFD700 40%, #FF9800 100%);
+            box-shadow: 0 4px 16px rgba(255, 152, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.45);
+            text-shadow: 0 1px 0 rgba(255,255,255,0.5);
         }
         .recommend-close {
             appearance: none;
@@ -1303,12 +1311,14 @@
             width: 100%;
         }
         .recommend-category-label {
-            margin-top: 6px;
+            margin-top: 8px;
             text-align: center;
-            font-size: calc(0.72rem * var(--font-scale));
-            font-weight: 800;
+            font-size: calc(1.08rem * var(--font-scale));
+            font-weight: 900;
             color: var(--cat-color);
-            line-height: 1.25;
+            line-height: 1.35;
+            letter-spacing: 0.03em;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.08);
         }
         /* popup 내부에서는 메뉴 카드가 "미리보기" 역할만 하도록 클릭/hover 제거 */
         .recommend-item .menu-card,
@@ -1363,8 +1373,16 @@
         body.high-contrast .recommend-item {
             border-color: #FFD700 !important;
         }
+        body.high-contrast .recommend-modal-header h2 {
+            background: #FFD700 !important;
+            color: #000 !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+        }
         body.high-contrast .recommend-category-label {
             color: #FFD700 !important;
+            font-size: calc(1.15rem * var(--font-scale)) !important;
+            text-shadow: none !important;
         }
 
         /* 카테고리 섹션 */
