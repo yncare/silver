@@ -534,7 +534,7 @@
         window.filterMenuCategory = filterMenuCategory;
 
         // ==================== 오늘의 추천 훈련 (일일 고정) ====================
-        const DAILY_RECO_STORAGE_KEY = 'dailyRecommendations.v1';
+        const DAILY_RECO_STORAGE_KEY = 'dailyRecommendations.v2';
         const DAILY_RECO_CATEGORIES = {
             memory: {
                 label: '기억력 훈련',
@@ -554,7 +554,7 @@
             spatial: {
                 label: '공간/지각 훈련',
                 color: '#9C27B0',
-                games: ['direction', 'maze', 'puzzle', 'rotate', 'shadow', 'sorting', 'pairing']
+                games: ['direction', 'maze', 'rotate', 'shadow', 'sorting', 'pairing']
             }
         };
 
@@ -580,7 +580,6 @@
             color: 'assets/game-icons/game_c6.png',
             direction: 'assets/game-icons/game_d1.png',
             maze: 'assets/game-icons/game_d2.png',
-            puzzle: 'assets/game-icons/game_d3.png',
             rotate: 'assets/game-icons/game_d4.png',
             shadow: 'assets/game-icons/game_d5.png',
             sorting: 'assets/game-icons/game_d6.png',
