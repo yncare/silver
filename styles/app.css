@@ -2755,6 +2755,7 @@
             max-width: 350px;
             margin: 15px auto;
         }
+        /* 그림자 보기: 완전 검정(brightness:0) 대신 회색 실루엣 — 이모지 형태가 남도록 */
         .shadow-option {
             aspect-ratio: 1;
             background: #fff2b3; /* 밝은 노랑 배경으로 대비 강화 */
@@ -2767,17 +2768,16 @@
             cursor: pointer;
             transition: all 0.3s;
             color: #111;
-            filter: brightness(0) saturate(0) contrast(2.2);
-            text-shadow: 0 2px 0 rgba(255, 255, 255, 0.9), 0 0 10px rgba(0, 0, 0, 0.25);
+            filter: grayscale(1) brightness(0.52) contrast(1.15);
+            text-shadow: none;
         }
         .shadow-option:hover { transform: scale(1.1); background: #ffe36e; border-color: #b8860b; }
 
-        /* 고대비 모드에서도 검은 배경이 되지 않도록 강제 */
         body.high-contrast .shadow-option {
             background: #fff2b3 !important;
             border-color: #111 !important;
             color: #111 !important;
-            filter: brightness(0) saturate(0) contrast(2.6) !important;
+            filter: grayscale(1) brightness(0.58) contrast(1.2) !important;
         }
         body.high-contrast .shadow-option:hover { background: #ffe36e !important; }
         
