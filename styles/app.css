@@ -3125,32 +3125,76 @@
         .training-report-list { margin: 8px 0 0; padding-left: 22px; line-height: 1.7; }
         .training-report-footnote { font-size: 0.82rem; color: #777; margin-top: 18px; }
 
-        /* 현재 페이지에서 리포트 영역만 인쇄 (팝업 없음) */
+        /* 현재 페이지 인쇄: display로 나머지 제거 → 빈 페이지(visibility 잔류 높이) 방지 */
         @media print {
             @page { margin: 12mm; size: auto; }
-            body.training-report-printing {
-                background: white !important;
-            }
-            body.training-report-printing * {
-                visibility: hidden !important;
-            }
-            body.training-report-printing #trainingReportPrint,
-            body.training-report-printing #trainingReportPrint * {
-                visibility: visible !important;
-            }
-            body.training-report-printing #trainingReportPrint {
-                position: absolute !important;
-                left: 0 !important;
-                top: 0 !important;
-                width: 100% !important;
-                max-width: none !important;
+
+            html.training-report-printing,
+            html.training-report-printing body {
                 margin: 0 !important;
                 padding: 0 !important;
                 background: white !important;
+                height: auto !important;
+                min-height: 0 !important;
+            }
+
+            html.training-report-printing body > *:not(#graphModal) {
+                display: none !important;
+            }
+
+            html.training-report-printing #graphModal {
+                position: static !important;
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                min-height: 0 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                background: white !important;
                 box-shadow: none !important;
-                z-index: 0 !important;
+                inset: auto !important;
+            }
+
+            html.training-report-printing #graphModal .graph-header,
+            html.training-report-printing #graphModal .graph-tabs,
+            html.training-report-printing #graphModal #scoreGraph,
+            html.training-report-printing #graphModal #accuracyGraph,
+            html.training-report-printing #graphModal #gamesGraph,
+            html.training-report-printing #graphModal #historyList,
+            html.training-report-printing #graphModal .stats-summary,
+            html.training-report-printing #graphModal .report-no-print {
+                display: none !important;
+            }
+
+            html.training-report-printing #graphModal .graph-container {
+                max-height: none !important;
+                overflow: visible !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                background: transparent !important;
+                border-radius: 0 !important;
+            }
+
+            html.training-report-printing #graphModal #reportGraph {
+                display: block !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: transparent !important;
+                border: none !important;
+            }
+
+            html.training-report-printing #trainingReportPrint {
+                max-width: 100% !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+            }
+
+            html.training-report-printing #trainingReportPrint .training-report-section-title {
+                page-break-after: avoid;
+            }
+            html.training-report-printing #trainingReportPrint .training-report-table {
+                page-break-inside: auto;
             }
         }
 

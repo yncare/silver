@@ -495,8 +495,10 @@
                 node.scrollIntoView({ block: 'nearest', behavior: 'instant' });
             } catch (e) { /* ignore */ }
 
+            document.documentElement.classList.add('training-report-printing');
             document.body.classList.add('training-report-printing');
             const cleanup = () => {
+                document.documentElement.classList.remove('training-report-printing');
                 document.body.classList.remove('training-report-printing');
                 window.removeEventListener('afterprint', cleanup);
             };
