@@ -487,47 +487,21 @@
 
         function printTrainingReport() {
             const node = document.getElementById('trainingReportPrint');
-            if (!node) return;
-
-            const cssLink = document.querySelector('link[rel="stylesheet"][href*="app.css"]');
-            const cssHref = cssLink ? cssLink.getAttribute('href') : 'styles/app.css?v=1558f54';
-
-            const w = window.open('', '_blank', 'noopener,noreferrer');
-            if (!w) {
-                alert('인쇄용 창을 열 수 없습니다. 브라우저에서 팝업을 허용한 뒤 다시 시도해 주세요.');
+            if (!node || !node.innerHTML.trim()) {
+                alert('리포트 내용이 없습니다. 먼저 「📄 카테고리 리포트」 탭에서 내용을 불러온 뒤 인쇄해 주세요.');
                 return;
             }
+            try {
+                node.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+            } catch (e) { /* ignore */ }
 
-            const safeHref = String(cssHref).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
-            const html = '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">' +
-                '<meta name="viewport" content="width=device-width, initial-scale=1">' +
-                '<title>훈련 카테고리 리포트</title>' +
-                '<link rel="stylesheet" href="' + safeHref + '">' +
-                '<style>body{margin:0;padding:16px;background:#fff;color:#111;font-family:system-ui,\"Malgun Gothic\",sans-serif}' +
-                '@media print{@page{margin:12mm}body{padding:0}}</style></head><body>' +
-                node.outerHTML +
-                '</body></html>';
-
-            w.document.open();
-            w.document.write(html);
-            w.document.close();
-
-            const runPrint = () => {
-                try {
-                    w.focus();
-                    w.print();
-                } finally {
-                    setTimeout(() => {
-                        try { w.close(); } catch (e) { /* ignore */ }
-                    }, 400);
-                }
+            document.body.classList.add('training-report-printing');
+            const cleanup = () => {
+                document.body.classList.remove('training-report-printing');
+                window.removeEventListener('afterprint', cleanup);
             };
-
-            if (w.document.readyState === 'complete') {
-                setTimeout(runPrint, 150);
-            } else {
-                w.onload = () => setTimeout(runPrint, 150);
-            }
+            window.addEventListener('afterprint', cleanup);
+            setTimeout(() => window.print(), 50);
         }
 
         window.printTrainingReport = printTrainingReport;

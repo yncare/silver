@@ -3125,6 +3125,35 @@
         .training-report-list { margin: 8px 0 0; padding-left: 22px; line-height: 1.7; }
         .training-report-footnote { font-size: 0.82rem; color: #777; margin-top: 18px; }
 
+        /* 현재 페이지에서 리포트 영역만 인쇄 (팝업 없음) */
+        @media print {
+            @page { margin: 12mm; size: auto; }
+            body.training-report-printing {
+                background: white !important;
+            }
+            body.training-report-printing * {
+                visibility: hidden !important;
+            }
+            body.training-report-printing #trainingReportPrint,
+            body.training-report-printing #trainingReportPrint * {
+                visibility: visible !important;
+            }
+            body.training-report-printing #trainingReportPrint {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                max-width: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+                box-shadow: none !important;
+                z-index: 0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+
         .chart-area {
             background: var(--background);
             border-radius: 15px;
