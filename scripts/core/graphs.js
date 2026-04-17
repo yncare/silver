@@ -437,7 +437,7 @@
                 <div class="training-report-header">
                     <h3 class="training-report-title">📄 훈련 카테고리 리포트</h3>
                     <p class="training-report-meta">${name}님 · 작성 시각 ${escapeHtml(generated)}</p>
-                    <p class="training-report-lead">게임 수행 기록을 카테고리별로 요약했습니다. 장·단점과 개선 방향은 자동 요약이며, 인쇄하여 보관하거나 상담 시 활용할 수 있습니다.</p>
+                    <p class="training-report-lead">게임 수행 기록을 카테고리별로 요약했습니다. 장점·개선사항·권장 활동은 자동 요약이며, 인쇄하여 보관하거나 상담 시 활용할 수 있습니다.</p>
                 </div>
 
                 <h4 class="training-report-section-title">1. 카테고리 요약 표</h4>
@@ -475,10 +475,10 @@
                 <h4 class="training-report-section-title">3. 장점</h4>
                 ${strengthsHtml}
 
-                <h4 class="training-report-section-title">4. 단점·보완이 필요한 점</h4>
+                <h4 class="training-report-section-title">4. 개선사항</h4>
                 ${weakHtml}
 
-                <h4 class="training-report-section-title">5. 개선점·권장 활동</h4>
+                <h4 class="training-report-section-title">5. 기타 권장 활동</h4>
                 ${improveHtml}
 
                 <p class="training-report-footnote">※ 본 리포트는 앱에 저장된 플레이 통계를 바탕으로 자동 생성되었습니다.</p>
@@ -486,13 +486,48 @@
         }
 
         function printTrainingReport() {
-            document.body.classList.add('print-training-report');
-            const done = () => {
-                document.body.classList.remove('print-training-report');
-                window.removeEventListener('afterprint', done);
+            const node = document.getElementById('trainingReportPrint');
+            if (!node) return;
+
+            const cssLink = document.querySelector('link[rel="stylesheet"][href*="app.css"]');
+            const cssHref = cssLink ? cssLink.getAttribute('href') : 'styles/app.css?v=1558f54';
+
+            const w = window.open('', '_blank', 'noopener,noreferrer');
+            if (!w) {
+                alert('인쇄용 창을 열 수 없습니다. 브라우저에서 팝업을 허용한 뒤 다시 시도해 주세요.');
+                return;
+            }
+
+            const safeHref = String(cssHref).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+            const html = '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">' +
+                '<meta name="viewport" content="width=device-width, initial-scale=1">' +
+                '<title>훈련 카테고리 리포트</title>' +
+                '<link rel="stylesheet" href="' + safeHref + '">' +
+                '<style>body{margin:0;padding:16px;background:#fff;color:#111;font-family:system-ui,\"Malgun Gothic\",sans-serif}' +
+                '@media print{@page{margin:12mm}body{padding:0}}</style></head><body>' +
+                node.outerHTML +
+                '</body></html>';
+
+            w.document.open();
+            w.document.write(html);
+            w.document.close();
+
+            const runPrint = () => {
+                try {
+                    w.focus();
+                    w.print();
+                } finally {
+                    setTimeout(() => {
+                        try { w.close(); } catch (e) { /* ignore */ }
+                    }, 400);
+                }
             };
-            window.addEventListener('afterprint', done);
-            window.print();
+
+            if (w.document.readyState === 'complete') {
+                setTimeout(runPrint, 150);
+            } else {
+                w.onload = () => setTimeout(runPrint, 150);
+            }
         }
 
         window.printTrainingReport = printTrainingReport;

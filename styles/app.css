@@ -3125,44 +3125,6 @@
         .training-report-list { margin: 8px 0 0; padding-left: 22px; line-height: 1.7; }
         .training-report-footnote { font-size: 0.82rem; color: #777; margin-top: 18px; }
 
-        @media print {
-            body.print-training-report .graph-header,
-            body.print-training-report .graph-tabs,
-            body.print-training-report .stats-summary,
-            body.print-training-report .report-no-print {
-                display: none !important;
-            }
-            body.print-training-report .graph-modal.active {
-                position: static !important;
-                background: none !important;
-                display: block !important;
-                padding: 0 !important;
-            }
-            body.print-training-report .graph-container {
-                max-height: none !important;
-                overflow: visible !important;
-                box-shadow: none !important;
-                padding: 10mm !important;
-                max-width: 100% !important;
-            }
-            body.print-training-report #scoreGraph,
-            body.print-training-report #accuracyGraph,
-            body.print-training-report #gamesGraph,
-            body.print-training-report #historyList {
-                display: none !important;
-            }
-            body.print-training-report #reportGraph {
-                display: block !important;
-            }
-            body.print-training-report .training-report-area {
-                background: none !important;
-                padding: 0 !important;
-            }
-            body.print-training-report .chart-area {
-                page-break-inside: avoid;
-            }
-        }
-        
         .chart-area {
             background: var(--background);
             border-radius: 15px;
