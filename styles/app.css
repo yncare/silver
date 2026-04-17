@@ -1236,7 +1236,7 @@
             box-shadow: 0 6px 16px rgba(0,0,0,0.15);
         }
 
-        /* 추천 모달 */
+        /* 추천 모달 (전체 약 50% 축소) */
         .recommend-modal {
             position: fixed;
             inset: 0;
@@ -1244,27 +1244,27 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 18px;
+            padding: 9px;
             z-index: 2000;
         }
         .recommend-modal-content {
-            width: min(920px, 96vw);
+            width: min(460px, 48vw);
             background: var(--card-bg);
-            border-radius: 18px;
-            padding: 18px;
-            box-shadow: 0 18px 50px rgba(0,0,0,0.35);
-            border: 2px solid rgba(0,0,0,0.08);
+            border-radius: 9px;
+            padding: 9px;
+            box-shadow: 0 9px 25px rgba(0,0,0,0.35);
+            border: 1px solid rgba(0,0,0,0.08);
         }
         .recommend-modal-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 8px;
+            gap: 5px;
+            margin-bottom: 4px;
         }
         .recommend-modal-header h2 {
             margin: 0;
-            font-size: calc(1.4rem * var(--font-scale));
+            font-size: calc(0.7rem * var(--font-scale));
             font-weight: 900;
             color: var(--primary-dark);
         }
@@ -1272,32 +1272,33 @@
             appearance: none;
             border: 0;
             background: transparent;
-            font-size: calc(1.3rem * var(--font-scale));
+            font-size: calc(0.65rem * var(--font-scale));
             cursor: pointer;
-            padding: 6px 10px;
-            border-radius: 10px;
+            padding: 3px 5px;
+            border-radius: 5px;
         }
         .recommend-close:hover { background: rgba(0,0,0,0.06); }
         .recommend-subtitle {
-            margin: 0 0 12px;
+            margin: 0 0 6px;
             color: var(--text-light);
             font-weight: 600;
+            font-size: calc(0.875rem * var(--font-scale));
         }
         .recommend-list {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 14px;
-            margin-top: 10px;
+            gap: 7px;
+            margin-top: 5px;
         }
         .recommend-item {
-            border-radius: 16px;
-            border: 2px solid rgba(0,0,0,0.08);
-            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.08);
+            padding: 6px;
             background: rgba(0,0,0,0.02);
             cursor: pointer;
             transition: transform 0.2s ease;
         }
-        .recommend-item:hover { transform: translateY(-2px); }
+        .recommend-item:hover { transform: translateY(-1px); }
         .recommend-preview {
             width: 100%;
         }
@@ -1314,25 +1315,34 @@
         }
         .recommend-item .rec-menu-card {
             width: 100%;
-            min-height: 150px;
+            min-height: 75px;
         }
         .recommend-fallback {
             width: 100%;
-            min-height: 150px;
+            min-height: 75px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 900;
+            font-size: calc(0.875rem * var(--font-scale));
             color: var(--cat-color);
             background: rgba(0,0,0,0.03);
-            border-radius: 16px;
+            border-radius: 8px;
         }
 
         /* 작은 화면에서도 2x2를 유지하되 너무 좁아지면 1열 */
         @media (max-width: 520px) {
             .recommend-list { grid-template-columns: 1fr; }
         }
-        .recommend-footer { margin-top: 14px; display: flex; justify-content: flex-end; }
+        .recommend-footer {
+            margin-top: 7px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .recommend-modal-content .btn {
+            padding: 6px 12px;
+            font-size: calc(0.85rem * var(--font-scale));
+        }
 
         body.high-contrast .recommend-btn {
             background: #FFD700 !important;
