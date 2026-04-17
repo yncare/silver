@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>굿실버 건강한 두뇌훈련</title>
-    <link rel="stylesheet" href="styles/app.css?v=1558f52">
+    <link rel="stylesheet" href="styles/app.css?v=1558f53">
     <script>
         // 캐시(특히 index.html)로 인해 최신 스크립트/스타일이 반영되지 않는 문제 방지용
         (function () {
@@ -113,10 +113,11 @@
             </div>
             
             <div class="graph-tabs">
-                <button class="graph-tab active" onclick="showGraphTab('score')">점수 추이</button>
-                <button class="graph-tab" onclick="showGraphTab('accuracy')">정확도</button>
-                <button class="graph-tab" onclick="showGraphTab('games')">게임별 통계</button>
-                <button class="graph-tab" onclick="showGraphTab('history')">기록 목록</button>
+                <button type="button" class="graph-tab active" data-tab="score" onclick="showGraphTab('score')">점수 추이</button>
+                <button type="button" class="graph-tab" data-tab="accuracy" onclick="showGraphTab('accuracy')">정확도</button>
+                <button type="button" class="graph-tab" data-tab="games" onclick="showGraphTab('games')">게임별 통계</button>
+                <button type="button" class="graph-tab" data-tab="history" onclick="showGraphTab('history')">기록 목록</button>
+                <button type="button" class="graph-tab" data-tab="report" onclick="showGraphTab('report')">📄 카테고리 리포트</button>
             </div>
             
             <!-- 점수 추이 그래프 -->
@@ -148,6 +149,17 @@
             <div id="historyList" class="chart-area" style="display:none;">
                 <div class="chart-title">📋 전체 기록</div>
                 <div class="history-list" id="historyListContent"></div>
+            </div>
+            
+            <!-- 카테고리별 리포트 -->
+            <div id="reportGraph" class="chart-area training-report-area" style="display:none;">
+                <div class="report-toolbar report-no-print">
+                    <button type="button" class="btn btn-primary" onclick="printTrainingReport()">🖨️ 리포트 인쇄</button>
+                    <span class="report-toolbar-hint">인쇄 시 아래 내용만 출력됩니다.</span>
+                </div>
+                <div id="trainingReportPrint" class="training-report-sheet">
+                    <div id="trainingReportBody"></div>
+                </div>
             </div>
             
             <!-- 요약 통계 -->
@@ -1446,7 +1458,7 @@
     <script defer src="scripts/core/levels.js?v=20260224a"></script>
     <script defer src="scripts/core/utils.js"></script>
     <script defer src="scripts/core/effects.js"></script>
-    <script defer src="scripts/core/graphs.js"></script>
+    <script defer src="scripts/core/graphs.js?v=1558f53"></script>
     <script defer src="scripts/games/games-basic.js?v=20260224a"></script>
     <script defer src="scripts/games/games-extended.js?v=20260224a"></script>
     <script defer src="scripts/games/games-advanced.js?v=20260224a"></script>

@@ -20,30 +20,44 @@
         }
         
         function showGraphTab(tab) {
-            document.querySelectorAll('.graph-tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            document.getElementById('scoreGraph').style.display = 'none';
-            document.getElementById('accuracyGraph').style.display = 'none';
-            document.getElementById('gamesGraph').style.display = 'none';
-            document.getElementById('historyList').style.display = 'none';
-            
-            switch(tab) {
+            document.querySelectorAll('.graph-tab').forEach(t => {
+                t.classList.toggle('active', t.getAttribute('data-tab') === tab);
+            });
+
+            const panelIds = ['scoreGraph', 'accuracyGraph', 'gamesGraph', 'historyList', 'reportGraph'];
+            panelIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+
+            const map = {
+                score: 'scoreGraph',
+                accuracy: 'accuracyGraph',
+                games: 'gamesGraph',
+                history: 'historyList',
+                report: 'reportGraph'
+            };
+            const showId = map[tab];
+            if (showId) {
+                const el = document.getElementById(showId);
+                if (el) el.style.display = 'block';
+            }
+
+            switch (tab) {
                 case 'score':
-                    document.getElementById('scoreGraph').style.display = 'block';
                     renderScoreChart();
                     break;
                 case 'accuracy':
-                    document.getElementById('accuracyGraph').style.display = 'block';
                     renderAccuracyChart();
                     break;
                 case 'games':
-                    document.getElementById('gamesGraph').style.display = 'block';
                     renderGamesChart();
                     break;
                 case 'history':
-                    document.getElementById('historyList').style.display = 'block';
                     renderHistoryList();
+                    break;
+                case 'report':
+                    renderTrainingReport();
                     break;
             }
         }
@@ -257,3 +271,228 @@
             document.getElementById('avgScore').textContent = avgScore;
             document.getElementById('avgAccuracy').textContent = avgAccuracy + '%';
         }
+
+        /** 메인 메뉴 4분류 — 카테고리 리포트용 */
+        const TRAINING_CATEGORY_META = [
+            { id: 'memory', label: '기억력 훈련', games: ['match', 'sequence', 'pattern', 'melody', 'palace', 'treasure'] },
+            { id: 'calcLang', label: '계산/언어 훈련', games: ['calc', 'counting', 'word', 'reverse', 'story', 'category'] },
+            { id: 'focusReaction', label: '집중/반응 훈련', games: ['reaction', 'findDiff', 'timing', 'focus', 'chain', 'color'] },
+            { id: 'spatial', label: '공간/지각 훈련', games: ['direction', 'maze', 'rotate', 'shadow', 'sorting', 'pairing'] }
+        ];
+
+        const CATEGORY_IMPROVE_HINTS = {
+            memory: '기억·패턴·멜로디·기억의 방·보물찾기 등을 번갈아 가며 꾸준히 플레이하면 좋습니다.',
+            calcLang: '암산·낱말·이야기 순서·분류 등을 생활 속 숫자·글자와 연결해 보세요.',
+            focusReaction: '신호등·다른 그림 찾기·시간 맞추기·집중 타겟 등으로 반응과 집중을 나눠 연습해 보세요.',
+            spatial: '방향·미로·도형 회전·그림자·순서 누르기·짝 연결을 규칙적으로 섞어 보세요.'
+        };
+
+        function escapeHtml(str) {
+            if (str == null) return '';
+            const d = document.createElement('div');
+            d.textContent = String(str);
+            return d.innerHTML;
+        }
+
+        function getCategoryAggregates() {
+            return TRAINING_CATEGORY_META.map(cat => {
+                let plays = 0;
+                let scoreSum = 0;
+                let accSum = 0;
+                let accN = 0;
+                const gameRows = [];
+                cat.games.forEach(gid => {
+                    const s = gameStats[gid];
+                    const name = gameNames[gid] || gid;
+                    if (!s || !s.count) {
+                        gameRows.push({ gid, name, plays: 0, avgScore: 0, avgAcc: null });
+                        return;
+                    }
+                    const c = s.count || 0;
+                    const ts = s.totalScore || 0;
+                    plays += c;
+                    scoreSum += ts;
+                    let gAcc = 0;
+                    let gAccN = 0;
+                    (s.details || []).forEach(d => {
+                        if (d && d.accuracy != null && !Number.isNaN(Number(d.accuracy))) {
+                            gAcc += Number(d.accuracy);
+                            gAccN++;
+                            accSum += Number(d.accuracy);
+                            accN++;
+                        }
+                    });
+                    const avgScoreG = c > 0 ? Math.round(ts / c) : 0;
+                    const avgAccG = gAccN > 0 ? Math.round(gAcc / gAccN) : null;
+                    gameRows.push({ gid, name, plays: c, avgScore: avgScoreG, avgAcc: avgAccG });
+                });
+                const avgScore = plays > 0 ? Math.round(scoreSum / plays) : 0;
+                const avgAccuracy = accN > 0 ? Math.round(accSum / accN) : null;
+                return {
+                    ...cat,
+                    plays,
+                    totalScore: scoreSum,
+                    avgScore,
+                    avgAccuracy,
+                    gameRows
+                };
+            });
+        }
+
+        function renderTrainingReport() {
+            const body = document.getElementById('trainingReportBody');
+            if (!body) return;
+
+            const name = escapeHtml(userProfile && userProfile.name ? userProfile.name : '사용자');
+            const generated = new Date().toLocaleString('ko-KR', { dateStyle: 'long', timeStyle: 'short' });
+            const cats = getCategoryAggregates();
+            const totalPlays = cats.reduce((a, c) => a + c.plays, 0);
+
+            if (totalPlays === 0) {
+                body.innerHTML = `
+                    <div class="training-report-header">
+                        <h3 class="training-report-title">📄 훈련 카테고리 리포트</h3>
+                        <p class="training-report-meta">${name}님 · ${escapeHtml(generated)}</p>
+                    </div>
+                    <p class="training-report-lead">아직 플레이 기록이 없습니다. 게임을 진행한 뒤 다시 열어 주세요.</p>
+                `;
+                return;
+            }
+
+            const tableRows = cats.map(c => {
+                const accCell = c.avgAccuracy != null ? `${c.avgAccuracy}%` : '—';
+                return `<tr>
+                    <td><strong style="color:${c.id === 'memory' ? '#2E7D32' : c.id === 'calcLang' ? '#1565C0' : c.id === 'focusReaction' ? '#E65100' : '#7B1FA2'}">${escapeHtml(c.label)}</strong></td>
+                    <td style="text-align:right">${c.plays}</td>
+                    <td style="text-align:right">${c.totalScore}</td>
+                    <td style="text-align:right">${c.avgScore}</td>
+                    <td style="text-align:center">${accCell}</td>
+                </tr>`;
+            }).join('');
+
+            const gameDetailRows = cats.map(c => {
+                return c.gameRows
+                    .filter(g => g.plays > 0)
+                    .sort((a, b) => b.plays - a.plays)
+                    .map(g => `<tr>
+                        <td>${escapeHtml(c.label)}</td>
+                        <td>${escapeHtml(g.name)}</td>
+                        <td style="text-align:right">${g.plays}</td>
+                        <td style="text-align:right">${g.avgScore}</td>
+                        <td style="text-align:center">${g.avgAcc != null ? g.avgAcc + '%' : '—'}</td>
+                    </tr>`).join('');
+            }).join('');
+            const gameDetailBody = gameDetailRows.trim()
+                ? gameDetailRows
+                : '<tr><td colspan="5">카테고리별 플레이한 게임이 없습니다.</td></tr>';
+
+            const sortedByPlays = [...cats].sort((a, b) => b.plays - a.plays);
+            const top = sortedByPlays[0];
+            const second = sortedByPlays[1];
+            const zeroCats = cats.filter(c => c.plays === 0);
+            const lowCats = sortedByPlays.filter(c => c.plays > 0 && c.plays <= Math.max(1, Math.floor(totalPlays / 8)));
+
+            let strengthsHtml = '<ul class="training-report-list">';
+            if (top && top.plays > 0) {
+                strengthsHtml += `<li><strong>${escapeHtml(top.label)}</strong> 영역을 가장 많이 연습하셨습니다. (총 <strong>${top.plays}</strong>회, 평균 점수 <strong>${top.avgScore}</strong>점)</li>`;
+            }
+            if (second && second.plays > 0 && second.id !== top.id) {
+                strengthsHtml += `<li><strong>${escapeHtml(second.label)}</strong>에서도 꾸준한 참여가 있었습니다. (${second.plays}회)</li>`;
+            }
+            const bestAcc = cats.filter(c => c.avgAccuracy != null).sort((a, b) => b.avgAccuracy - a.avgAccuracy)[0];
+            if (bestAcc && bestAcc.avgAccuracy >= 60) {
+                strengthsHtml += `<li>평균 정확도가 높은 영역: <strong>${escapeHtml(bestAcc.label)}</strong> (${bestAcc.avgAccuracy}%)</li>`;
+            }
+            strengthsHtml += '</ul>';
+
+            const weakItems = [];
+            if (zeroCats.length > 0) {
+                weakItems.push(`아직 한 번도 플레이하지 않은 카테고리: <strong>${zeroCats.map(z => escapeHtml(z.label)).join(', ')}</strong>`);
+            }
+            if (lowCats.length > 0 && totalPlays >= 8) {
+                weakItems.push(`상대적으로 플레이 횟수가 적은 영역: ${lowCats.map(z => `<strong>${escapeHtml(z.label)}</strong> (${z.plays}회)`).join(', ')}`);
+            }
+            if (totalPlays < 8) {
+                weakItems.push('데이터가 더 쌓이면 상대적인 약점 영역이 명확해집니다. 지금은 균형 있게 다양한 게임을 권장합니다.');
+            }
+            if (weakItems.length === 0) {
+                weakItems.push('뚜렷한 약점 패턴은 없습니다. 네 카테고리를 골고루 유지해 보세요.');
+            }
+            const weakHtml = `<ul class="training-report-list">${weakItems.map(w => `<li>${w}</li>`).join('')}</ul>`;
+
+            const improveItems = [];
+            cats.forEach(c => {
+                if (c.plays === 0) {
+                    improveItems.push(`<li><strong>${escapeHtml(c.label)}</strong>: ${CATEGORY_IMPROVE_HINTS[c.id] || '해당 영역의 게임을 주 2~3회 이상 나누어 시도해 보세요.'}</li>`);
+                } else if ((totalPlays >= 8 && lowCats.some(l => l.id === c.id)) || (c.avgAccuracy != null && c.avgAccuracy < 55)) {
+                    improveItems.push(`<li><strong>${escapeHtml(c.label)}</strong>: ${CATEGORY_IMPROVE_HINTS[c.id] || '난이도를 한 단계 낮추거나 짧은 세션으로 반복해 보세요.'}</li>`);
+                }
+            });
+            if (improveItems.length === 0) {
+                improveItems.push('<li>네 카테고리 모두에서 활동이 있습니다. 주간 목표를 정해 균형을 유지해 보세요.</li>');
+            }
+            const improveHtml = `<ul class="training-report-list">${improveItems.join('')}</ul>`;
+
+            body.innerHTML = `
+                <div class="training-report-header">
+                    <h3 class="training-report-title">📄 훈련 카테고리 리포트</h3>
+                    <p class="training-report-meta">${name}님 · 작성 시각 ${escapeHtml(generated)}</p>
+                    <p class="training-report-lead">게임 수행 기록을 카테고리별로 요약했습니다. 장·단점과 개선 방향은 자동 요약이며, 인쇄하여 보관하거나 상담 시 활용할 수 있습니다.</p>
+                </div>
+
+                <h4 class="training-report-section-title">1. 카테고리 요약 표</h4>
+                <div class="training-report-table-wrap">
+                    <table class="training-report-table">
+                        <thead>
+                            <tr>
+                                <th>카테고리</th>
+                                <th>플레이 횟수</th>
+                                <th>누적 점수</th>
+                                <th>회당 평균 점수</th>
+                                <th>평균 정확도(기록 있는 경우)</th>
+                            </tr>
+                        </thead>
+                        <tbody>${tableRows}</tbody>
+                    </table>
+                </div>
+
+                <h4 class="training-report-section-title">2. 게임별 상세 (플레이한 항목만)</h4>
+                <div class="training-report-table-wrap">
+                    <table class="training-report-table training-report-table--compact">
+                        <thead>
+                            <tr>
+                                <th>카테고리</th>
+                                <th>게임</th>
+                                <th>횟수</th>
+                                <th>회당 평균 점수</th>
+                                <th>평균 정확도</th>
+                            </tr>
+                        </thead>
+                        <tbody>${gameDetailBody}</tbody>
+                    </table>
+                </div>
+
+                <h4 class="training-report-section-title">3. 장점</h4>
+                ${strengthsHtml}
+
+                <h4 class="training-report-section-title">4. 단점·보완이 필요한 점</h4>
+                ${weakHtml}
+
+                <h4 class="training-report-section-title">5. 개선점·권장 활동</h4>
+                ${improveHtml}
+
+                <p class="training-report-footnote">※ 본 리포트는 앱에 저장된 플레이 통계를 바탕으로 자동 생성되었습니다.</p>
+            `;
+        }
+
+        function printTrainingReport() {
+            document.body.classList.add('print-training-report');
+            const done = () => {
+                document.body.classList.remove('print-training-report');
+                window.removeEventListener('afterprint', done);
+            };
+            window.addEventListener('afterprint', done);
+            window.print();
+        }
+
+        window.printTrainingReport = printTrainingReport;
