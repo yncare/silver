@@ -730,6 +730,7 @@
                         <div class="recommend-preview">
                             ${previewHtml || buildFallbackMenuCardHtml(gameId, meta)}
                         </div>
+                        <div class="recommend-category-label">${meta.label}</div>
                     </div>
                 `;
             }).join('');
