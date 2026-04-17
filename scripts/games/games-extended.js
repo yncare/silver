@@ -262,8 +262,7 @@
                 res.className = 'result-message success';
                 playCorrectSound();
                 miniConfetti();
-            }
-            else {
+            } else {
                 checkLevelUp(false, 'counting');
                 res.textContent = timeout ? `⏰ 시간 초과! 정답: ${countAnswer}` : `❌ 틀렸습니다! 정답: ${countAnswer}`;
                 res.className = 'result-message error';

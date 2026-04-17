@@ -127,7 +127,7 @@
             document.getElementById('existingUsersSection').style.display = 'block';
             document.getElementById('enterBtn').style.display = 'none';
             
-    userProfile = { id: '', name: '', age: null, gender: null, difficulty: 'normal' };
+    userProfile = { id: '', name: '', age: null, gender: null, difficulty: 'normal', userType: 'personal' };
             selectedUserId = null;
             
             // 사용자 목록 갱신
@@ -342,7 +342,8 @@
         function updateGameDifficultyButtons(currentDiff) {
             document.querySelectorAll('.game-diff-btn').forEach(btn => {
                 btn.classList.remove('active');
-                const btnDiff = btn.className.match(/very-easy|easy|normal|hard|very-hard/)?.[0]?.replace('-', '_');
+                // 긴 토큰(very-*)을 먼저 매칭 — 'hard'가 'very-hard'의 부분문자열로 잡히는 오류 방지
+                const btnDiff = btn.className.match(/very-easy|very-hard|easy|normal|hard/)?.[0]?.replace(/-/g, '_');
                 if (btnDiff === currentDiff) {
                     btn.classList.add('active');
                 }

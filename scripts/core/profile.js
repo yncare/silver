@@ -292,7 +292,7 @@
                 const isSelected = selectedUserId === user.id;
                 
                 return `
-                    <div class="user-card ${isSelected ? 'selected' : ''}" onclick="selectUser('${user.id}')">
+                    <div class="user-card ${isSelected ? 'selected' : ''}" onclick="selectUser('${user.id}', event)">
                         <div class="user-card-info">
                             <span class="user-card-icon">${genderIconSvg(profile.gender)}</span>
                             <div class="user-card-details">
@@ -319,10 +319,11 @@
         }
         
         // 사용자 선택
-        function selectUser(userId) {
+        function selectUser(userId, ev) {
+            const target = ev && ev.currentTarget ? ev.currentTarget : null;
             selectedUserId = userId;
             document.querySelectorAll('.user-card').forEach(card => card.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
+            if (target) target.classList.add('selected');
             document.getElementById('enterBtn').style.display = 'block';
         }
         
