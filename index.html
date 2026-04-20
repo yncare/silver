@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>굿실버 건강한 두뇌훈련</title>
-    <link rel="stylesheet" href="styles/app.css?v=1558f56">
+    <link rel="stylesheet" href="styles/app.css?v=1558f62">
     <script>
         // 캐시(특히 index.html)로 인해 최신 스크립트/스타일이 반영되지 않는 문제 방지용
         (function () {
-            var v = "1558f40";
+            var v = "1558f62";
             try {
                 var url = new URL(window.location.href);
                 if (url.searchParams.get("v") !== v) {
@@ -108,8 +108,13 @@
     <div class="graph-modal" id="graphModal">
         <div class="graph-container">
             <div class="graph-header">
-                <h2>📊 <span id="graphUserName">사용자</span>님의 훈련 기록</h2>
-                <button class="close-graph-btn" onclick="closeStatsGraph()">✕ 닫기</button>
+                <div class="graph-header-top">
+                    <h2 class="graph-header-heading">📊 <span id="graphUserName">사용자</span>님의 훈련 기록</h2>
+                    <button type="button" class="close-graph-btn" onclick="closeStatsGraph()">✕ 닫기</button>
+                </div>
+                <div class="graph-report-strip">
+                    <button type="button" class="graph-header-report-btn" onclick="showGraphTab('report')" title="훈련 리포트 보기">훈련 리포트</button>
+                </div>
             </div>
             
             <div class="graph-tabs">
@@ -117,7 +122,6 @@
                 <button type="button" class="graph-tab" data-tab="accuracy" onclick="showGraphTab('accuracy')">정확도</button>
                 <button type="button" class="graph-tab" data-tab="games" onclick="showGraphTab('games')">게임별 통계</button>
                 <button type="button" class="graph-tab" data-tab="history" onclick="showGraphTab('history')">기록 목록</button>
-                <button type="button" class="graph-tab" data-tab="report" onclick="showGraphTab('report')">📄 카테고리 리포트</button>
             </div>
             
             <!-- 점수 추이 그래프 -->
@@ -151,7 +155,7 @@
                 <div class="history-list" id="historyListContent"></div>
             </div>
             
-            <!-- 카테고리별 리포트 -->
+            <!-- 훈련 리포트 -->
             <div id="reportGraph" class="chart-area training-report-area" style="display:none;">
                 <div class="report-toolbar report-no-print">
                     <button type="button" class="btn btn-primary" onclick="printTrainingReport()">🖨️ 리포트 인쇄</button>
@@ -1458,7 +1462,7 @@
     <script defer src="scripts/core/levels.js?v=20260224a"></script>
     <script defer src="scripts/core/utils.js"></script>
     <script defer src="scripts/core/effects.js"></script>
-    <script defer src="scripts/core/graphs.js?v=1558f56"></script>
+    <script defer src="scripts/core/graphs.js?v=1558f62"></script>
     <script defer src="scripts/games/games-basic.js?v=20260224a"></script>
     <script defer src="scripts/games/games-extended.js?v=20260224a"></script>
     <script defer src="scripts/games/games-advanced.js?v=20260224a"></script>

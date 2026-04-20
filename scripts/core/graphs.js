@@ -272,7 +272,7 @@
             document.getElementById('avgAccuracy').textContent = avgAccuracy + '%';
         }
 
-        /** 메인 메뉴 4분류 — 카테고리 리포트용 */
+        /** 메인 메뉴 4분류 — 훈련 리포트용 */
         const TRAINING_CATEGORY_META = [
             { id: 'memory', label: '기억력 훈련', games: ['match', 'sequence', 'pattern', 'melody', 'palace', 'treasure'] },
             { id: 'calcLang', label: '계산/언어 훈련', games: ['calc', 'counting', 'word', 'reverse', 'story', 'category'] },
@@ -351,7 +351,7 @@
             if (totalPlays === 0) {
                 body.innerHTML = `
                     <div class="training-report-header">
-                        <h3 class="training-report-title">📄 훈련 카테고리 리포트</h3>
+                        <h3 class="training-report-title">훈련 리포트</h3>
                         <p class="training-report-meta">${name}님 · ${escapeHtml(generated)}</p>
                     </div>
                     <p class="training-report-lead">아직 플레이 기록이 없습니다. 게임을 진행한 뒤 다시 열어 주세요.</p>
@@ -435,12 +435,12 @@
 
             body.innerHTML = `
                 <div class="training-report-header">
-                    <h3 class="training-report-title">📄 훈련 카테고리 리포트</h3>
+                    <h3 class="training-report-title">훈련 리포트</h3>
                     <p class="training-report-meta">${name}님 · 작성 시각 ${escapeHtml(generated)}</p>
-                    <p class="training-report-lead">게임 수행 기록을 카테고리별로 요약했습니다. 장점·개선사항·권장 활동은 자동 요약이며, 인쇄하여 보관하거나 상담 시 활용할 수 있습니다.</p>
+                    <p class="training-report-lead">게임 수행 기록을 훈련 영역별로 요약했습니다. 장점·개선사항·권장 활동은 자동 요약이며, 인쇄하여 보관하거나 상담 시 활용할 수 있습니다.</p>
                 </div>
 
-                <h4 class="training-report-section-title">1. 카테고리 요약 표</h4>
+                <h4 class="training-report-section-title">1. 훈련 영역 요약 표</h4>
                 <div class="training-report-table-wrap">
                     <table class="training-report-table">
                         <thead>
@@ -487,8 +487,9 @@
 
         function printTrainingReport() {
             const node = document.getElementById('trainingReportPrint');
-            if (!node || !node.innerHTML.trim()) {
-                alert('리포트 내용이 없습니다. 먼저 「📄 카테고리 리포트」 탭에서 내용을 불러온 뒤 인쇄해 주세요.');
+            const body = document.getElementById('trainingReportBody');
+            if (!node || !body || !body.innerHTML.trim()) {
+                alert('리포트 내용이 없습니다. 먼저 「훈련 리포트」에서 내용을 불러온 뒤 인쇄해 주세요.');
                 return;
             }
             try {
