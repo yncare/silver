@@ -212,6 +212,8 @@
         
         /* 헤더 우측 영역 */
         .header-right {
+            grid-column: 3;
+            justify-self: end;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
@@ -324,17 +326,27 @@
             color: white;
             border-radius: 0 0 40px 40px;
             box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
             align-items: center;
+            gap: 12px 16px;
         }
-        
+
         .header-left {
+            grid-column: 1;
+            justify-self: start;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
             flex-shrink: 0;
+            min-width: 0;
+        }
+
+        .header-center {
+            grid-column: 2;
+            justify-self: center;
+            max-width: 100%;
+            min-width: 0;
         }
 
         /* 헤더 타이틀/로고 클릭으로 메인 이동 */
@@ -399,6 +411,48 @@
         
         .header-badge-btn.home:hover {
             background: rgba(255,255,255,0.40);
+        }
+
+        .header-report-btn {
+            font-weight: 900;
+            padding: 5px 12px;
+            border-width: 2px;
+            background: rgba(255, 255, 255, 0.38);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+        .header-report-btn:hover {
+            background: rgba(255, 255, 255, 0.52);
+        }
+        body.high-contrast .header-report-btn {
+            border-color: #FFD700 !important;
+            color: #000 !important;
+            background: #FFD700 !important;
+        }
+
+        @media (max-width: 720px) {
+            header {
+                grid-template-columns: 1fr;
+                justify-items: center;
+                text-align: center;
+            }
+            .header-left {
+                grid-column: 1;
+                justify-self: center;
+                align-items: center;
+            }
+            .header-center {
+                grid-column: 1;
+                justify-self: center;
+            }
+            .header-right {
+                grid-column: 1;
+                justify-self: center;
+                align-items: center;
+            }
+            .header-user-badge {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
         }
         
         /* 환영/로그인 화면(밝은 톤) */

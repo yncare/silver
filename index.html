@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>굿실버 건강한 두뇌훈련</title>
-    <link rel="stylesheet" href="styles/app.css?v=1558f62">
+    <link rel="stylesheet" href="styles/app.css?v=1558f63">
     <script>
         // 캐시(특히 index.html)로 인해 최신 스크립트/스타일이 반영되지 않는 문제 방지용
         (function () {
-            var v = "1558f62";
+            var v = "1558f63";
             try {
                 var url = new URL(window.location.href);
                 if (url.searchParams.get("v") !== v) {
@@ -194,14 +194,16 @@
             <p>매일 10분, 건강한 두뇌를 위한 훈련</p>
         </div>
         
-        <!-- 사용자 배지 (헤더 중앙) -->
-        <div class="header-user-badge" id="headerUserBadge" style="display:none;">
-            <span id="userGenderIcon">👤</span>
-            <span><strong id="userNameDisplay">사용자</strong>님</span>
-            <span class="difficulty-badge clickable" id="difficultyBadge" onclick="showDifficultyModal()" title="클릭하여 난이도 변경">보통 ▼</span>
-            <button class="header-badge-btn" onclick="showBadgeModal()">🏆 배지</button>
-            <button class="header-badge-btn" onclick="showStatsGraph()">📊 기록</button>
-            <button class="header-badge-btn home" onclick="goHome()">🏠 홈</button>
+        <!-- 사용자 배지 + 훈련 리포트 (헤더 가로 중앙) -->
+        <div class="header-center" id="headerCenter">
+            <div class="header-user-badge" id="headerUserBadge" style="display:none;">
+                <span id="userGenderIcon">👤</span>
+                <span><strong id="userNameDisplay">사용자</strong>님</span>
+                <span class="difficulty-badge clickable" id="difficultyBadge" onclick="showDifficultyModal()" title="클릭하여 난이도 변경">보통 ▼</span>
+                <button type="button" class="header-badge-btn" onclick="showBadgeModal()">🏆 배지</button>
+                <button type="button" class="header-badge-btn header-report-btn" onclick="showStatsGraph()" title="훈련 리포트 보기">📊 리포트</button>
+                <button type="button" class="header-badge-btn home" onclick="goHome()">🏠 홈</button>
+            </div>
         </div>
         
         <!-- 우측 영역: 점수 + 접근성 컨트롤 -->
