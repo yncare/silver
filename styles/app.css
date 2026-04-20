@@ -1550,12 +1550,351 @@
         /* 게임 화면 */
         .game-screen {
             display: none;
+            position: relative;
             background: var(--card-bg);
             border-radius: var(--radius);
             padding: 20px;
             box-shadow: var(--shadow);
             min-height: auto;
             text-align: center;
+        }
+
+        /* 게임만 전체화면: 배경은 뷰포트 전체, 본문은 콘텐츠 높이에 맞춤·세로 가운데 */
+        .game-screen:fullscreen,
+        .game-screen:-webkit-full-screen {
+            display: flex !important;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: center;
+            justify-content: safe center;
+            width: 100%;
+            min-height: 100vh;
+            min-height: 100dvh;
+            min-height: -webkit-fill-available;
+            max-height: 100dvh;
+            height: auto;
+            max-width: none;
+            margin: 0;
+            border-radius: 0;
+            box-sizing: border-box;
+            padding:
+                max(10px, env(safe-area-inset-top, 0px))
+                max(12px, env(safe-area-inset-right, 0px))
+                max(10px, env(safe-area-inset-bottom, 0px))
+                max(12px, env(safe-area-inset-left, 0px));
+            overflow-x: hidden;
+            overflow-y: auto;
+            box-shadow: none;
+            /* 전체화면 전용: 글자·이미지 확대 기준 (rem 상속) */
+            font-size: clamp(1.08rem, 0.78rem + 1.85vmin, 1.48rem);
+        }
+        body.high-contrast .game-screen:fullscreen,
+        body.high-contrast .game-screen:-webkit-full-screen {
+            background: #1a1a1a !important;
+            border: 2px solid #FFD700 !important;
+        }
+
+        /* 전체화면: 설명 듣기·문제 읽기 등 TTS 버튼 숨김 */
+        .game-screen:fullscreen .tts-btn,
+        .game-screen:-webkit-full-screen .tts-btn {
+            display: none !important;
+        }
+
+        /* 돌아가기/시작 줄: 콘텐츠 흐름에 맞춤(세로 끝으로 밀지 않음) */
+        .game-screen:fullscreen > .btn-group,
+        .game-screen:-webkit-full-screen > .btn-group {
+            flex-shrink: 0;
+            padding-top: 10px;
+        }
+
+        /* 주요 플레이 박스: 남는 세로를 늘리지 않고 본문 크기 유지 */
+        .game-screen:fullscreen > .match-game-container,
+        .game-screen:-webkit-full-screen > .match-game-container,
+        .game-screen:fullscreen > .reaction-box,
+        .game-screen:-webkit-full-screen > .reaction-box,
+        .game-screen:fullscreen > .maze-container,
+        .game-screen:-webkit-full-screen > .maze-container,
+        .game-screen:fullscreen > .puzzle-container,
+        .game-screen:-webkit-full-screen > .puzzle-container,
+        .game-screen:fullscreen > .treasure-grid,
+        .game-screen:-webkit-full-screen > .treasure-grid,
+        .game-screen:fullscreen > .palace-room,
+        .game-screen:-webkit-full-screen > .palace-room,
+        .game-screen:fullscreen > .shadow-main,
+        .game-screen:-webkit-full-screen > .shadow-main,
+        .game-screen:fullscreen > .focus-arena,
+        .game-screen:-webkit-full-screen > .focus-arena,
+        .game-screen:fullscreen > .rotate-main,
+        .game-screen:-webkit-full-screen > .rotate-main,
+        .game-screen:fullscreen > .chain-arena,
+        .game-screen:-webkit-full-screen > .chain-arena {
+            flex: 0 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-screen:fullscreen > .pattern-grid,
+        .game-screen:-webkit-full-screen > .pattern-grid,
+        .game-screen:fullscreen > .find-diff-grid,
+        .game-screen:-webkit-full-screen > .find-diff-grid,
+        .game-screen:fullscreen > .sort-grid,
+        .game-screen:-webkit-full-screen > .sort-grid,
+        .game-screen:fullscreen > .category-options,
+        .game-screen:-webkit-full-screen > .category-options,
+        .game-screen:fullscreen > .pair-grid,
+        .game-screen:-webkit-full-screen > .pair-grid,
+        .game-screen:fullscreen > .color-options,
+        .game-screen:-webkit-full-screen > .color-options,
+        .game-screen:fullscreen > .calc-options,
+        .game-screen:-webkit-full-screen > .calc-options,
+        .game-screen:fullscreen > .direction-btns,
+        .game-screen:-webkit-full-screen > .direction-btns,
+        .game-screen:fullscreen > .letter-input,
+        .game-screen:-webkit-full-screen > .letter-input,
+        .game-screen:fullscreen > .count-options,
+        .game-screen:-webkit-full-screen > .count-options,
+        .game-screen:fullscreen > .story-cards,
+        .game-screen:-webkit-full-screen > .story-cards,
+        .game-screen:fullscreen > .melody-piano,
+        .game-screen:-webkit-full-screen > .melody-piano,
+        .game-screen:fullscreen > .shadow-options,
+        .game-screen:-webkit-full-screen > .shadow-options,
+        .game-screen:fullscreen > .rotate-options,
+        .game-screen:-webkit-full-screen > .rotate-options,
+        .game-screen:fullscreen > .word-display,
+        .game-screen:-webkit-full-screen > .word-display,
+        .game-screen:fullscreen > .counting-grid,
+        .game-screen:-webkit-full-screen > .counting-grid {
+            flex: 0 1 auto;
+            min-height: 0;
+            align-self: center;
+        }
+
+        .game-screen:fullscreen > .num-pad,
+        .game-screen:-webkit-full-screen > .num-pad {
+            flex: 0 1 auto;
+            min-height: 0;
+            max-width: min(98vw, 620px);
+            align-content: center;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(10px, 2.2vmin, 18px);
+            padding: 8px 4px 16px;
+        }
+
+        .game-screen:fullscreen .match-grid,
+        .game-screen:-webkit-full-screen .match-grid {
+            gap: clamp(8px, 2vmin, 14px);
+        }
+
+        .game-screen:fullscreen .sort-grid,
+        .game-screen:-webkit-full-screen .sort-grid {
+            max-width: min(96vw, 440px);
+        }
+
+        .game-screen:fullscreen .maze-container,
+        .game-screen:-webkit-full-screen .maze-container {
+            max-height: min(72dvh, 560px);
+            overflow: auto;
+        }
+
+        .game-screen:fullscreen > .maze-controls,
+        .game-screen:-webkit-full-screen > .maze-controls {
+            flex-shrink: 0;
+        }
+
+        /* 전체화면: 이미지·아이콘 비율 유지 + 확대 */
+        .game-screen:fullscreen img,
+        .game-screen:-webkit-full-screen img {
+            max-width: min(94vw, 720px);
+            max-height: min(52dvh, 520px);
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            object-position: center;
+            vertical-align: middle;
+        }
+
+        .game-screen:fullscreen .game-header h2,
+        .game-screen:-webkit-full-screen .game-header h2 {
+            font-size: clamp(1.25rem, 0.95rem + 2.2vmin, 1.95rem);
+        }
+
+        .game-screen:fullscreen .game-info,
+        .game-screen:-webkit-full-screen .game-info,
+        .game-screen:fullscreen .level-display,
+        .game-screen:-webkit-full-screen .level-display {
+            font-size: clamp(0.98rem, 0.85rem + 1.15vmin, 1.22rem);
+        }
+
+        .game-screen:fullscreen .level-display .level-number,
+        .game-screen:-webkit-full-screen .level-display .level-number {
+            font-size: clamp(1.15rem, 1rem + 1.4vmin, 1.45rem);
+        }
+
+        /* 반응 박스: 정사각(1:1) + 큰 터치 영역 */
+        .game-screen:fullscreen > .reaction-box,
+        .game-screen:-webkit-full-screen > .reaction-box {
+            aspect-ratio: 1;
+            width: min(82vmin, 400px);
+            height: auto;
+            max-width: min(92vw, 400px);
+            max-height: min(58dvh, 82vmin);
+            font-size: clamp(1.45rem, 1.1rem + 2.8vmin, 2.15rem);
+        }
+
+        .game-screen:fullscreen .num-btn,
+        .game-screen:-webkit-full-screen .num-btn {
+            width: calc(min(26vmin, 118px) * var(--font-scale));
+            height: calc(min(26vmin, 118px) * var(--font-scale));
+            aspect-ratio: 1;
+            font-size: calc(clamp(1.45rem, 4.8vmin, 2.15rem) * var(--font-scale));
+        }
+
+        .game-screen:fullscreen > .game-display,
+        .game-screen:-webkit-full-screen > .game-display {
+            flex: 0 1 auto;
+            font-size: clamp(1.45rem, 1rem + 3.2vmin, 2.65rem);
+            min-height: 0;
+            padding: clamp(10px, 2.2vmin, 22px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-screen:fullscreen .match-grid.grid-2x4,
+        .game-screen:-webkit-full-screen .match-grid.grid-2x4 { grid-template-columns: repeat(4, min(17vmin, 88px)); }
+        .game-screen:fullscreen .match-grid.grid-3x4,
+        .game-screen:-webkit-full-screen .match-grid.grid-3x4 { grid-template-columns: repeat(4, min(16vmin, 82px)); }
+        .game-screen:fullscreen .match-grid.grid-4x4,
+        .game-screen:-webkit-full-screen .match-grid.grid-4x4 { grid-template-columns: repeat(4, min(15vmin, 76px)); }
+        .game-screen:fullscreen .match-grid.grid-4x5,
+        .game-screen:-webkit-full-screen .match-grid.grid-4x5 { grid-template-columns: repeat(5, min(12.5vmin, 62px)); }
+
+        .game-screen:fullscreen .match-card,
+        .game-screen:-webkit-full-screen .match-card {
+            font-size: clamp(1.75rem, 5.5vmin, 3rem);
+            aspect-ratio: 1;
+        }
+
+        .game-screen:fullscreen .find-diff-grid,
+        .game-screen:-webkit-full-screen .find-diff-grid {
+            max-width: min(96vw, 480px);
+        }
+
+        .game-screen:fullscreen .diff-item,
+        .game-screen:-webkit-full-screen .diff-item {
+            font-size: clamp(2rem, 6.5vmin, 3.8rem);
+            aspect-ratio: 1;
+        }
+
+        .game-screen:fullscreen .sort-item,
+        .game-screen:-webkit-full-screen .sort-item {
+            width: calc(min(22vmin, 108px) * var(--font-scale));
+            height: calc(min(22vmin, 108px) * var(--font-scale));
+            aspect-ratio: 1;
+            font-size: calc(clamp(1.85rem, 5.5vmin, 2.85rem) * var(--font-scale));
+        }
+
+        .game-screen:fullscreen .arrow-display,
+        .game-screen:-webkit-full-screen .arrow-display {
+            font-size: clamp(5rem, 24vmin, 11rem);
+        }
+
+        .game-screen:fullscreen .direction-btns,
+        .game-screen:-webkit-full-screen .direction-btns {
+            grid-template-columns: repeat(3, min(26vmin, 118px));
+            grid-template-rows: repeat(3, min(26vmin, 118px));
+            gap: clamp(12px, 2.2vmin, 22px);
+        }
+
+        .game-screen:fullscreen .dir-btn:not(.empty),
+        .game-screen:-webkit-full-screen .dir-btn:not(.empty) {
+            aspect-ratio: 1;
+            font-size: clamp(2rem, 7vmin, 3.2rem);
+        }
+
+        .game-screen:fullscreen .color-btn,
+        .game-screen:-webkit-full-screen .color-btn {
+            min-width: min(42vw, 200px);
+            min-height: min(14vmin, 72px);
+            font-size: clamp(1.15rem, 3.8vmin, 1.65rem);
+            aspect-ratio: auto;
+        }
+
+        .game-screen:fullscreen .color-word,
+        .game-screen:-webkit-full-screen .color-word {
+            font-size: clamp(2rem, 7vmin, 3.5rem);
+        }
+
+        .game-screen:fullscreen .story-card,
+        .game-screen:-webkit-full-screen .story-card {
+            font-size: clamp(2rem, 6.5vmin, 3.5rem);
+        }
+
+        .game-screen:fullscreen .story-card .card-label,
+        .game-screen:-webkit-full-screen .story-card .card-label {
+            font-size: clamp(0.9rem, 2.8vmin, 1.1rem);
+        }
+
+        .game-screen:fullscreen .piano-key,
+        .game-screen:-webkit-full-screen .piano-key {
+            min-width: min(11vmin, 56px);
+            min-height: min(22vmin, 120px);
+            font-size: clamp(1rem, 3.2vmin, 1.35rem);
+        }
+
+        .game-screen:fullscreen .pattern-cell,
+        .game-screen:-webkit-full-screen .pattern-cell {
+            aspect-ratio: 1;
+            font-size: clamp(1.5rem, 5vmin, 2.5rem);
+        }
+
+        .game-screen:fullscreen .word-display,
+        .game-screen:-webkit-full-screen .word-display {
+            font-size: clamp(1.85rem, 1.2rem + 3.5vmin, 3rem);
+        }
+
+        .game-screen:fullscreen .letter-btn,
+        .game-screen:-webkit-full-screen .letter-btn {
+            min-width: min(12vmin, 52px);
+            min-height: min(12vmin, 52px);
+            font-size: clamp(1.2rem, 4vmin, 1.75rem);
+            aspect-ratio: 1;
+        }
+
+        .game-screen:fullscreen .calc-option,
+        .game-screen:-webkit-full-screen .calc-option {
+            font-size: clamp(1.35rem, 4.2vmin, 2rem);
+            min-height: min(12vmin, 64px);
+        }
+
+        .game-screen:fullscreen .count-btn,
+        .game-screen:-webkit-full-screen .count-btn {
+            width: calc(min(22vmin, 100px) * var(--font-scale));
+            height: calc(min(22vmin, 100px) * var(--font-scale));
+            aspect-ratio: 1;
+            font-size: calc(clamp(1.75rem, 5vmin, 2.5rem) * var(--font-scale));
+        }
+
+        .game-screen:fullscreen .pair-item,
+        .game-screen:-webkit-full-screen .pair-item {
+            font-size: clamp(1.35rem, 4vmin, 2rem);
+            min-height: min(12vmin, 56px);
+        }
+
+        .game-screen:fullscreen .category-title,
+        .game-screen:-webkit-full-screen .category-title {
+            font-size: clamp(1.35rem, 4vmin, 2rem);
+        }
+
+        .game-screen:fullscreen .category-options button,
+        .game-screen:-webkit-full-screen .category-options button {
+            font-size: clamp(1.1rem, 3.5vmin, 1.5rem);
+            min-height: min(11vmin, 52px);
         }
         
         .game-screen .game-header,
@@ -1785,6 +2124,115 @@
         
         .btn-back { background: #757575; color: white; padding: 10px 20px; font-size: 1rem; }
         .btn-group { display: flex; justify-content: center; gap: 15px; margin-top: 25px; flex-wrap: wrap; }
+
+        .match-start-btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+        }
+        .game-screen .btn-game-fullscreen {
+            flex-shrink: 0;
+        }
+        .game-screen .btn-game-pause,
+        .game-screen .btn-game-exit {
+            flex-shrink: 0;
+        }
+        .btn-game-pause {
+            min-width: 6em;
+        }
+        .btn-game-exit {
+            min-width: 48px;
+            padding: 10px 14px;
+            font-size: 1.15rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+        .game-pause-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            z-index: 99;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(3px);
+            border-radius: inherit;
+            pointer-events: auto;
+        }
+        .game-screen.game-paused .game-pause-overlay {
+            display: flex;
+        }
+        .game-pause-overlay-inner {
+            text-align: center;
+            padding: 24px 28px;
+            max-width: 90%;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(37, 99, 235, 0.25);
+        }
+        .game-pause-title {
+            margin: 0 0 10px;
+            font-size: calc(1.35rem * var(--font-scale));
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+        .game-pause-hint {
+            margin: 0;
+            font-size: calc(1rem * var(--font-scale));
+            color: var(--text-light);
+            line-height: 1.45;
+        }
+        .game-screen.game-paused .match-start-btn-row,
+        .game-screen.game-paused .btn-group {
+            position: relative;
+            z-index: 120;
+        }
+        body.high-contrast .game-pause-overlay-inner {
+            background: #1a1a1a !important;
+            border-color: #FFD700 !important;
+        }
+        body.high-contrast .game-pause-title {
+            color: #FFD700 !important;
+        }
+        body.high-contrast .game-pause-hint {
+            color: #eee !important;
+        }
+        .game-fullscreen-exit {
+            display: none;
+            position: fixed;
+            top: max(12px, env(safe-area-inset-top, 12px));
+            right: max(12px, env(safe-area-inset-right, 12px));
+            z-index: 2147483000;
+            width: 48px;
+            height: 48px;
+            padding: 0;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            line-height: 1;
+            font-weight: 900;
+            cursor: pointer;
+            font-family: inherit;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.55);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+            transition: background 0.15s ease, transform 0.15s ease;
+        }
+        .game-fullscreen-exit:hover {
+            background: rgba(0, 0, 0, 0.72);
+            transform: scale(1.05);
+        }
+        body.high-contrast .game-fullscreen-exit {
+            background: #000 !important;
+            color: #FFD700 !important;
+            border: 3px solid #FFD700 !important;
+        }
         
         /* 타이머 바 */
         .timer-bar { height: 8px; background: #E0E0E0; border-radius: 4px; margin: 12px 0; overflow: hidden; }
@@ -2038,6 +2486,31 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+        
+        .game-screen img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            object-position: center;
+        }
+        .match-grid,
+        .find-diff-grid,
+        .treasure-grid,
+        .shadow-options,
+        .counting-grid,
+        .puzzle-container,
+        .color-options,
+        .pair-grid,
+        .category-options,
+        .calc-options,
+        .rotate-options,
+        .palace-room {
+            justify-items: center;
+            align-items: center;
         }
         
         .user-input-display {
@@ -2498,6 +2971,9 @@
             background: white;
             cursor: pointer;
             text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.2s ease;
         }
         
@@ -2791,6 +3267,10 @@
             border: 2px solid #d4a900 !important;
             border-radius: 20px;
             margin: 15px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         .shadow-object {
             font-size: 4rem;
@@ -2906,6 +3386,7 @@
         /* 24. 도형 회전 */
         .rotate-main {
             display: flex;
+            align-items: center;
             justify-content: center;
             margin: 15px 0;
         }

@@ -349,6 +349,193 @@
                 }
             });
         }
+
+        // ==================== 게임 전체화면 (활성 .game-screen만 — 헤더/메뉴 제외) ====================
+        function removeGameFullscreenExitOverlay() {
+            document.querySelectorAll('#gameFullscreenExitBtn').forEach((b) => b.remove());
+        }
+
+        function ensureGameFullscreenExitOverlay(screen) {
+            removeGameFullscreenExitOverlay();
+            const el = document.createElement('button');
+            el.id = 'gameFullscreenExitBtn';
+            el.type = 'button';
+            el.className = 'game-fullscreen-exit';
+            el.setAttribute('aria-label', '전체화면 종료');
+            el.textContent = '✕';
+            el.addEventListener('click', () => exitGameFullscreen());
+            screen.appendChild(el);
+            return el;
+        }
+
+        function syncGameFullscreenExitVisibility() {
+            const fs = document.fullscreenElement || document.webkitFullscreenElement
+                || document.mozFullScreenElement || document.msFullscreenElement;
+            const btn = document.getElementById('gameFullscreenExitBtn');
+            if (!fs) {
+                removeGameFullscreenExitOverlay();
+            } else if (btn) {
+                btn.style.display = 'flex';
+            }
+        }
+
+        if (typeof document !== 'undefined') {
+            document.addEventListener('fullscreenchange', syncGameFullscreenExitVisibility);
+            document.addEventListener('webkitfullscreenchange', syncGameFullscreenExitVisibility);
+        }
+
+        function enterGameFullscreen() {
+            const screen = document.querySelector('.game-screen.active');
+            if (!screen) return;
+            const req = screen.requestFullscreen || screen.webkitRequestFullscreen
+                || screen.mozRequestFullScreen || screen.msRequestFullscreen;
+            if (!req) {
+                alert('이 브라우저에서는 전체화면을 지원하지 않습니다.');
+                return;
+            }
+            ensureGameFullscreenExitOverlay(screen);
+            req.call(screen).catch(() => {
+                removeGameFullscreenExitOverlay();
+            });
+        }
+
+        function exitGameFullscreen() {
+            const ex = document.exitFullscreen || document.webkitExitFullscreen
+                || document.mozCancelFullScreen || document.msExitFullscreen;
+            if (!ex) return;
+            if (document.fullscreenElement || document.webkitFullscreenElement
+                || document.mozFullScreenElement || document.msFullscreenElement) {
+                ex.call(document).catch(() => {});
+            }
+        }
+
+        function exitGameFullscreenIfNeeded() {
+            if (document.fullscreenElement || document.webkitFullscreenElement
+                || document.mozFullScreenElement || document.msFullscreenElement) {
+                exitGameFullscreen();
+            }
+        }
+
+        function ensureGamePauseOverlay(screen) {
+            let el = screen.querySelector('.game-pause-overlay');
+            if (el) return el;
+            el = document.createElement('div');
+            el.className = 'game-pause-overlay';
+            el.setAttribute('aria-hidden', 'true');
+            el.innerHTML = ''
+                + '<div class="game-pause-overlay-inner">'
+                + '<p class="game-pause-title">일시정지</p>'
+                + '<p class="game-pause-hint">계속하려면 <strong>일시정지</strong>를 다시 누르세요</p>'
+                + '</div>';
+            screen.appendChild(el);
+            return el;
+        }
+
+        function setGamePaused(screen, paused) {
+            if (!screen) return;
+            ensureGamePauseOverlay(screen);
+            screen.classList.toggle('game-paused', paused);
+            const overlay = screen.querySelector('.game-pause-overlay');
+            if (overlay) {
+                overlay.setAttribute('aria-hidden', paused ? 'false' : 'true');
+            }
+            const pauseBtn = screen.querySelector('.btn-game-pause');
+            if (pauseBtn) {
+                pauseBtn.textContent = paused ? '▶ 계속' : '⏸ 일시정지';
+                pauseBtn.setAttribute('aria-pressed', paused ? 'true' : 'false');
+            }
+            if (paused && typeof stopSpeaking === 'function') stopSpeaking();
+            window.dispatchEvent(new CustomEvent('appGamePause', { detail: { paused, screen } }));
+        }
+
+        function clearGamePauseAll() {
+            document.querySelectorAll('.game-screen').forEach((s) => {
+                s.classList.remove('game-paused');
+                const o = s.querySelector('.game-pause-overlay');
+                if (o) o.setAttribute('aria-hidden', 'true');
+                const p = s.querySelector('.btn-game-pause');
+                if (p) {
+                    p.textContent = '⏸ 일시정지';
+                    p.setAttribute('aria-pressed', 'false');
+                }
+            });
+        }
+
+        function attachGameFullscreenButton() {
+            const screen = document.querySelector('.game-screen.active');
+            if (!screen) return;
+
+            const existingRow = screen.querySelector('.match-start-btn-row');
+            if (existingRow) {
+                const m = existingRow.querySelector('#matchStartBtn');
+                if (m && existingRow.parentNode) {
+                    existingRow.parentNode.insertBefore(m, existingRow);
+                }
+                existingRow.remove();
+            }
+            screen.querySelectorAll('.btn-game-fullscreen, .btn-game-pause, .btn-game-exit').forEach((b) => b.remove());
+
+            const startBtn = screen.querySelector('button.btn-primary[id$="StartBtn"]');
+            if (!startBtn) return;
+
+            const fsBtn = document.createElement('button');
+            fsBtn.type = 'button';
+            fsBtn.className = 'btn btn-secondary btn-game-fullscreen';
+            fsBtn.textContent = '⛶ 전체화면';
+            fsBtn.title = '전체화면으로 보기 (해제: 화면 위 ✕ 또는 Esc)';
+            fsBtn.addEventListener('click', (ev) => {
+                ev.preventDefault();
+                enterGameFullscreen();
+            });
+
+            const pauseBtn = document.createElement('button');
+            pauseBtn.type = 'button';
+            pauseBtn.className = 'btn btn-secondary btn-game-pause';
+            pauseBtn.textContent = '⏸ 일시정지';
+            pauseBtn.title = '게임을 잠시 멈춥니다';
+            pauseBtn.setAttribute('aria-pressed', 'false');
+            pauseBtn.addEventListener('click', (ev) => {
+                ev.preventDefault();
+                setGamePaused(screen, !screen.classList.contains('game-paused'));
+            });
+
+            const exitBtn = document.createElement('button');
+            exitBtn.type = 'button';
+            exitBtn.className = 'btn btn-danger btn-game-exit';
+            exitBtn.textContent = '✕';
+            exitBtn.title = '메인 화면으로 나가기';
+            exitBtn.setAttribute('aria-label', '메인 화면으로 나가기');
+            exitBtn.addEventListener('click', (ev) => {
+                ev.preventDefault();
+                if (confirm('게임을 종료하고 메인 화면으로 나갈까요?')) {
+                    setGamePaused(screen, false);
+                    goBack();
+                }
+            });
+
+            if (startBtn.id === 'matchStartBtn') {
+                const row = document.createElement('div');
+                row.className = 'match-start-btn-row';
+                startBtn.style.marginTop = '';
+                row.style.marginTop = '15px';
+                const parent = startBtn.parentNode;
+                parent.insertBefore(row, startBtn);
+                row.appendChild(startBtn);
+                row.appendChild(fsBtn);
+                row.appendChild(pauseBtn);
+                row.appendChild(exitBtn);
+            } else {
+                startBtn.insertAdjacentElement('afterend', fsBtn);
+                fsBtn.insertAdjacentElement('afterend', pauseBtn);
+                pauseBtn.insertAdjacentElement('afterend', exitBtn);
+            }
+
+            ensureGamePauseOverlay(screen);
+            setGamePaused(screen, false);
+        }
+
+        window.enterGameFullscreen = enterGameFullscreen;
+        window.exitGameFullscreen = exitGameFullscreen;
         
         function startGame(game) {
             try {
@@ -437,6 +624,9 @@
                         }
                     }, 300);
                 }
+
+                attachGameFullscreenButton();
+                syncGameFullscreenExitVisibility();
             } catch (error) {
                 console.error('게임 시작 중 오류 발생:', error);
             }
@@ -444,6 +634,8 @@
         
         function goBack() {
             try {
+                clearGamePauseAll();
+                exitGameFullscreenIfNeeded();
                 // 레벨업 후 자동 진행 타이머가 남아있으면 정리
                 if (typeof clearAutoAdvanceAfterLevelUpTimer === 'function') {
                     clearAutoAdvanceAfterLevelUpTimer();
@@ -792,6 +984,7 @@
         
         function endGame(game, score) {
             try {
+                clearGamePauseAll();
                 clearAutoAdvanceAfterLevelUpTimer();
                 clearAllTimers();
                 gameState.gamesPlayed++;
