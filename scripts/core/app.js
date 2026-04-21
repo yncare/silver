@@ -351,8 +351,106 @@
         }
 
         // ==================== 게임 전체화면 (활성 .game-screen만 — 헤더/메뉴 제외) ====================
+        const FS_ZOOM_STORAGE_KEY = 'silverFullscreenZoom';
+
+        function getFsZoomLevel() {
+            const v = sessionStorage.getItem(FS_ZOOM_STORAGE_KEY);
+            if (v === '1' || v === '2' || v === '3') return v;
+            return '2';
+        }
+
+        function setFsZoomLevel(level, screen) {
+            if (!['1', '2', '3'].includes(level)) return;
+            sessionStorage.setItem(FS_ZOOM_STORAGE_KEY, level);
+            const wrap = screen && screen.querySelector('.game-fs-zoom-wrap');
+            if (wrap) wrap.setAttribute('data-fs-zoom', level);
+            syncFsZoomButtons(screen);
+        }
+
+        function syncFsZoomButtons(screen) {
+            const bar = screen && screen.querySelector('#gameFullscreenZoomBar');
+            if (!bar) return;
+            const wrap = screen.querySelector('.game-fs-zoom-wrap');
+            const level = (wrap && wrap.getAttribute('data-fs-zoom')) || getFsZoomLevel();
+            bar.querySelectorAll('.game-fs-zoom-btn').forEach((btn) => {
+                const on = btn.getAttribute('data-zoom') === level;
+                btn.classList.toggle('active', on);
+                btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+            });
+        }
+
         function removeGameFullscreenExitOverlay() {
             document.querySelectorAll('#gameFullscreenExitBtn').forEach((b) => b.remove());
+        }
+
+        function removeGameFullscreenZoomBar() {
+            document.querySelectorAll('#gameFullscreenZoomBar').forEach((el) => el.remove());
+        }
+
+        function unwrapAllFsZoomWraps() {
+            document.querySelectorAll('.game-fs-zoom-wrap').forEach((wrap) => {
+                const screen = wrap.parentElement;
+                if (!screen) return;
+                while (wrap.firstChild) {
+                    screen.insertBefore(wrap.firstChild, wrap);
+                }
+                wrap.remove();
+            });
+        }
+
+        /** 전체화면에서만: 본문만 확대(종료·일시정지·크기 버튼은 래퍼 밖에 둠) */
+        function ensureFsZoomWrap(screen) {
+            let wrap = screen.querySelector('.game-fs-zoom-wrap');
+            if (wrap) {
+                wrap.setAttribute('data-fs-zoom', getFsZoomLevel());
+                return wrap;
+            }
+            wrap = document.createElement('div');
+            wrap.className = 'game-fs-zoom-wrap';
+            const skipIds = new Set(['gameFullscreenExitBtn', 'gameFullscreenZoomBar']);
+            const toMove = [];
+            Array.from(screen.children).forEach((el) => {
+                if (skipIds.has(el.id)) return;
+                if (el.classList && el.classList.contains('game-pause-overlay')) return;
+                toMove.push(el);
+            });
+            toMove.forEach((el) => {
+                screen.removeChild(el);
+                wrap.appendChild(el);
+            });
+            screen.insertBefore(wrap, screen.firstChild);
+            wrap.setAttribute('data-fs-zoom', getFsZoomLevel());
+            return wrap;
+        }
+
+        function ensureGameFullscreenZoomBar(screen) {
+            removeGameFullscreenZoomBar();
+            const bar = document.createElement('div');
+            bar.id = 'gameFullscreenZoomBar';
+            bar.className = 'game-fs-zoom-bar';
+            bar.setAttribute('role', 'toolbar');
+            bar.setAttribute('aria-label', '전체화면 크기: 보통, 크게, 더 크게');
+            const levels = [
+                { id: '1', label: '보통', title: '기본 크기' },
+                { id: '2', label: '크게', title: '글자·화면을 크게' },
+                { id: '3', label: '더 크게', title: '최대로 크게 보기' },
+            ];
+            levels.forEach(({ id, label, title }) => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'game-fs-zoom-btn';
+                b.setAttribute('data-zoom', id);
+                b.title = title;
+                b.textContent = label;
+                b.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    setFsZoomLevel(id, screen);
+                });
+                bar.appendChild(b);
+            });
+            screen.appendChild(bar);
+            syncFsZoomButtons(screen);
+            return bar;
         }
 
         function ensureGameFullscreenExitOverlay(screen) {
@@ -374,6 +472,8 @@
             const btn = document.getElementById('gameFullscreenExitBtn');
             if (!fs) {
                 removeGameFullscreenExitOverlay();
+                removeGameFullscreenZoomBar();
+                unwrapAllFsZoomWraps();
             } else if (btn) {
                 btn.style.display = 'flex';
             }
@@ -393,9 +493,13 @@
                 alert('이 브라우저에서는 전체화면을 지원하지 않습니다.');
                 return;
             }
+            ensureFsZoomWrap(screen);
             ensureGameFullscreenExitOverlay(screen);
+            ensureGameFullscreenZoomBar(screen);
             req.call(screen).catch(() => {
                 removeGameFullscreenExitOverlay();
+                removeGameFullscreenZoomBar();
+                unwrapAllFsZoomWraps();
             });
         }
 

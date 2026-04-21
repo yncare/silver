@@ -1559,14 +1559,13 @@
             text-align: center;
         }
 
-        /* 게임만 전체화면: 배경은 뷰포트 전체, 본문은 콘텐츠 높이에 맞춤·세로 가운데 */
+        /* 게임만 전체화면: 배경은 뷰포트 전체, 본문은 상단부터 배치 */
         .game-screen:fullscreen,
         .game-screen:-webkit-full-screen {
             display: flex !important;
             flex-direction: column;
             align-items: stretch;
-            justify-content: center;
-            justify-content: safe center;
+            justify-content: flex-start;
             width: 100%;
             min-height: 100vh;
             min-height: 100dvh;
@@ -1633,7 +1632,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
         }
 
         .game-screen:fullscreen > .pattern-grid,
@@ -1697,7 +1696,7 @@
 
         .game-screen:fullscreen .maze-container,
         .game-screen:-webkit-full-screen .maze-container {
-            max-height: min(72dvh, 560px);
+            max-height: min(78dvh, 720px);
             overflow: auto;
         }
 
@@ -1706,15 +1705,15 @@
             flex-shrink: 0;
         }
 
-        /* 전체화면: 이미지·아이콘 비율 유지 + 확대 */
+        /* 전체화면: 이미지는 뷰포트 비율에 맞춰 크게(비율 유지) */
         .game-screen:fullscreen img,
         .game-screen:-webkit-full-screen img {
-            max-width: min(94vw, 720px);
-            max-height: min(52dvh, 520px);
+            max-width: min(98vw, 100vw - 24px);
+            max-height: min(72dvh, 88vmin);
             width: auto;
             height: auto;
             object-fit: contain;
-            object-position: center;
+            object-position: center top;
             vertical-align: middle;
         }
 
@@ -1739,10 +1738,10 @@
         .game-screen:fullscreen > .reaction-box,
         .game-screen:-webkit-full-screen > .reaction-box {
             aspect-ratio: 1;
-            width: min(82vmin, 400px);
+            width: min(88vmin, 480px);
             height: auto;
-            max-width: min(92vw, 400px);
-            max-height: min(58dvh, 82vmin);
+            max-width: min(96vw, 480px);
+            max-height: min(72dvh, 88vmin);
             font-size: clamp(1.45rem, 1.1rem + 2.8vmin, 2.15rem);
         }
 
@@ -1782,7 +1781,7 @@
 
         .game-screen:fullscreen .find-diff-grid,
         .game-screen:-webkit-full-screen .find-diff-grid {
-            max-width: min(96vw, 480px);
+            max-width: min(98vw, 920px);
         }
 
         .game-screen:fullscreen .diff-item,
@@ -2201,6 +2200,84 @@
         body.high-contrast .game-pause-hint {
             color: #eee !important;
         }
+
+        /* 전체화면 3단계 크기(본문 래퍼만 확대 — 종료/크기 버튼은 비율 유지) */
+        .game-screen:fullscreen .game-fs-zoom-wrap,
+        .game-screen:-webkit-full-screen .game-fs-zoom-wrap {
+            width: 100%;
+            box-sizing: border-box;
+            transform-origin: top center;
+        }
+        .game-screen:fullscreen .game-fs-zoom-wrap[data-fs-zoom="1"],
+        .game-screen:-webkit-full-screen .game-fs-zoom-wrap[data-fs-zoom="1"] {
+            zoom: 1;
+        }
+        .game-screen:fullscreen .game-fs-zoom-wrap[data-fs-zoom="2"],
+        .game-screen:-webkit-full-screen .game-fs-zoom-wrap[data-fs-zoom="2"] {
+            zoom: 1.22;
+        }
+        .game-screen:fullscreen .game-fs-zoom-wrap[data-fs-zoom="3"],
+        .game-screen:-webkit-full-screen .game-fs-zoom-wrap[data-fs-zoom="3"] {
+            zoom: 1.42;
+        }
+        #gameFullscreenZoomBar.game-fs-zoom-bar {
+            display: none;
+            position: fixed;
+            left: max(10px, env(safe-area-inset-left, 10px));
+            top: max(10px, env(safe-area-inset-top, 10px));
+            z-index: 2147482600;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+            max-width: calc(100vw - 72px);
+            padding: 6px 8px;
+            border-radius: 14px;
+            background: rgba(0, 0, 0, 0.52);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+            font-family: inherit;
+        }
+        .game-screen:fullscreen #gameFullscreenZoomBar.game-fs-zoom-bar,
+        .game-screen:-webkit-full-screen #gameFullscreenZoomBar.game-fs-zoom-bar {
+            display: flex;
+        }
+        .game-fs-zoom-btn {
+            margin: 0;
+            padding: 8px 12px;
+            min-height: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            border-radius: 10px;
+            font-size: calc(0.92rem * var(--font-scale));
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.12);
+            transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+        }
+        .game-fs-zoom-btn:hover {
+            background: rgba(255, 255, 255, 0.22);
+            border-color: rgba(255, 255, 255, 0.55);
+        }
+        .game-fs-zoom-btn.active {
+            background: rgba(76, 175, 80, 0.55);
+            border-color: #a5d6a7;
+            box-shadow: 0 0 0 2px rgba(129, 199, 132, 0.45);
+        }
+        body.high-contrast .game-fs-zoom-btn {
+            border-color: #FFD700 !important;
+            color: #FFD700 !important;
+            background: #000 !important;
+        }
+        body.high-contrast .game-fs-zoom-btn.active {
+            background: #1a1a1a !important;
+            box-shadow: 0 0 0 2px #FFD700 !important;
+        }
+        body.high-contrast #gameFullscreenZoomBar.game-fs-zoom-bar {
+            background: rgba(0, 0, 0, 0.85) !important;
+            border: 2px solid #FFD700;
+        }
+
         .game-fullscreen-exit {
             display: none;
             position: fixed;
