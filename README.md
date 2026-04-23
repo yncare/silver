@@ -1,56 +1,46 @@
-## 프로젝트 검증/정리 결과
+# Good Silver Brain Training
 
-### 실행(권장)
-- **첫 렌딩 페이지**: `index.html`
-  - 메인 앱이 바로 실행됩니다.
+정적 HTML/CSS/JavaScript 기반의 시니어 두뇌 훈련 웹앱입니다.
 
-### 구조 요약
-- **메인 앱**: `brain-training.html`
-- **모듈**
-  - 스타일: `styles/app.css`
-  - 스크립트: `scripts/core/*`, `scripts/games/*`
-- **이미지**
-  - 메뉴 이미지: `assets/` (예: `assets/card_match.png`, `assets/sequence.png`)
-  - 로고 이미지: `assets/logo.png`
-- **임시/백업**
-  - 이전 파일/백업: `temp/legacy/*`, `temp/backups/brain-training/*`
-  - 미사용 리소스: `temp/unused/*`
-  - 배포 워크플로우 백업: `temp/legacy-github/workflows/*`
+## Project Structure
 
-### 적용한 수정(표준화/정규화/모듈화)
-- **모듈화**: HTML 내부 CSS/JS를 파일로 분리(`styles/`, `scripts/`)
-- **표준화**: 리소스 경로를 `assets/`로 통일
-- **정리**: 불필요/백업 파일을 `temp/`로 이동
-
-### 추가로 권장(선택)
-- GitHub Pages 배포를 유지하려면 `temp/legacy-github/workflows`를 `.github/workflows`로 되돌리세요.
-
----
-
-## GitHub에 올리기(커밋/푸시)
-
-원격 저장소: `https://github.com/yncare/silver.git`
-
-아래 명령은 **프로젝트 폴더(이 README가 있는 폴더)** 에서 실행하세요.
-
-```bash
-git init
-git branch -M main
-git add .
-git commit -m "Initial commit: static site + GitHub Pages workflow"
-git remote add origin https://github.com/yncare/silver.git
-git push -u origin main
+```text
+.
+├── public/                 # GitHub Pages에 배포되는 정적 사이트 루트
+│   ├── index.html
+│   ├── assets/
+│   ├── scripts/
+│   │   ├── core/           # 프로필, 접근성, TTS, 레벨, 리포트 등 공통 로직
+│   │   └── games/          # 게임별 실행 로직
+│   └── styles/
+├── docs/                   # 프로젝트 문서
+├── .github/workflows/      # CI/CD 워크플로
+├── temp/                   # 임시/백업 파일, Git 추적 제외
+├── _local/                 # 로컬 원본/압축 산출물, Git 추적 제외
+├── CLAUDE.md
+└── README.md
 ```
 
-> 참고: 만약 `git` 명령이 인식되지 않으면, 새 터미널을 다시 열거나 **Git Bash**에서 동일 명령을 실행하세요.
+## Run Locally
 
-## GitHub Pages로 배포
+정적 사이트이므로 `public/index.html`을 브라우저에서 열면 실행됩니다.
 
-이 프로젝트는 정적 사이트라서 빌드 없이 바로 배포합니다.
-이미 `.github/workflows/pages.yml`이 포함되어 있어, `main` 브랜치에 푸시되면 자동으로 배포됩니다.
+로컬 서버로 확인하려면:
 
-1) GitHub 저장소에서 **Settings → Pages**로 이동  
-2) **Build and deployment → Source**를 **GitHub Actions**로 선택  
-3) `main`에 푸시하면 Actions가 실행되고, 배포 URL이 생성됩니다.
+```bash
+cd public
+python -m http.server 8000
+```
 
+그 다음 브라우저에서 `http://localhost:8000`으로 접속합니다.
 
+## Deployment
+
+GitHub Pages 배포 워크플로는 `.github/workflows/deploy.yml`에 있으며, `public/` 디렉토리만 배포 산출물로 업로드합니다.
+
+## Production Notes
+
+- `public/` 아래에는 실제 서비스에 필요한 파일만 둡니다.
+- 대용량 압축 파일, 원본 이미지, 실험 파일은 `_local/` 또는 외부 스토리지에 보관합니다.
+- 새 게임을 추가할 때는 HTML 마크업, `scripts/games/`, 공통 등록 로직의 책임을 분리해 유지합니다.
+- 배포 전에는 JS 구문 검증, 주요 이미지/스크립트 경로 검증, 모바일 화면 확인을 수행합니다.

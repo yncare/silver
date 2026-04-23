@@ -1,5 +1,17 @@
 # Temporary files
 temp/
+_local/
+
+# Local archives and source exports
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.gz
+
+# Editor/local environment files
+.env
+.env.*
 
 # OS files
 .DS_Store
