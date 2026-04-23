@@ -5,7 +5,7 @@
             direction: '방향 맞추기', word: '단어 완성', counting: '개수 세기', pairing: '짝 연결',
             timing: '시간 맞추기', reverse: '거꾸로 말하기', category: '분류하기', story: '이야기 순서',
             maze: '미로 탈출', melody: '멜로디 기억', puzzle: '퍼즐 맞추기', treasure: '보물 찾기',
-            shadow: '그림자 매칭', focus: '집중 타겟', palace: '기억의 방', rotate: '도형 회전', chain: '연쇄 반응'
+            shadow: '그림자 매칭', focus: '집중 타겟', palace: '기억의 방', rotate: '도형 회전', chain: '숫자순서 찾기'
         };
         
         function showStatsGraph() {

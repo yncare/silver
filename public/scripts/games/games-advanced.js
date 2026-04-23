@@ -713,7 +713,7 @@
             document.getElementById('rotateStartBtn').style.display = '';
         }
         
-        // 25. 연쇄 반응 (집중력)
+        // 25. 숫자순서 찾기 (집중력)
         let chainLevel = 1, chainScore = 0, chainNumbers = [], chainCurrent = 1, chainTimer = null, chainStarted = false;
         
         function initChainGame() {
