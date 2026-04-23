@@ -576,7 +576,13 @@
             for(let i = 0; i < 9; i++) {
                 const spot = document.createElement('div');
                 spot.className = 'palace-spot';
-                if(showItems) { const item = palaceItems.find(it => it.pos === i); spot.textContent = item ? item.item : ''; }
+                if (showItems) {
+                    const item = palaceItems.find(it => it.pos === i);
+                    spot.textContent = item ? item.item : '';
+                } else {
+                    spot.classList.add('hidden-spot');
+                    spot.innerHTML = '<span class="hidden-square">■</span>';
+                }
                 room.appendChild(spot);
             }
         }

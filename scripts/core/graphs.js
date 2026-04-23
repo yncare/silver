@@ -1,7 +1,7 @@
 ﻿// ==================== 그래프 기능 ====================
         const gameNames = {
             match: '짝 맞추기', sequence: '숫자 기억', calc: '암산 훈련', color: '색상 맞추기',
-            pattern: '패턴 기억', reaction: '반응 속도', findDiff: '다른 것 찾기', sorting: '순서 정렬',
+            pattern: '창문 기억', reaction: '반응 속도', findDiff: '다른 것 찾기', sorting: '순서 정렬',
             direction: '방향 맞추기', word: '단어 완성', counting: '개수 세기', pairing: '짝 연결',
             timing: '시간 맞추기', reverse: '거꾸로 말하기', category: '분류하기', story: '이야기 순서',
             maze: '미로 탈출', melody: '멜로디 기억', puzzle: '퍼즐 맞추기', treasure: '보물 찾기',

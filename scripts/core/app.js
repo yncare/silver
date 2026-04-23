@@ -731,13 +731,20 @@
 
                 attachGameFullscreenButton();
                 syncGameFullscreenExitVisibility();
+
+                try {
+                    window.__silverGameStatePushed = true;
+                    window.history.pushState({ silver: 'game' }, '', window.location.href);
+                } catch (e) { /* ignore */ }
             } catch (error) {
                 console.error('게임 시작 중 오류 발생:', error);
             }
         }
-        
-        function goBack() {
+
+        /** 메인 메뉴로 복귀(히스토리 없이 DOM만 정리) — popstate·직접 호출 공용 */
+        function leaveGameToMainMenu() {
             try {
+                window.__silverGameStatePushed = false;
                 clearGamePauseAll();
                 exitGameFullscreenIfNeeded();
                 // 레벨업 후 자동 진행 타이머가 남아있으면 정리
@@ -749,23 +756,23 @@
                 }
                 if (typeof stopSpeaking === 'function') stopSpeaking(); // 음성 안내 중지
                 document.querySelectorAll('.game-screen').forEach(s => s.classList.remove('active'));
-                
+
                 const mainMenu = document.getElementById('mainMenu');
                 // 홈 복귀 시 레이아웃(특히 전체보기 grid)이 CSS로 적용되도록 inline display는 제거
                 if (mainMenu) mainMenu.style.display = '';
-                
+
                 const todayStats = document.querySelector('.today-stats');
                 if (todayStats) todayStats.style.display = 'block';
-                
+
                 const scoreDisplay = document.querySelector('.score-display');
                 if (scoreDisplay) scoreDisplay.style.display = 'flex';
-                
+
                 const userBadge = document.querySelector('.user-badge');
                 if (userBadge && userBadge.parentElement) userBadge.parentElement.style.display = 'block';
-                
+
                 const ttsToggle = document.querySelector('.tts-auto-toggle');
                 if (ttsToggle) ttsToggle.style.display = 'flex';
-                
+
                 clearAllTimers();
                 if (typeof saveUserData === 'function') saveUserData(); // 사용자 데이터 저장
                 if (typeof updateUI === 'function') updateUI();
@@ -773,14 +780,36 @@
                 // 메인으로 돌아왔을 때는 배지 획득 팝업 비활성화
                 window.__allowBadgeUnlockPopup = false;
 
-                // 뒤로가기 후에도 "전체보기" 상태로 복귀
+                // 복귀 후에도 선택했던 메뉴 카테고리 상태 유지
                 if (typeof filterMenuCategory === 'function') {
                     const cat = (typeof gameState === 'object' && gameState && gameState.menuCategoryBeforeGame) ? gameState.menuCategoryBeforeGame : (window.selectedMenuCategory || 'all');
                     filterMenuCategory(cat, { scroll: false });
                 }
             } catch (error) {
-                console.error('뒤로가기 처리 중 오류:', error);
+                console.error('메인 메뉴 복귀 처리 중 오류:', error);
             }
+        }
+
+        /**
+         * 이전 화면으로 이동: 게임 진입 시 pushState 해 두었으면 history.back() (브라우저 뒤로가기와 동일),
+         * 아니면 메인 메뉴로만 복귀
+         */
+        function goBack() {
+            try {
+                if (window.__silverGameStatePushed && window.history.length > 1) {
+                    window.history.back();
+                    return;
+                }
+            } catch (e) { /* fall through */ }
+            leaveGameToMainMenu();
+        }
+
+        if (typeof window !== 'undefined') {
+            window.addEventListener('popstate', function silverTrainingPopstate() {
+                const activeGame = document.querySelector('.game-screen.active');
+                if (!activeGame) return;
+                leaveGameToMainMenu();
+            });
         }
 
         // ==================== 메인 메뉴 카테고리 필터 ====================
@@ -1171,9 +1200,6 @@
                 
                 const gameComplete = document.getElementById('gameComplete');
                 if (gameComplete) gameComplete.classList.add('active');
-                
-                // 능력 리포트 생성
-                generateAbilityReport(game, score, accuracy);
 
                 // 레벨업이 발생한 경우: 팝업 없이 자동으로 다음 단계(같은 게임 재시작)로 진행
                 if (leveledUp) {
@@ -1191,91 +1217,6 @@
             } catch (error) {
                 console.error('게임 종료 처리 중 오류:', error);
             }
-        }
-        
-        // 능력 리포트 생성
-        function generateAbilityReport(game, score, accuracy) {
-            // 게임별 능력 분류
-            const gameAbilities = {
-                match: { memory: 90, reaction: 30, focus: 70, motor: 50 },
-                sequence: { memory: 100, reaction: 20, focus: 80, motor: 30 },
-                calc: { memory: 40, reaction: 50, focus: 90, motor: 20 },
-                color: { memory: 30, reaction: 70, focus: 100, motor: 20 },
-                pattern: { memory: 100, reaction: 20, focus: 80, motor: 40 },
-                reaction: { memory: 10, reaction: 100, focus: 60, motor: 80 },
-                findDiff: { memory: 40, reaction: 50, focus: 100, motor: 30 },
-                sorting: { memory: 50, reaction: 40, focus: 70, motor: 90 },
-                direction: { memory: 30, reaction: 80, focus: 90, motor: 60 },
-                word: { memory: 70, reaction: 30, focus: 80, motor: 40 },
-                counting: { memory: 50, reaction: 40, focus: 90, motor: 20 },
-                pairing: { memory: 60, reaction: 30, focus: 70, motor: 80 },
-                timing: { memory: 20, reaction: 100, focus: 80, motor: 70 },
-                reverse: { memory: 90, reaction: 30, focus: 80, motor: 40 },
-                category: { memory: 60, reaction: 40, focus: 90, motor: 30 },
-                story: { memory: 80, reaction: 30, focus: 90, motor: 50 }
-            };
-            
-            const abilities = gameAbilities[game] || { memory: 50, reaction: 50, focus: 50, motor: 50 };
-            const scoreMultiplier = Math.min(accuracy / 100, 1) * 0.5 + 0.5; // 0.5 ~ 1.0
-            
-            // 각 능력 수치 계산 (게임 기본값 * 점수 배율)
-            const memoryScore = Math.round(abilities.memory * scoreMultiplier);
-            const reactionScore = Math.round(abilities.reaction * scoreMultiplier);
-            const focusScore = Math.round(abilities.focus * scoreMultiplier);
-            const motorScore = Math.round(abilities.motor * scoreMultiplier);
-            
-            // 리포트 UI 업데이트
-            updateAbilityBar('memory', memoryScore);
-            updateAbilityBar('reaction', reactionScore);
-            updateAbilityBar('focus', focusScore);
-            updateAbilityBar('motor', motorScore);
-            
-            // 개선 팁 생성
-            const tips = generateImprovementTip(game, accuracy, { memoryScore, reactionScore, focusScore, motorScore });
-            const tipText = document.getElementById('tipText');
-            if (tipText) tipText.textContent = tips;
-        }
-        
-        function updateAbilityBar(ability, value) {
-            const fill = document.getElementById(ability + 'Fill');
-            const valueEl = document.getElementById(ability + 'Value');
-            
-            if (fill) {
-                fill.style.width = value + '%';
-                fill.className = 'ability-fill';
-                if (value < 40) fill.classList.add('low');
-                else if (value >= 70) fill.classList.add('high');
-            }
-            if (valueEl) {
-                if (value >= 80) valueEl.textContent = '매우 좋음';
-                else if (value >= 60) valueEl.textContent = '좋음';
-                else if (value >= 40) valueEl.textContent = '보통';
-                else valueEl.textContent = '향상 필요';
-            }
-        }
-        
-        function generateImprovementTip(game, accuracy, scores) {
-            const gameTips = {
-                match: { good: '기억력이 향상되고 있어요! 더 어려운 레벨에 도전해보세요.', bad: '카드 위치를 천천히 기억해보세요. 규칙적인 패턴을 찾으면 도움이 됩니다.' },
-                sequence: { good: '숫자 기억력이 좋아지고 있어요! 일상에서도 전화번호를 외워보세요.', bad: '숫자를 소리내어 읽으면 기억에 도움이 됩니다. 천천히 연습해보세요.' },
-                calc: { good: '암산 능력이 훌륭해요! 계속 훈련하면 더 빨라질 거예요.', bad: '작은 숫자부터 시작해보세요. 10단위로 묶어서 계산하면 쉬워요.' },
-                color: { good: '집중력이 좋아지고 있어요! 색상 인지 능력도 향상되었어요.', bad: '글자가 아닌 색상에만 집중해보세요. 천천히 읽으면 덜 헷갈려요.' },
-                pattern: { good: '패턴 인식 능력이 좋아요! 더 많은 칸에 도전해보세요.', bad: '켜진 칸을 순서대로 기억해보세요. 이야기를 만들면 도움이 됩니다.' },
-                reaction: { good: '반응 속도가 빨라지고 있어요! 손가락 운동도 함께 해보세요.', bad: '화면을 주시하며 준비하세요. 매일 조금씩 연습하면 빨라져요.' },
-                findDiff: { good: '관찰력이 뛰어나요! 세부 사항을 잘 구분하고 있어요.', bad: '한 줄씩 천천히 살펴보세요. 급하지 않게 비교하면 찾기 쉬워요.' },
-                sorting: { good: '순서 정렬 능력이 좋아요! 손가락 조작도 정확해지고 있어요.', bad: '작은 숫자부터 차례로 누르세요. 손가락 힘 조절 연습이 도움됩니다.' },
-                direction: { good: '방향 인지 능력이 향상되었어요! 길찾기에도 도움이 될 거예요.', bad: '화살표 방향을 먼저 확인하고 누르세요. 천천히 해도 괜찮아요.' },
-                word: { good: '어휘력이 좋아지고 있어요! 책 읽기도 함께 해보세요.', bad: '빈칸 앞뒤 글자를 보며 유추해보세요. 평소 단어를 많이 접해보세요.' },
-                counting: { good: '개수 세기가 정확해요! 집중력도 좋아지고 있어요.', bad: '손가락으로 짚으며 세면 정확해요. 그룹으로 나눠서 세보세요.' },
-                pairing: { good: '연결 능력이 좋아요! 관계 파악 능력도 향상되었어요.', bad: '관련 있는 단어를 먼저 찾아보세요. 천천히 생각하면 찾을 수 있어요.' },
-                timing: { good: '시간 감각이 좋아지고 있어요! 정확도가 높아지고 있어요.', bad: '마음속으로 초를 세어보세요. 규칙적인 리듬이 도움됩니다.' },
-                reverse: { good: '언어 처리 능력이 좋아요! 두뇌 활성화에 매우 효과적이에요.', bad: '글자를 하나씩 읽으며 뒤에서부터 눌러보세요. 연습하면 익숙해져요.' },
-                category: { good: '분류 능력이 좋아요! 체계적 사고력이 향상되고 있어요.', bad: '카테고리를 먼저 확인하고 해당하는 것만 선택하세요.' },
-                story: { good: '순서 파악 능력이 뛰어나요! 논리적 사고력도 좋아지고 있어요.', bad: '이야기의 흐름을 생각하며 순서를 정해보세요. 일상 순서를 떠올려보세요.' }
-            };
-            
-            const tip = gameTips[game] || { good: '잘하고 있어요!', bad: '연습하면 늘어요!' };
-            return accuracy >= 50 ? tip.good : tip.bad;
         }
         
         // 훈련 기록 저장

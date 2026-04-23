@@ -33,32 +33,29 @@
             matchConsecutive = 0;
             matchMaxConsecutive = 0;
             
-            setTextByIds(['matchLevel', 'matchLevel2'], 1);
+            setTextById('matchLevel', 1);
             setTextById('matchScore', 0);
             setTextById('matchTries', 0);
-            setTextByIds(['matchMatches', 'matchMatches2'], 0);
+            setTextById('matchMatches', 0);
             document.getElementById('matchGrid').innerHTML = '';
             document.getElementById('matchStartBtn').style.display = 'inline-block';
-            document.getElementById('stageButtons').style.display = 'flex';
+            const sb = document.getElementById('stageButtons');
+            if (sb) sb.style.display = 'flex';
             
-            updateMatchStageDisplay();
+            selectMatchStage(matchStage);
         }
         
         function selectMatchStage(stage) {
             matchStage = stage;
             document.querySelectorAll('.stage-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.stage-btn.${stage}`).classList.add('active');
-            updateMatchStageDisplay();
-        }
-        
-        function updateMatchStageDisplay() {
-            const stageNames = { animal: '🐾 동물', plant: '🌿 식물', mixed: '🎨 혼합' };
-            setTextById('matchStage', stageNames[matchStage]);
+            const sel = document.querySelector(`.stage-btn.${stage}`);
+            if (sel) sel.classList.add('active');
         }
         
         function startMatchGame() {
             document.getElementById('matchStartBtn').style.display = 'none';
-            document.getElementById('stageButtons').style.display = 'none';
+            const sb = document.getElementById('stageButtons');
+            if (sb) sb.style.display = 'none';
             generateMatchLevel();
         }
         
@@ -87,9 +84,8 @@
             matchFlipped = [];
             matchCanFlip = true;
             
-            setTextByIds(['matchLevel', 'matchLevel2'], matchLevel);
-            setTextByIds(['matchMatches', 'matchMatches2'], 0);
-            setTextById('matchTotal', matchTotalPairs);
+            setTextById('matchLevel', matchLevel);
+            setTextById('matchMatches', 0);
             
             // 그리드 클래스 결정
             let gridClass = 'grid-2x4';
@@ -145,7 +141,7 @@
                     if (matchConsecutive > matchMaxConsecutive) matchMaxConsecutive = matchConsecutive;
                     gameState.correctAnswers++;
                     checkLevelUp(true, 'match');
-                    setTextByIds(['matchMatches', 'matchMatches2'], matchPairs);
+                    setTextById('matchMatches', matchPairs);
                     
                     const pts = 10 + matchLevel * 2;
                     matchScore += pts;
@@ -194,13 +190,9 @@
 
 // ==================== 1. 숫자 기억 ====================
         let sequence = [], userSequence = '', seqLevel = 1, seqScore = 0, seqTimer = null;
-        let seqChanceCount = 2; // 다시보기 찬스 횟수
-        let seqCanUseChance = false; // 찬스 사용 가능 여부
         
         function initSequenceGame() {
             seqLevel = 1; seqScore = 0; sequence = []; userSequence = '';
-            seqChanceCount = 2; // 찬스 횟수 초기화
-            seqCanUseChance = false;
             document.getElementById('seqScore').textContent = '0';
             document.getElementById('seqDisplay').textContent = '시작을 눌러주세요!';
             document.getElementById('userInput').textContent = '';
@@ -208,53 +200,6 @@
             document.getElementById('numPad').style.pointerEvents = 'none';
             document.getElementById('seqStartBtn').style.display = 'inline-block';
             document.getElementById('seqInputHint').style.display = 'none';
-            updateSeqChanceBtn();
-        }
-        
-        // 찬스 버튼 상태 업데이트
-        function updateSeqChanceBtn() {
-            const btn = document.getElementById('seqChanceBtn');
-            const count = document.getElementById('seqChanceCount');
-            if (btn && count) {
-                count.textContent = seqChanceCount;
-                btn.disabled = !seqCanUseChance || seqChanceCount <= 0;
-            }
-        }
-        
-        // 다시보기 찬스 사용
-        function useSequenceChance() {
-            if (seqChanceCount <= 0 || !seqCanUseChance) return;
-            
-            seqChanceCount--;
-            seqCanUseChance = false;
-            updateSeqChanceBtn();
-            
-            // 찬스 사용 애니메이션
-            const btn = document.getElementById('seqChanceBtn');
-            btn.classList.add('chance-used');
-            setTimeout(() => btn.classList.remove('chance-used'), 500);
-            
-            // 타이머 일시정지
-            if (seqTimer) clearInterval(seqTimer);
-            
-            // 숫자 다시 보여주기
-            const disp = document.getElementById('seqDisplay');
-            document.getElementById('numPad').style.pointerEvents = 'none';
-            disp.textContent = sequence.join(' ');
-            disp.style.color = '#FF5722'; // 찬스 표시
-            
-            // 음성으로 알려주기
-            if (ttsAutoEnabled) {
-                speak('다시 한번 보세요! ' + sequence.join(', '));
-            }
-            
-            // 1.5초 후 다시 숨기기
-            setTimeout(() => {
-                disp.textContent = '숫자를 입력하세요!';
-                disp.style.color = '';
-                document.getElementById('numPad').style.pointerEvents = 'auto';
-                startSeqTimer();
-            }, 2000);
         }
         
         function startSequence() {
@@ -286,8 +231,6 @@
             disp.textContent = '집중하세요...';
             disp.style.color = ''; // 색상 초기화
             document.getElementById('numPad').style.pointerEvents = 'none';
-            seqCanUseChance = false;
-            updateSeqChanceBtn();
             
             setTimeout(() => {
                 disp.textContent = sequence.join(' ');
@@ -297,9 +240,6 @@
                     userSequence = '';
                     document.getElementById('userInput').textContent = '';
                     document.getElementById('numPad').style.pointerEvents = 'auto';
-                    // 찬스 사용 가능하게 설정
-                    seqCanUseChance = seqChanceCount > 0;
-                    updateSeqChanceBtn();
                     startSeqTimer();
                 }, showTime);
             }, 400);
@@ -374,8 +314,39 @@
                 res.style.display = 'block';
                 playWrongSound();
                 checkLevelUp(false, 'sequence');
-                currentGameData = { sequenceLength: seqLevel - 1, finalLevel: getGameLevel('sequence') };
-                setTimeout(() => endGame('sequence', seqScore), 1500);
+                setTimeout(() => {
+                    res.style.display = 'none';
+                    recoverSequenceToStart();
+                }, 1500);
+            }
+        }
+
+        /** 시간 초과·오답 시 게임 종료 없이 「시작」 대기 화면으로 복구 */
+        function recoverSequenceToStart() {
+            try {
+                if (seqTimer) {
+                    clearInterval(seqTimer);
+                    seqTimer = null;
+                }
+                const res = document.getElementById('seqResult');
+                if (res) res.style.display = 'none';
+                const disp = document.getElementById('seqDisplay');
+                if (disp) {
+                    disp.textContent = '시작을 눌러주세요!';
+                    disp.style.color = '';
+                }
+                userSequence = '';
+                const ui = document.getElementById('userInput');
+                if (ui) ui.textContent = '';
+                document.getElementById('numPad').style.pointerEvents = 'none';
+                const startBtn = document.getElementById('seqStartBtn');
+                if (startBtn) startBtn.style.display = 'inline-block';
+                const tb = document.getElementById('seqTimer');
+                if (tb) tb.style.width = '100%';
+                const hint = document.getElementById('seqInputHint');
+                if (hint) hint.style.display = 'none';
+            } catch (e) {
+                console.error('숫자 기억 복구 중 오류:', e);
             }
         }
 
@@ -570,70 +541,17 @@
             setTimeout(nextColorProblem, 1200);
         }
 
-// ==================== 5. 패턴 기억 ====================
+// ==================== 5. 창문 기억 ====================
         let patternLevel = 1, patternScore = 0, pattern = [], userPattern = [], patternPhase = 'show';
-        let patternChanceCount = 2; // 다시보기 찬스 횟수
-        let patternCanUseChance = false; // 찬스 사용 가능 여부
         
         function initPatternGame() {
             patternLevel = 1; patternScore = 0; pattern = []; userPattern = [];
-            patternChanceCount = 2; // 찬스 횟수 초기화
-            patternCanUseChance = false;
             document.getElementById('patternLevel').textContent = '1';
             document.getElementById('patternScore').textContent = '0';
             document.getElementById('patternResult').style.display = 'none';
             document.getElementById('patternStartBtn').style.display = 'inline-block';
-            document.getElementById('patternInstruction').textContent = '패턴을 기억하세요!';
+            document.getElementById('patternInstruction').textContent = '창문 위치를 기억하세요!';
             renderPatternGrid();
-            updatePatternChanceBtn();
-        }
-        
-        // 패턴 찬스 버튼 상태 업데이트
-        function updatePatternChanceBtn() {
-            const btn = document.getElementById('patternChanceBtn');
-            const count = document.getElementById('patternChanceCount');
-            if (btn && count) {
-                count.textContent = patternChanceCount;
-                btn.disabled = !patternCanUseChance || patternChanceCount <= 0;
-            }
-        }
-        
-        // 패턴 다시보기 찬스 사용
-        function usePatternChance() {
-            if (patternChanceCount <= 0 || !patternCanUseChance || patternPhase !== 'input') return;
-            
-            patternChanceCount--;
-            patternCanUseChance = false;
-            updatePatternChanceBtn();
-            
-            // 찬스 사용 애니메이션
-            const btn = document.getElementById('patternChanceBtn');
-            btn.classList.add('chance-used');
-            setTimeout(() => btn.classList.remove('chance-used'), 500);
-            
-            // 입력 금지
-            const cells = document.querySelectorAll('.pattern-cell');
-            cells.forEach(c => c.style.pointerEvents = 'none');
-            
-            // 패턴 다시 보여주기
-            document.getElementById('patternInstruction').textContent = '🔍 다시 한번 보세요!';
-            pattern.forEach(i => cells[i].classList.add('active'));
-            
-            // 음성으로 알려주기
-            if (ttsAutoEnabled) {
-                speak('다시 한번 보세요! 잘 기억하세요.');
-            }
-            
-            // 1.5초 후 다시 숨기기
-            setTimeout(() => {
-                cells.forEach(c => c.classList.remove('active'));
-                document.getElementById('patternInstruction').textContent = '패턴을 클릭하세요!';
-                cells.forEach(c => {
-                    if (!c.classList.contains('selected')) {
-                        c.style.pointerEvents = 'auto';
-                    }
-                });
-            }, 2000);
         }
         
         function renderPatternGrid() {
@@ -661,9 +579,7 @@
         
         function showPattern() {
             patternPhase = 'show';
-            patternCanUseChance = false;
-            updatePatternChanceBtn();
-            document.getElementById('patternInstruction').textContent = '패턴을 기억하세요!';
+            document.getElementById('patternInstruction').textContent = '창문 위치를 기억하세요!';
             const cells = document.querySelectorAll('.pattern-cell');
             cells.forEach(c => { c.classList.remove('active', 'selected', 'correct', 'wrong'); c.style.pointerEvents = 'none'; });
             pattern.forEach(i => cells[i].classList.add('active'));
@@ -673,11 +589,8 @@
                 cells.forEach(c => c.classList.remove('active'));
                 patternPhase = 'input';
                 userPattern = [];
-                document.getElementById('patternInstruction').textContent = '패턴을 클릭하세요!';
+                document.getElementById('patternInstruction').textContent = '창문을 클릭하세요!';
                 cells.forEach(c => c.style.pointerEvents = 'auto');
-                // 찬스 사용 가능하게 설정
-                patternCanUseChance = patternChanceCount > 0;
-                updatePatternChanceBtn();
             }, showTime);
         }
         
@@ -727,9 +640,24 @@
                 res.style.display = 'block';
                 playWrongSound();
                 checkLevelUp(false, 'pattern');
-                currentGameData = { patternLevel: patternLevel - 1, finalLevel: getGameLevel('pattern') };
-                setTimeout(() => endGame('pattern', patternScore), 1500);
+                setTimeout(() => {
+                    res.style.display = 'none';
+                    recoverPatternToStart();
+                }, 1500);
             }
+        }
+
+        function recoverPatternToStart() {
+            const cells = document.querySelectorAll('.pattern-cell');
+            cells.forEach(c => {
+                c.classList.remove('active', 'selected', 'correct', 'wrong');
+                c.style.pointerEvents = 'none';
+            });
+            patternPhase = 'show';
+            userPattern = [];
+            document.getElementById('patternInstruction').textContent = '시작을 눌러주세요!';
+            document.getElementById('patternStartBtn').style.display = 'inline-block';
+            document.getElementById('patternResult').style.display = 'none';
         }
 
 // ==================== 6. 반응 속도 ====================

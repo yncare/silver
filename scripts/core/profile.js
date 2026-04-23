@@ -443,7 +443,7 @@
             { id: 'score_100', icon: '💯', name: '100점 달성', desc: '한 게임에서 100점 이상 획득', condition: (s) => s.maxSingleScore >= 100 },
             { id: 'perfect_accuracy', icon: '🎯', name: '완벽한 정확도', desc: '게임에서 정확도 100% 달성', condition: (s) => s.hasPerfectAccuracy },
             { id: 'lightning_fast', icon: '⚡', name: '번개 반응', desc: '반응속도 게임에서 300ms 이하 달성', condition: (s) => s.fastestReaction <= 300 && s.fastestReaction > 0 },
-            { id: 'pattern_master', icon: '🧠', name: '패턴 마스터', desc: '패턴 기억 레벨 5 이상 달성', condition: (s) => s.maxPatternLevel >= 5 },
+            { id: 'pattern_master', icon: '🧠', name: '창문 마스터', desc: '창문 기억 레벨 5 이상 달성', condition: (s) => s.maxPatternLevel >= 5 },
             { id: 'number_genius', icon: '🔢', name: '숫자 천재', desc: '숫자 기억 5자리 이상 성공', condition: (s) => s.maxSequenceLength >= 5 },
             { id: 'calc_king', icon: '➕', name: '암산왕', desc: '암산 게임에서 10문제 연속 정답', condition: (s) => s.calcConsecutive >= 10 },
             { id: 'color_expert', icon: '🎨', name: '색상 달인', desc: '색상 맞추기 10문제 연속 정답', condition: (s) => s.colorConsecutive >= 10 },
