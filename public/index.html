@@ -206,174 +206,137 @@
             </div>
         </div>
         
-        <!-- 우측 영역: 점수 + 접근성 컨트롤 -->
-        <div class="header-right">
-            <!-- 접근성 컨트롤 -->
-            <div class="accessibility-controls">
-                <button class="access-btn" id="fontSizeBtn" onclick="toggleFontSize()">
-                    <span class="btn-icon">🔤</span>
-                    <span id="fontSizeLabel">크게 보기</span>
-                </button>
-                <button class="access-btn" id="contrastBtn" onclick="toggleHighContrast()">
-                    <span class="btn-icon">🌙</span>
-                    <span id="contrastLabel">고대비</span>
-                </button>
-            </div>
+        <!-- 우측 영역: 로그인/회원가입 버튼 -->
+        <div class="header-right" id="headerAuthBtns">
+            <button class="header-auth-btn" onclick="openAuthModal('login')">로그인</button>
+            <button class="header-auth-btn primary" onclick="openAuthModal('register')">회원가입</button>
         </div>
     </header>
     
     <div class="container">
-        <!-- 환영 화면 -->
-        <div id="welcomeScreen" class="welcome-screen">
+        <!-- 첫 화면: 배경 이미지만 표시 -->
+        <div id="welcomeScreen" class="welcome-screen"></div>
+
+        <!-- 인증 화면: 로그인 / 회원가입 -->
+        <div id="authScreen" class="auth-screen hidden">
             <div class="welcome-card">
-                <p class="subtitle">사용자를 선택하거나 새로 등록하세요</p>
+                <!-- 뒤로가기 -->
+                <button class="auth-back-btn" onclick="goBackToWelcome()">← 돌아가기</button>
 
-                <!-- 개인/기관 선택 (가로 스크롤) -->
-                <div class="account-type-strip" id="accountTypeStrip" aria-label="가입자 유형 선택">
-                    <button class="account-type-btn active" data-type="personal" onclick="setAccountType('personal')">
-                        <span class="account-type-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="7" r="4"></circle>
-                                <path d="M20 21a8 8 0 0 0-16 0"></path>
-                            </svg>
-                        </span>
-                        <span class="account-type-label">개인</span>
-                    </button>
-                    <button class="account-type-btn" data-type="institution" onclick="setAccountType('institution')">
-                        <span class="account-type-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 21h18"></path>
-                                <path d="M6 21V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13"></path>
-                                <path d="M10 10h4"></path>
-                                <path d="M10 14h4"></path>
-                                <path d="M10 18h4"></path>
-                            </svg>
-                        </span>
-                        <span class="account-type-label">기관</span>
-                    </button>
-                </div>
-                
-                <!-- 신규 등록(리스트 숨김 상태에서도 접근 가능) -->
-                <div class="new-user-toggle" id="newUserTogglePrimary" onclick="toggleNewUserForm()">
-                    <span class="ui-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 5v14"></path>
-                            <path d="M5 12h14"></path>
-                        </svg>
-                    </span>
-                    신규 등록
+                <!-- 탭 전환 -->
+                <div class="auth-tabs">
+                    <button class="auth-tab active" id="loginTab" onclick="switchAuthTab('login')">로그인</button>
+                    <button class="auth-tab" id="registerTab" onclick="switchAuthTab('register')">회원가입</button>
                 </div>
 
-                <!-- 기존 사용자 선택 (처음엔 숨김, 개인/기관 클릭 시 표시) -->
-                <div class="user-select-section is-hidden" id="existingUsersSection">
-                    <h3>
-                        <span class="ui-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20 21a7 7 0 0 0-14 0"></path>
-                                <circle cx="13" cy="7" r="4"></circle>
-                                <path d="M2 21a6 6 0 0 1 8-5.2"></path>
-                                <circle cx="6" cy="8" r="3"></circle>
-                            </svg>
-                        </span>
-                        기존 사용자
-                    </h3>
-                    <div class="existing-users" id="existingUsersList">
-                        <!-- 사용자 목록이 여기에 표시됨 -->
-                    </div>
-                </div>
-                
-                <!-- 새 사용자 등록 폼 -->
-                <div class="new-user-form" id="newUserForm">
-                    <h3>
-                        <span class="ui-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 2l1.2 4.2L17.5 8l-4.3 1.8L12 14l-1.2-4.2L6.5 8l4.3-1.8L12 2z"></path>
-                                <path d="M20 12l.8 2.8L23 16l-2.2 1.2L20 20l-.8-2.8L17 16l2.2-1.2L20 12z"></path>
-                            </svg>
-                        </span>
-                        신규 등록
-                    </h3>
-                    
-                    <div class="form-group">
-                        <label>
-                            <span class="ui-icon" aria-hidden="true">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M12 20h9"></path>
-                                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
-                                </svg>
-                            </span>
-                            이름
-                        </label>
-                        <input type="text" id="userName" maxlength="10" placeholder="이름을 입력하세요" style="text-align:center;">
-                    </div>
-
-                <div class="form-group">
-                    <label>
-                        <span class="ui-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="4" width="18" height="18" rx="2"></rect>
-                                <path d="M16 2v4"></path>
-                                <path d="M8 2v4"></path>
-                                <path d="M3 10h18"></path>
-                            </svg>
-                        </span>
-                        나이
-                    </label>
-                    <input type="number" id="userAge" min="1" max="120" inputmode="numeric" placeholder="나이를 입력하세요" style="text-align:center;">
-                </div>
-                    
-                    <div class="form-group">
-                        <label>
-                            <span class="ui-icon" aria-hidden="true">
+                <!-- 로그인 패널 -->
+                <div class="auth-panel" id="loginPanel">
+                    <!-- 개인 / 기관 탭 -->
+                    <div class="account-type-strip" id="accountTypeStrip" aria-label="가입자 유형 선택">
+                        <button class="account-type-btn active" data-type="personal" onclick="setAccountType('personal')">
+                            <span class="account-type-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="12" cy="7" r="4"></circle>
                                     <path d="M20 21a8 8 0 0 0-16 0"></path>
                                 </svg>
                             </span>
-                            성별
-                        </label>
-                        <div class="gender-options">
-                            <button class="gender-btn" onclick="selectGender('male', this)">
-                                <span class="gender-icon" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M14 3h7v7"></path>
-                                        <path d="M21 3l-7 7"></path>
-                                        <circle cx="10" cy="14" r="6"></circle>
-                                    </svg>
-                                </span>
-                                남성
-                            </button>
-                            <button class="gender-btn" onclick="selectGender('female', this)">
-                                <span class="gender-icon" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <circle cx="12" cy="9" r="6"></circle>
-                                        <path d="M12 15v7"></path>
-                                        <path d="M9 19h6"></path>
-                                    </svg>
-                                </span>
-                                여성
-                            </button>
+                            <span class="account-type-label">개인</span>
+                        </button>
+                        <button class="account-type-btn" data-type="institution" onclick="setAccountType('institution')">
+                            <span class="account-type-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 21h18"></path>
+                                    <path d="M6 21V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13"></path>
+                                    <path d="M10 10h4"></path>
+                                    <path d="M10 14h4"></path>
+                                    <path d="M10 18h4"></path>
+                                </svg>
+                            </span>
+                            <span class="account-type-label">기관</span>
+                        </button>
+                    </div>
+
+                    <!-- 이름 / 나이 검색 -->
+                    <div class="login-search-box" id="loginSearchBox" style="display:none;">
+                        <div class="login-search-fields">
+                            <div class="login-field-group">
+                                <label class="login-field-label">이름</label>
+                                <input type="text" id="loginSearchName" placeholder="이름을 입력하세요" maxlength="10"
+                                    onkeydown="if(event.key==='Enter')doLoginSearch()">
+                            </div>
+                            <div class="login-field-group">
+                                <label class="login-field-label">나이</label>
+                                <input type="text" id="loginSearchAge" placeholder="숫자 입력 (예: 72)"
+                                    inputmode="numeric" pattern="[0-9]*" maxlength="3"
+                                    oninput="this.value=this.value.replace(/[^0-9]/,'')"
+                                    onkeydown="if(event.key==='Enter')doLoginSearch()">
+                            </div>
+                        </div>
+                        <button class="login-search-btn" onclick="doLoginSearch()">검색</button>
+                        <div id="loginSearchResult" style="display:none;">
+                            <div class="existing-users" id="existingUsersList"></div>
+                            <p id="loginNoResult" style="display:none;color:#888;font-size:0.9rem;margin-top:12px;">검색 결과가 없습니다.</p>
                         </div>
                     </div>
-                    
-                    <div class="form-group">
-                    <label>⚙️ 난이도 (나이 자동 설정)</label>
-                    <p id="difficultyAutoHint" style="font-size:0.9rem;color:#666;margin-bottom:10px;">나이를 입력하면 난이도가 자동으로 적용됩니다.</p>
-                    <select id="difficultySelect" class="difficulty-select" onchange="selectRegDifficulty(this.value)" disabled>
-                            <option value="normal">⭐⭐⭐ 보통 (기본)</option>
-                            <option value="very_easy">⭐ 매우 쉬움</option>
-                            <option value="easy">⭐⭐ 쉬움</option>
-                            <option value="hard">⭐⭐⭐⭐ 어려움</option>
-                            <option value="very_hard">⭐⭐⭐⭐⭐ 매우 어려움</option>
-                        </select>
-                    </div>
-                    
-                    <button class="start-btn" id="registerBtn" onclick="registerNewUser()" disabled>등록하고 시작하기 →</button>
-                    <button class="new-user-toggle" onclick="toggleNewUserForm()" style="margin-top:10px;border-color:#757575;color:#757575;">← 돌아가기</button>
+
+                    <!-- 숨겨진 더미 (JS 하위호환) -->
+                    <div id="existingUsersSection" style="display:none;"></div>
+                    <button id="enterBtn" style="display:none;" onclick="enterWithSelectedUser()"></button>
+
+                    <p class="auth-switch-hint">계정이 없으신가요? <span onclick="switchAuthTab('register')">회원가입</span></p>
                 </div>
-                
-                <!-- 선택된 사용자로 시작 버튼 -->
-                <button class="start-btn" id="enterBtn" onclick="enterWithSelectedUser()" style="display:none;">선택한 사용자로 시작하기 →</button>
+
+                <!-- 회원가입 패널 -->
+                <div class="auth-panel" id="registerPanel" style="display:none;">
+                    <div class="new-user-form" id="newUserForm" style="display:block;">
+                        <div class="form-group">
+                            <label>이름</label>
+                            <input type="text" id="userName" maxlength="10" placeholder="이름을 입력하세요" style="text-align:center;">
+                        </div>
+                        <div class="form-group">
+                            <label>나이</label>
+                            <input type="number" id="userAge" min="1" max="120" inputmode="numeric" placeholder="나이를 입력하세요" style="text-align:center;">
+                        </div>
+                        <div class="form-group">
+                            <label>성별</label>
+                            <div class="gender-options">
+                                <button class="gender-btn" onclick="selectGender('male', this)">
+                                    <span class="gender-icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14 3h7v7"></path>
+                                            <path d="M21 3l-7 7"></path>
+                                            <circle cx="10" cy="14" r="6"></circle>
+                                        </svg>
+                                    </span>
+                                    남성
+                                </button>
+                                <button class="gender-btn" onclick="selectGender('female', this)">
+                                    <span class="gender-icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="9" r="6"></circle>
+                                            <path d="M12 15v7"></path>
+                                            <path d="M9 19h6"></path>
+                                        </svg>
+                                    </span>
+                                    여성
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>⚙️ 난이도 (나이 자동 설정)</label>
+                            <p id="difficultyAutoHint" style="font-size:0.9rem;color:#666;margin-bottom:10px;">나이를 입력하면 난이도가 자동으로 적용됩니다.</p>
+                            <select id="difficultySelect" class="difficulty-select" onchange="selectRegDifficulty(this.value)" disabled>
+                                <option value="normal">⭐⭐⭐ 보통 (기본)</option>
+                                <option value="very_easy">⭐ 매우 쉬움</option>
+                                <option value="easy">⭐⭐ 쉬움</option>
+                                <option value="hard">⭐⭐⭐⭐ 어려움</option>
+                                <option value="very_hard">⭐⭐⭐⭐⭐ 매우 어려움</option>
+                            </select>
+                        </div>
+                        <button class="start-btn" id="registerBtn" onclick="registerNewUser()" disabled>등록하고 시작하기 →</button>
+                        <p class="auth-switch-hint">이미 계정이 있으신가요? <span onclick="switchAuthTab('login')">로그인</span></p>
+                    </div>
+                </div>
             </div>
         </div>
         

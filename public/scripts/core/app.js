@@ -85,6 +85,10 @@
             document.getElementById('headerUserBadge').style.display = 'flex';
             window.__allowBadgeUnlockPopup = false;
 
+            // 로그인 후 헤더 auth 버튼 숨김
+            const headerAuthBtns = document.getElementById('headerAuthBtns');
+            if (headerAuthBtns) headerAuthBtns.style.display = 'none';
+
             const headerScore = document.getElementById('headerScore');
             if (headerScore) headerScore.style.display = 'flex';
             
@@ -149,12 +153,18 @@
                 // 화면 전환
                 const main = document.getElementById('mainContent');
                 const welcome = document.getElementById('welcomeScreen');
+                const authScreen = document.getElementById('authScreen');
                 if (main) main.classList.add('hidden');
+                if (authScreen) authScreen.classList.add('hidden');
                 if (welcome) welcome.classList.remove('hidden');
 
                 // 헤더 숨김
                 const headerUserBadge = document.getElementById('headerUserBadge');
                 if (headerUserBadge) headerUserBadge.style.display = 'none';
+
+                // 홈 복귀 시 auth 버튼 다시 표시
+                const headerAuthBtns = document.getElementById('headerAuthBtns');
+                if (headerAuthBtns) headerAuthBtns.style.display = 'flex';
                 const headerScore = document.getElementById('headerScore');
                 if (headerScore) headerScore.style.display = 'none';
 

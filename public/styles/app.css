@@ -466,18 +466,172 @@
             /* 헤더가 위에 고정되어 있으므로 남은 뷰포트 영역에서 로그인 카드가 가운데 오도록 높이 확보 */
             min-height: calc(100vh - 170px);
             min-height: calc(100svh - 170px);
-            background:
-                radial-gradient(1200px 420px at 50% -20%, rgba(33,150,243,0.18), rgba(33,150,243,0) 65%),
-                radial-gradient(900px 380px at 10% 10%, rgba(76,175,80,0.14), rgba(76,175,80,0) 60%),
-                radial-gradient(900px 380px at 90% 20%, rgba(255,152,0,0.12), rgba(255,152,0,0) 60%),
-                linear-gradient(135deg, #F8FBFF 0%, #F7FFF9 55%, #FFF9FB 100%);
+            background-image: url('../assets/PPP2.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             border: 1px solid rgba(0,0,0,0.06);
         }
         
+        /* 헤더 로그인/회원가입 버튼 */
+        .header-auth-btn {
+            padding: 8px 18px;
+            border-radius: 8px;
+            border: 2px solid #2196F3;
+            background: transparent;
+            color: #2196F3;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .header-auth-btn:hover { background: rgba(33,150,243,0.1); }
+
+        .header-auth-btn.primary {
+            background: #2196F3;
+            color: #fff;
+        }
+
+        .header-auth-btn.primary:hover { background: #1976D2; }
+
+        /* 인증 화면 (로그인/회원가입 전용 페이지) */
+        .auth-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 170px);
+            min-height: calc(100svh - 170px);
+            padding: 34px 22px;
+        }
+
+        .auth-back-btn {
+            display: inline-block;
+            margin-bottom: 18px;
+            background: none;
+            border: none;
+            color: #2196F3;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0;
+            font-family: inherit;
+        }
+
+        .auth-back-btn:hover { text-decoration: underline; }
+
+        /* 로그인 검색 */
+        .login-search-box { width: 100%; margin-top: 16px; }
+
+        .login-search-fields {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .login-field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            text-align: left;
+        }
+
+        .login-field-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .login-field-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        .login-field-group input:focus { border-color: #2196F3; }
+
+        .login-search-btn {
+            width: 100%;
+            padding: 13px 0;
+            background: #2196F3;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            margin-bottom: 16px;
+            transition: background 0.2s;
+        }
+
+        .login-search-btn:hover { background: #1976D2; }
+
+        /* 사용자 카드 아바타 */
+        .user-card-avatar {
+            font-size: 1.6rem;
+            line-height: 1;
+            margin-right: 2px;
+        }
+
+        /* 로그인/회원가입 탭 */
+        .auth-tabs {
+            display: flex;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            border: 2px solid #2196F3;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 13px 0;
+            font-size: 1.05rem;
+            font-weight: 700;
+            border: none;
+            background: transparent;
+            color: #2196F3;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            font-family: inherit;
+        }
+
+        .auth-tab.active {
+            background: #2196F3;
+            color: #fff;
+        }
+
+        .auth-tab:first-child { border-radius: 10px 0 0 10px; }
+        .auth-tab:last-child  { border-radius: 0 10px 10px 0; }
+
+        .auth-panel { width: 100%; }
+
+        .auth-switch-hint {
+            margin-top: 16px;
+            font-size: 0.92rem;
+            color: #666;
+        }
+
+        .auth-switch-hint span {
+            color: #2196F3;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
         .welcome-card {
-            background: rgba(255,255,255,0.86);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            position: relative;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-radius: 22px;
             padding: 34px 28px;
             box-shadow: 0 18px 60px rgba(0,0,0,0.10);

@@ -21,24 +21,19 @@
                 }
             } catch (e) { /* ignore */ }
 
-            // 선택 초기화 후 목록 재렌더
             selectedUserId = null;
-            const enterBtn = document.getElementById('enterBtn');
-            if (enterBtn) enterBtn.style.display = 'none';
 
-            // 리스트 섹션 표시(처음 클릭 시)
-            try {
-                const section = document.getElementById('existingUsersSection');
-                if (section) section.classList.remove('is-hidden');
-            } catch (e) { /* ignore */ }
-
-            renderExistingUsers();
-
-            // 리스트가 보이도록 스크롤
-            try {
-                const section = document.getElementById('existingUsersSection');
-                if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            } catch (e) { /* ignore */ }
+            // 검색박스 표시 및 초기화
+            const searchBox = document.getElementById('loginSearchBox');
+            if (searchBox) {
+                searchBox.style.display = 'block';
+                const nameEl    = document.getElementById('loginSearchName');
+                const ageEl     = document.getElementById('loginSearchAge');
+                const resultBox = document.getElementById('loginSearchResult');
+                if (nameEl)    nameEl.value = '';
+                if (ageEl)     ageEl.value  = '';
+                if (resultBox) resultBox.style.display = 'none';
+            }
         }
         
         // 전체 사용자 목록 (localStorage에서 로드)
@@ -205,111 +200,92 @@
             }
         }
         
-        // 기존 사용자 목록 렌더링
-        function renderExistingUsers() {
+        // 로그인 검색: 이름 + 나이 모두 입력, 정확히 일치해야만 본인 카드 표시
+        function doLoginSearch() {
             const container = document.getElementById('existingUsersList');
-            const userIds = Object.keys(allUsers);
-            
-            if (userIds.length === 0) {
-                container.innerHTML = '<div class="no-data" style="padding:20px;">등록된 사용자가 없습니다.</div>';
-                document.getElementById('existingUsersSection').querySelector('h3').style.display = 'none';
-                document.getElementById('newUserForm').classList.add('active');
-                // 첫 화면에서는 리스트 섹션 자체를 숨김(신규 등록 폼으로 유도)
-                try {
-                    const section = document.getElementById('existingUsersSection');
-                    if (section) section.classList.add('is-hidden');
-                } catch (e) { /* ignore */ }
-                return;
-            }
-            
-            document.getElementById('existingUsersSection').querySelector('h3').style.display = 'block';
-            // 신규 등록 버튼은 상단에 별도로 노출됨(섹션 내부 토글 제거됨)
-            
-            // 최근 활동순으로 정렬
-            const sortedUsers = userIds.map(id => ({
-                id,
-                ...allUsers[id]
-            })).sort((a, b) => new Date(b.lastActive || 0) - new Date(a.lastActive || 0));
+            const noResult  = document.getElementById('loginNoResult');
+            const resultBox = document.getElementById('loginSearchResult');
+            if (!container || !resultBox) return;
 
-            // 탭 UI active 상태 동기화(초기 렌더 포함)
-            try {
-                const strip = document.getElementById('accountTypeStrip');
-                if (strip) {
-                    strip.querySelectorAll('.account-type-btn').forEach(btn => {
-                        btn.classList.toggle('active', btn.getAttribute('data-type') === selectedAccountType);
-                    });
-                }
-            } catch (e) { /* ignore */ }
+            resultBox.style.display = 'block';
 
-            // 첫 화면에서는 리스트 숨김 (탭 클릭 이후에만 표시)
-            try {
-                const section = document.getElementById('existingUsersSection');
-                if (section) {
-                    section.classList.toggle('is-hidden', !hasOpenedUserList);
+            const nameQ = (document.getElementById('loginSearchName')?.value || '').trim();
+            const ageQ  = (document.getElementById('loginSearchAge')?.value  || '').trim();
+
+            // 둘 다 입력 필수
+            if (!nameQ || !ageQ) {
+                container.innerHTML = '';
+                if (noResult) {
+                    noResult.textContent = '이름과 나이를 모두 입력해 주세요.';
+                    noResult.style.display = 'block';
                 }
-            } catch (e) { /* ignore */ }
-            if (!hasOpenedUserList) {
-                // 리스트는 펼치지 않되, 등록 폼 등 다른 UI는 정상 동작해야 함
                 return;
             }
 
-            // 개인/기관 필터
-            const filteredUsers = sortedUsers.filter(u => {
-                const t = (u.profile && u.profile.userType) ? u.profile.userType : 'personal';
-                return t === selectedAccountType;
+            // 항상 최신 localStorage에서 읽음
+            const latest = JSON.parse(localStorage.getItem('allUsers') || '{}');
+            allUsers = latest;
+
+            const matchId = Object.keys(latest).find(id => {
+                const p = (latest[id].profile) || {};
+                return (p.userType || 'personal') === selectedAccountType
+                    && p.name === nameQ
+                    && String(p.age) === ageQ;
             });
 
-            if (filteredUsers.length === 0) {
-                container.innerHTML = `<div class="no-data" style="padding:20px;">등록된 사용자가 없습니다.</div>`;
-                document.getElementById('enterBtn').style.display = 'none';
+            if (!matchId) {
+                container.innerHTML = '';
+                if (noResult) {
+                    noResult.textContent = '일치하는 사용자를 찾을 수 없습니다.';
+                    noResult.style.display = 'block';
+                }
                 return;
             }
-            
-            const genderIconSvg = (gender) => {
-                const g = (gender === 'male') ? 'male' : 'female';
-                if (g === 'male') {
-                    return `
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M14 3h7v7"></path>
-                            <path d="M21 3l-7 7"></path>
-                            <circle cx="10" cy="14" r="6"></circle>
-                        </svg>
-                    `;
-                }
-                return `
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="12" cy="9" r="6"></circle>
-                        <path d="M12 15v7"></path>
-                        <path d="M9 19h6"></path>
-                    </svg>
-                `;
-            };
 
-            container.innerHTML = filteredUsers.map(user => {
-                const profile = user.profile;
-                const totalScore = (user.trainingHistory || []).reduce((sum, r) => sum + (r.totalScore || 0), 0);
-                const totalGames = (user.trainingHistory || []).reduce((sum, r) => sum + (r.gamesPlayed || 0), 0);
-                const isSelected = selectedUserId === user.id;
-                
-                return `
-                    <div class="user-card ${isSelected ? 'selected' : ''}" onclick="selectUser('${user.id}', event)">
-                        <div class="user-card-info">
-                            <span class="user-card-icon">${genderIconSvg(profile.gender)}</span>
-                            <div class="user-card-details">
-                                <div class="user-card-name">${profile.name}</div>
-                                <div class="user-card-meta">${getDifficultyName(profile.difficulty)}</div>
-                            </div>
-                        </div>
-                        <div style="display:flex;align-items:center;">
-                            <div class="user-card-stats">
-                                <div class="user-card-score">${totalScore}점</div>
-                                <div>총 ${totalGames}회</div>
-                            </div>
-                            <button class="delete-user-btn" onclick="deleteUser('${user.id}', event)" title="삭제">🗑️</button>
+            if (noResult) noResult.style.display = 'none';
+
+            const user = latest[matchId];
+            const profile = user.profile || {};
+            const totalScore = (user.trainingHistory || []).reduce((s, r) => s + (r.totalScore || 0), 0);
+            const totalGames = (user.trainingHistory || []).reduce((s, r) => s + (r.gamesPlayed || 0), 0);
+            const genderLabel = profile.gender === 'male' ? '남성' : '여성';
+            const ageLabel    = profile.age ? profile.age + '세' : '';
+
+            container.innerHTML = `
+                <div class="user-card login-result-card" data-uid="${matchId}" style="cursor:pointer;">
+                    <div class="user-card-info">
+                        <div class="user-card-avatar">${profile.gender === 'male' ? '👨' : '👩'}</div>
+                        <div class="user-card-details">
+                            <div class="user-card-name">${profile.name}</div>
+                            <div class="user-card-meta">${ageLabel} · ${genderLabel} · ${getDifficultyName(profile.difficulty)}</div>
                         </div>
                     </div>
-                `;
-            }).join('');
+                    <div class="user-card-stats">
+                        <div class="user-card-score">${totalScore}점</div>
+                        <div>총 ${totalGames}회</div>
+                    </div>
+                </div>
+                <button class="start-btn" style="margin-top:14px;" onclick="loginSelectUser('${matchId}')">입장하기 →</button>
+            `;
+        }
+
+        function renderLoginSearch() {}
+        function renderExistingUsers() {}
+
+        // 로그인 카드 클릭 → 게임 화면 진입
+        function loginSelectUser(userId) {
+            allUsers = JSON.parse(localStorage.getItem('allUsers') || '{}');
+            if (!allUsers[userId]) {
+                alert('사용자 정보를 찾을 수 없습니다.');
+                return;
+            }
+            selectedUserId = userId;
+            const userData = allUsers[userId];
+            userProfile = { ...userData.profile, id: userId };
+            loadUserData(userId);
+            initGameState();
+            closeAuthModal();
+            showMainContent();
         }
         
         // 난이도 이름 가져오기
@@ -335,34 +311,78 @@
             userProfile = { ...userData.profile, id: selectedUserId };
             
             loadUserData(selectedUserId);
-            
+
             // 게임 상태 초기화
             initGameState();
+            closeAuthModal();
             showMainContent();
         }
         
-        // 새 사용자 폼 토글
-        function toggleNewUserForm() {
-            const form = document.getElementById('newUserForm');
-            const section = document.getElementById('existingUsersSection');
-            const enterBtn = document.getElementById('enterBtn');
-            
-            if (form.classList.contains('active')) {
-                form.classList.remove('active');
-                section.style.display = 'block';
-                enterBtn.style.display = selectedUserId ? 'block' : 'none';
+        // 인증 화면 열기/닫기
+        function openAuthModal(tab) {
+            // 검색창 초기화
+            hasOpenedUserList = false;
+            const searchBox = document.getElementById('loginSearchBox');
+            if (searchBox) searchBox.style.display = 'none';
+            const resultBox = document.getElementById('loginSearchResult');
+            if (resultBox) resultBox.style.display = 'none';
+            const nameEl = document.getElementById('loginSearchName');
+            const ageEl  = document.getElementById('loginSearchAge');
+            if (nameEl) nameEl.value = '';
+            if (ageEl)  ageEl.value  = '';
+
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('authScreen').classList.remove('hidden');
+            switchAuthTab(tab || 'login');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+        }
+
+        function goBackToWelcome() {
+            closeAuthModal();
+        }
+
+        // 탭 전환 (로그인 / 회원가입)
+        function switchAuthTab(tab) {
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            const loginPanel = document.getElementById('loginPanel');
+            const registerPanel = document.getElementById('registerPanel');
+
+            if (tab === 'login') {
+                loginTab.classList.add('active');
+                registerTab.classList.remove('active');
+                loginPanel.style.display = 'block';
+                registerPanel.style.display = 'none';
+                // 개인/기관 탭이 이미 선택된 상태면 검색창 표시
+                const searchBox = document.getElementById('loginSearchBox');
+                if (searchBox && hasOpenedUserList) {
+                    searchBox.style.display = 'block';
+                    // 검색 결과만 초기화, 입력값은 유지
+                    const resultBox = document.getElementById('loginSearchResult');
+                    if (resultBox) resultBox.style.display = 'none';
+                }
             } else {
-                form.classList.add('active');
-                section.style.display = 'none';
-                enterBtn.style.display = 'none';
+                registerTab.classList.add('active');
+                loginTab.classList.remove('active');
+                registerPanel.style.display = 'block';
+                loginPanel.style.display = 'none';
                 // 폼 초기화
                 document.getElementById('userName').value = '';
-            document.getElementById('userAge').value = '';
+                document.getElementById('userAge').value = '';
                 document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('selected'));
                 document.getElementById('registerBtn').disabled = true;
-            applyDifficultyFromAge(null);
+                applyDifficultyFromAge(null);
                 userProfile.gender = null;
             }
+        }
+
+        // 새 사용자 폼 토글 (하위 호환용)
+        function toggleNewUserForm() {
+            switchAuthTab('register');
         }
         
         // 새 사용자 등록
@@ -377,8 +397,8 @@
             // 중복 체크
             if (allUsers[userId]) {
                 alert('동일한 정보의 사용자가 이미 존재합니다. 기존 사용자를 선택해주세요.');
-                toggleNewUserForm();
-                renderExistingUsers();
+                hasOpenedUserList = true;
+                switchAuthTab('login');
                 return;
             }
             
@@ -400,9 +420,10 @@
             
             // 저장
             saveUserData();
-            
+
             // 게임 상태 초기화
             initGameState();
+            closeAuthModal();
             showMainContent();
         }
         
