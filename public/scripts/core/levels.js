@@ -70,7 +70,15 @@
                             return `<span class="${cls}"></span>`;
                         }).join('')}
                     </div>
+                    <button class="level-reset-btn" onclick="confirmResetLevel('${gameId}')" title="레벨 초기화">↺</button>
                 `;
+            }
+        }
+
+        function confirmResetLevel(gameId) {
+            if (confirm('이 게임의 레벨을 1로 초기화할까요?')) {
+                resetLevel(gameId);
+                updateLevelDisplay(gameId);
             }
         }
         
@@ -169,6 +177,8 @@
             }
         }
         
+        window.confirmResetLevel = confirmResetLevel;
+
         // 레벨 완전 초기화 (모든 게임 레벨 삭제)
         function clearLevelData() {
             ALL_GAMES.forEach(game => {
