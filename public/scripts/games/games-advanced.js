@@ -4,10 +4,41 @@
         
         // 17. 미로 탈출 (공간지각)
         let mazeLevel = 1, mazeMoves = 0, mazeGrid = [], playerPos = {x:0, y:0}, goalPos = {x:0, y:0}, mazeStarted = false;
-        
+
+        // 레벨별 그리드 크기: 레벨1=4, 2=5, 3=5, 4=6, 5=6, 6=7, 7=7, 8=8, 9=8, 10=9
+        function getMazeSize(level) {
+            return Math.min(4 + Math.floor((level - 1) / 2), 9);
+        }
+
+        // 레벨별 벽 비율: 레벨1=20%, 레벨10=29% (경로 차단 방지를 위해 상한 제한)
+        function getMazeWallRate(level) {
+            return 0.20 + (level - 1) * 0.01;
+        }
+
+        // BFS로 시작→골 경로 존재 여부 확인
+        function mazeHasPath(grid, start, goal) {
+            const rows = grid.length;
+            const cols = grid[0].length;
+            const visited = Array.from({length: rows}, () => new Array(cols).fill(false));
+            const queue = [start];
+            visited[start.y][start.x] = true;
+            const dirs = [{dx:0,dy:-1},{dx:0,dy:1},{dx:-1,dy:0},{dx:1,dy:0}];
+            while (queue.length) {
+                const {x, y} = queue.shift();
+                if (x === goal.x && y === goal.y) return true;
+                for (const {dx, dy} of dirs) {
+                    const nx = x + dx, ny = y + dy;
+                    if (nx >= 0 && nx < cols && ny >= 0 && ny < rows && !visited[ny][nx] && grid[ny][nx] === 0) {
+                        visited[ny][nx] = true;
+                        queue.push({x: nx, y: ny});
+                    }
+                }
+            }
+            return false;
+        }
+
         function initMazeGame() {
-            mazeLevel = gameLevels['maze'] || 1;
-            if(mazeLevel > 10) mazeLevel = 10;
+            mazeLevel = Math.min(Math.max(gameLevels['maze'] || 1, 1), 10);
             mazeMoves = 0;
             mazeStarted = false;
             document.getElementById('mazeLevel').textContent = mazeLevel;
@@ -17,86 +48,96 @@
             document.getElementById('mazeStartBtn').textContent = '시작';
             document.getElementById('mazeStartBtn').style.display = '';
         }
-        
+
         function startMaze() {
             mazeStarted = true;
             mazeMoves = 0;
             document.getElementById('mazeMoves').textContent = 0;
-            const size = Math.min(4 + Math.floor(mazeLevel / 2), 9);
-            generateMaze(size);
             document.getElementById('mazeStartBtn').style.display = 'none';
             document.getElementById('mazeResult').style.display = 'none';
+            generateMaze(getMazeSize(mazeLevel));
         }
-        
+
         function generateMaze(size) {
-            mazeGrid = [];
-            for(let y = 0; y < size; y++) {
-                mazeGrid[y] = [];
-                for(let x = 0; x < size; x++) {
-                    mazeGrid[y][x] = Math.random() < (0.2 + mazeLevel * 0.02) ? 1 : 0;
+            const wallRate = getMazeWallRate(mazeLevel);
+            let attempts = 0;
+            // 경로가 존재하는 미로가 생성될 때까지 재시도 (최대 100회)
+            do {
+                mazeGrid = [];
+                for (let y = 0; y < size; y++) {
+                    mazeGrid[y] = [];
+                    for (let x = 0; x < size; x++) {
+                        mazeGrid[y][x] = Math.random() < wallRate ? 1 : 0;
+                    }
                 }
-            }
+                // 시작/골 및 주변 셀 강제 개방
+                mazeGrid[0][0] = 0;
+                mazeGrid[0][1] = 0;
+                mazeGrid[1][0] = 0;
+                mazeGrid[size-1][size-1] = 0;
+                mazeGrid[size-1][size-2] = 0;
+                mazeGrid[size-2][size-1] = 0;
+                attempts++;
+            } while (!mazeHasPath(mazeGrid, {x:0, y:0}, {x:size-1, y:size-1}) && attempts < 100);
+
             playerPos = {x: 0, y: 0};
             goalPos = {x: size-1, y: size-1};
-            mazeGrid[0][0] = 0; mazeGrid[size-1][size-1] = 0;
-            mazeGrid[0][1] = 0; mazeGrid[1][0] = 0;
-            mazeGrid[size-1][size-2] = 0; mazeGrid[size-2][size-1] = 0;
             mazeMoves = 0;
             document.getElementById('mazeMoves').textContent = 0;
             renderMaze();
         }
-        
+
         function renderMaze() {
             const container = document.getElementById('mazeContainer');
-            const size = mazeGrid.length;
-            container.style.gridTemplateColumns = `repeat(${size}, 42px)`;
+            const rows = mazeGrid.length;
+            const cols = mazeGrid[0].length;
+            container.style.gridTemplateColumns = `repeat(${cols}, 42px)`;
             container.innerHTML = '';
-            for(let y = 0; y < size; y++) {
-                for(let x = 0; x < size; x++) {
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < cols; x++) {
                     const cell = document.createElement('div');
                     cell.className = 'maze-cell';
-                    if(x === playerPos.x && y === playerPos.y) { cell.classList.add('player'); cell.textContent = '🐭'; }
-                    else if(x === goalPos.x && y === goalPos.y) { cell.classList.add('goal'); cell.textContent = '🧀'; }
-                    else if(mazeGrid[y][x] === 1) { cell.classList.add('wall'); }
+                    if (x === playerPos.x && y === playerPos.y) { cell.classList.add('player'); cell.textContent = '🐭'; }
+                    else if (x === goalPos.x && y === goalPos.y) { cell.classList.add('goal'); cell.textContent = '🧀'; }
+                    else if (mazeGrid[y][x] === 1) { cell.classList.add('wall'); }
                     else { cell.classList.add('path'); }
                     container.appendChild(cell);
                 }
             }
         }
-        
+
         function moveMaze(dir) {
-            if(!mazeStarted || !mazeGrid.length) return;
+            if (!mazeStarted || !mazeGrid.length) return;
+            const rows = mazeGrid.length;
+            const cols = mazeGrid[0].length;
             let nx = playerPos.x, ny = playerPos.y;
-            if(dir === 'up') ny--; if(dir === 'down') ny++; if(dir === 'left') nx--; if(dir === 'right') nx++;
-            if(nx < 0 || nx >= mazeGrid.length || ny < 0 || ny >= mazeGrid.length || mazeGrid[ny][nx] === 1) return;
+            if (dir === 'up') ny--; else if (dir === 'down') ny++; else if (dir === 'left') nx--; else if (dir === 'right') nx++;
+            if (nx < 0 || nx >= cols || ny < 0 || ny >= rows || mazeGrid[ny][nx] === 1) return;
             playerPos = {x: nx, y: ny};
             mazeMoves++;
             document.getElementById('mazeMoves').textContent = mazeMoves;
             if (typeof playMoveSound === 'function') playMoveSound();
             renderMaze();
-            if(nx === goalPos.x && ny === goalPos.y) completeMaze();
+            if (nx === goalPos.x && ny === goalPos.y) completeMaze();
         }
-        
+
         function completeMaze() {
             mazeStarted = false;
             const score = Math.max(100 + mazeLevel * 10 - mazeMoves * 2, 30);
             showGameResult('mazeResult', true, `🎉 탈출 성공! +${score}점`);
             addScore(score);
-            gameState.correctAnswers++; gameState.totalAnswers++;
+            gameState.correctAnswers++;
+            gameState.totalAnswers++;
             gameLevelCounts['maze'] = (gameLevelCounts['maze'] || 0) + 1;
-            let leveledUp = false;
-            if(gameLevelCounts['maze'] >= ADV_LEVEL_UP_SUCCESSES && mazeLevel < 10) {
-                mazeLevel++; 
-                gameLevels['maze'] = mazeLevel; 
+            if (gameLevelCounts['maze'] >= ADV_LEVEL_UP_SUCCESSES && mazeLevel < 10) {
+                mazeLevel++;
+                gameLevels['maze'] = mazeLevel;
                 gameLevelCounts['maze'] = 0;
-                leveledUp = true;
                 showLevelUpMessage('maze');
             }
             saveLevel();
             document.getElementById('mazeLevel').textContent = mazeLevel;
             updateLevelDisplay('maze');
-            document.getElementById('mazeStartBtn').textContent = '다음 문제';
-            document.getElementById('mazeStartBtn').style.display = 'none';
             setTimeout(() => startMaze(), ADV_AUTO_ADVANCE_MS);
         }
         
@@ -853,4 +894,12 @@
         window.checkRotate = checkRotate;
         window.startChain = startChain;
         window.clickChain = clickChain;
-        
+
+        // 미로 탈출 키보드 방향키 지원
+        document.addEventListener('keydown', function(e) {
+            if (!mazeStarted) return;
+            const keyMap = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' };
+            const dir = keyMap[e.key];
+            if (dir) { e.preventDefault(); moveMaze(dir); }
+        });
+
