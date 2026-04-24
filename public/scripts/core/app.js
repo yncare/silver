@@ -71,6 +71,8 @@
         
         function showMainContent() {
             document.getElementById('welcomeScreen').classList.add('hidden');
+            const _authScreen = document.getElementById('authScreen');
+            if (_authScreen) _authScreen.classList.add('hidden');
             document.getElementById('mainContent').classList.remove('hidden');
             document.getElementById('userNameDisplay').textContent = userProfile.name;
             document.getElementById('userGenderIcon').textContent = userProfile.gender === 'male' ? '👨' : '👩';
