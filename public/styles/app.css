@@ -3312,15 +3312,15 @@
             background: #333;
             padding: 10px;
             border-radius: 15px;
-            max-width: 320px;
+            max-width: 384px;
         }
         .maze-cell {
-            width: 35px;
-            height: 35px;
+            width: 42px;
+            height: 42px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
+            font-size: 1.56rem;
             border-radius: 5px;
         }
         .maze-cell.wall { background: #555; }

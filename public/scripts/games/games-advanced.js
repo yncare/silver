@@ -49,7 +49,7 @@
         function renderMaze() {
             const container = document.getElementById('mazeContainer');
             const size = mazeGrid.length;
-            container.style.gridTemplateColumns = `repeat(${size}, 35px)`;
+            container.style.gridTemplateColumns = `repeat(${size}, 42px)`;
             container.innerHTML = '';
             for(let y = 0; y < size; y++) {
                 for(let x = 0; x < size; x++) {
