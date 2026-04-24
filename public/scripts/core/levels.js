@@ -70,7 +70,7 @@
                             return `<span class="${cls}"></span>`;
                         }).join('')}
                     </div>
-                    <button class="level-reset-btn" onclick="confirmResetLevel('${gameId}')" title="레벨 초기화">↺</button>
+                    <button class="level-reset-btn" onclick="confirmResetLevel('${gameId}')">↺ 초기화</button>
                 `;
             }
         }
