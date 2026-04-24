@@ -1802,7 +1802,7 @@
 
         .game-screen:fullscreen .arrow-display,
         .game-screen:-webkit-full-screen .arrow-display {
-            font-size: clamp(5rem, 24vmin, 11rem);
+            font-size: clamp(4rem, 19.2vmin, 8.8rem);
         }
 
         .game-screen:fullscreen .direction-btns,
@@ -2833,7 +2833,7 @@
         
         /* 방향 게임 */
         .arrow-display {
-            font-size: 8rem;
+            font-size: 6.4rem;
             text-align: center;
             padding: 20px;
             margin-bottom: 20px;
