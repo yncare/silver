@@ -13,14 +13,14 @@
             return map[Math.min(level - 1, 9)];
         }
 
-        // 레벨별 제한 시간(초): 레벨1=120초, 레벨10=60초
+        // 레벨별 제한 시간(초): 레벨1=135초, 레벨10=75초
         function getMazeTimeLimit(level) {
-            return Math.max(120 - (level - 1) * 7, 60);
+            return Math.max(135 - (level - 1) * 7, 75);
         }
 
-        // 레벨별 루프(지름길) 제거 수: 낮은 레벨은 많이(쉬움), 높은 레벨은 0(어려움)
+        // 레벨별 루프(지름길) 수: 낮은 레벨은 많이(쉬움), 높은 레벨도 최소 2개 유지
         function getMazeLoops(level) {
-            return Math.max(8 - (level - 1), 0);
+            return Math.max(11 - (level - 1), 2);
         }
 
         // Recursive Backtracker DFS 미로 생성
@@ -163,7 +163,7 @@
             const container = document.getElementById('mazeContainer');
             const rows = mazeGrid.length;
             const cols = mazeGrid[0].length;
-            const cellPx = rows <= 11 ? 36 : rows <= 15 ? 28 : 22;
+            const cellPx = rows <= 11 ? 32 : rows <= 15 ? 25 : 20;
             container.style.gridTemplateColumns = `repeat(${cols}, ${cellPx}px)`;
             container.style.maxWidth = (cols * cellPx + cols * 2 + 20) + 'px';
             container.innerHTML = '';
